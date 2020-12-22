@@ -1,9 +1,9 @@
 #include "ofApp.h"
 
 /*************************************************************************
-* Midterm
-* Class: CS 116B
-* Student: Ivan Hernandez
+* ------------------- RAY TRACING / RAY MARCHING -------------------------
+* Date Created: Fall 2019
+* Author: Ivan Hernandez
 * Description: This project adds the functionality to perform ray
 * marching on a 3D scene. It also has the sceneSDF() function that
 * calls each primitive's sdf and returns the closest distance to the
@@ -58,7 +58,7 @@ void ofApp::setup() {
 	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
 	sphere1 = Sphere(glm::vec3(0, 1, 0), .25, ofColor::mediumPurple);
 	cube1 = Cube(glm::vec3(0, 0, 0), 3, ofColor::seaGreen);
-	f1 = Fractal(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
+	f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
 	wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
 	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
 	torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
