@@ -387,66 +387,6 @@ glm::vec3 ofApp::getNormal(const glm::vec3 &p, int i) {
 	return pNormal;
 }
 
-
-/**
-* Mesh Intersection function. It iterates through every triangle in the mesh
-* to check if the ray intersects the Triangle. If it does interset a triangle
-* then it takes the barycentric coordinates and using the equation from the slides
-* and the book it interpolates the normal and finds the point on the triangle based
-* on the barycentric coordinates. Also, it takes the closest hit triangle, so that
-* triangles behind it are not shown in front.
-*/
-bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
-	bool insideTri = false;
-	float maxLocalDist = FLT_MAX;
-	float dist;
-	glm::vec3 p, n;
-	for (Triangle triangle : tris) {
-		glm::vec3 na, nb, nc;
-		glm::vec3 bary;
-		if (glm::intersectRayTriangle(ray.p, ray.d, vertices[triangle.i], vertices[triangle.j], vertices[triangle.k], bary)) {
-			//get the vertex normals from the mesh vector
-			na = vertNormals[triangle.in];
-			nb = vertNormals[triangle.jn];
-			nc = vertNormals[triangle.kn];
-
-			//Use barycentric coordinates and vertex normals to interpolate the normal
-			normal = glm::normalize((1 - bary.x - bary.y) * na + bary.x *nb + bary.y * nc);
-
-			//Use barycentric coordinates to find the point on the triangle
-			point = vertices[triangle.i] + bary.x * (vertices[triangle.j] - vertices[triangle.i])
-				+ bary.y * (vertices[triangle.k] - vertices[triangle.i]);
-			dist = glm::distance(ray.p, point);
-			if (dist < maxLocalDist) {
-				maxLocalDist = dist;
-				insideTri = true;
-				p = point;
-				n = normal;
-			}
-		}
-	}
-	point = p;
-	normal = n;
-	return insideTri;
-}
-
-bool Plane::intersect(const Ray &ray, glm::vec3 & point, glm::vec3 & normalAtIntersect) {
-	float dist;
-	bool insidePlane = false;
-	bool hit = glm::intersectRayPlane(ray.p, ray.d, position, this->normal, dist);
-	if (hit) {
-		Ray r = ray;
-		point = r.evalPoint(dist);
-		normalAtIntersect = this->normal;
-		glm::vec2 xrange = glm::vec2(position.x - width / 2, position.x + width / 2);
-		glm::vec2 zrange = glm::vec2(position.z - height / 2, position.z + height / 2);
-		if (point.x < xrange[1] && point.x > xrange[0] && point.z < zrange[1] && point.z > zrange[0]) {
-			insidePlane = true;
-		}
-	}
-	return insidePlane;
-}
-
 glm::vec3 ViewPlane::toWorld(float u, float v) {
 	float w = width();
 	float h = height();

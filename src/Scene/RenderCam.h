@@ -4,8 +4,7 @@
 #include "SceneObject.h"
 #include "ViewPlane.h"
 
-//  render camera  - currently must be z axis aligned (we will improve this in project 4)
-//
+// render camera  - currently must be z axis aligned (we will improve this in project 4)
 class RenderCam : public SceneObject {
 public:
 	RenderCam() {
@@ -14,9 +13,7 @@ public:
 	}
 	Ray getRay(float u, float v);
 	void draw() { ofDrawBox(position, 1.0); };
-	void drawFrustum() {
-		view.draw();
-	};
+	void drawFrustum() { view.draw(); };
 
 	glm::vec3 aim;
 	ViewPlane view;          // The camera viewplane, this is the view that we will render 

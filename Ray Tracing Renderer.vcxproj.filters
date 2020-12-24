@@ -49,6 +49,27 @@
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp">
       <Filter>addons\ofxGui\src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Sphere.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Cube.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Torus.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Mesh.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\LSystem.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\WaterPool.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Plane.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

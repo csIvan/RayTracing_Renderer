@@ -196,6 +196,13 @@
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSlider.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxSliderGroup.cpp" />
     <ClCompile Include="..\..\..\addons\ofxGui\src\ofxToggle.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\Cube.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\LSystem.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\Mesh.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\Plane.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\Sphere.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\Torus.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\WaterPool.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Definitions.h" />

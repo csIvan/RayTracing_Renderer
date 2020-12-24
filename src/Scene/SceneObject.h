@@ -20,7 +20,6 @@ public:
 	glm::vec3 position = glm::vec3(0, 0, 0);
 
 	// material properties (we will ultimately replace this with a Material class - TBD)
-	//
 	ofColor diffuseColor = ofColor::grey;    // default colors - can be changed.
 	ofColor specularColor = ofColor::lightGray;
 };

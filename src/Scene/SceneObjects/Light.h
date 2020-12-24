@@ -8,6 +8,7 @@ class Light : public SceneObject {
 public:
 	float intensity = 100;
 	float radius = 0.1;
+
 	Light(glm::vec3 p, float i) {
 		position = p;
 		intensity = i;
