@@ -72,7 +72,7 @@ public:
 	Light light2;
 	Light light3;
 	Light light4;
-	Spotlight sp1;
+	SpotLight sp1;
 
 	float nearestDistance;
 

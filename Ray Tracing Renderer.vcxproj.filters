@@ -70,6 +70,15 @@
     <ClCompile Include="src\Scene\SceneObjects\Plane.cpp">
       <Filter>src\Scene\SceneObjects</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\RenderCam.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\ViewPlane.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Lights\SpotLight.cpp">
+      <Filter>src\Scene\SceneObjects\Lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">

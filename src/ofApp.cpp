@@ -33,7 +33,7 @@ void ofApp::setup() {
 	previewCam.setNearClip(.1);
 
 	//spotlight
-	sp1 = Spotlight(glm::vec3(.5, -1, -.55), .1, 4);
+	sp1 = SpotLight(glm::vec3(.5, -1, -.55), .1, 4);
 	sp1.position = glm::vec3(-3, 4, 1);
 
 	//point light 
@@ -149,20 +149,6 @@ ofColor ofApp::phong(const glm::vec3 &point, const glm::vec3 &normal, const ofCo
 		//}
 	}
 	return phongColor;
-}
-
-// Calculate the light depending on the constraint angle and falloff angle
-float Spotlight::falloff(float spotAngle) {
-	spotAngle = 1 - spotAngle;
-	if (spotAngle < lightAngle) {
-		return 1;
-	}
-	if (spotAngle > falloffAngle) {
-		return 0;
-	}
-
-	float delta = (spotAngle - falloffAngle) / (lightAngle - falloffAngle);
-	return delta;
 }
 
 bool ofApp::inShadow(const Ray &r) {
@@ -385,17 +371,6 @@ glm::vec3 ofApp::getNormal(const glm::vec3 &p, int i) {
 		pNormal = glm::vec3(0, 1, 0);
 
 	return pNormal;
-}
-
-glm::vec3 ViewPlane::toWorld(float u, float v) {
-	float w = width();
-	float h = height();
-	return (glm::vec3((u * w) + min.x, (v * h) + min.y, position.z));
-}
-
-Ray RenderCam::getRay(float u, float v) {
-	glm::vec3 pointOnPlane = view.toWorld(u, v);
-	return(Ray(position, glm::normalize(pointOnPlane - position)));
 }
 
 /**
