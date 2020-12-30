@@ -63,11 +63,11 @@ void ofApp::setup() {
 	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
 	torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
 	torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 65.0f, glm::vec3(1, 0, 1), ofColor::orangeRed);
-	//scene.push_back(&sphere1);
+	scene.push_back(&sphere1);
 	//scene.push_back(&cube1);
-	scene.push_back(&f1);
+	//scene.push_back(&f1);
 	//scene.push_back(&wp1);
-	//scene.push_back(&plane1);
+	scene.push_back(&plane1);
 	//scene.push_back(&torus1);
 	//scene.push_back(&torus2);
 }
@@ -313,9 +313,9 @@ void ofApp::RayMarching() {
 			else
 				image.setColor(j, imageHeight - i - 1, ofColor::black);
 		}
-		cout << i << "-";
+		//cout << i << "-";
 	}
-	image.save("images/LSystem140.jpg");
+	image.save("images/Render2.jpg");
 }
 
 //SceneSDF. Checks every primitive's sdf and determines the closest one to the point

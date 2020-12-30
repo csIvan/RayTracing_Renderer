@@ -79,6 +79,12 @@
     <ClCompile Include="src\Scene\SceneObjects\Lights\SpotLight.cpp">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClCompile>
+    <ClCompile Include="src\Renderers\RayTracer.cpp">
+      <Filter>src\Renderers</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderers\RayMarcher.cpp">
+      <Filter>src\Renderers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -128,6 +134,9 @@
     </Filter>
     <Filter Include="src\Scene\SceneObjects\Lights">
       <UniqueIdentifier>{a2b6a36b-7a3d-46af-8a2a-0d229976f324}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Renderers">
+      <UniqueIdentifier>{12a48249-ef02-4282-bb16-c4b73ff40a2b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -346,6 +355,12 @@
     </ClInclude>
     <ClInclude Include="src\Scene\SceneObjects\Lights\SpotLight.h">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderers\RayTracer.h">
+      <Filter>src\Renderers</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Renderers\RayMarcher.h">
+      <Filter>src\Renderers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

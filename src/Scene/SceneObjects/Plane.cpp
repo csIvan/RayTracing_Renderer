@@ -41,7 +41,7 @@ void Plane::draw() {
 	plane.drawWireframe();
 }
 
-float Plane::sdf(glm::vec3 p) {
+float Plane::sdf(const glm::vec3 p) {
 	return p.y - position.y;
 }
 
