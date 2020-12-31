@@ -2,14 +2,25 @@
 
 #include "ofMain.h"
 #include "Shader.h"
+#include "../Definitions.h"
 #include "../Scene/Ray.h"
+#include "../Scene/RenderCam.h"
 #include "../Scene/SceneObject.h"
+#include "../Scene/SceneObjects/Light.h"
 
 class RayMarcher {
 public:
+	vector<SceneObject*> objects;
+	vector<Light*> lights;
+	RenderCam renderCam;
+	ofImage image;
 	Shader shader;
+	int imageWidth, imageHeight;
+	float nearestDist = FLT_MAX;
+	int indexHit;
 
-	RayMarcher();
+	RayMarcher(int imageWidth, int imageHeight, ofImage image);
+	RayMarcher() {};
 	void render();
 	bool rayMarch(Ray r, glm::vec3 &p);
 
@@ -18,4 +29,7 @@ public:
 	glm::vec3 getNormalRM(const glm::vec3 &p);
 	float opRep(const glm::vec3 p, const glm::vec3 c, SceneObject &s);
 	float opRound(const glm::vec3 p, SceneObject &s, float rad);
+
+	void addObject(SceneObject &object);
+	void addLight(Light &light);
 };

@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Definitions.h"
+#include "Rendering/RayTracer.h"
 #include "Scene/SceneObject.h"
 #include "Scene/ViewPlane.h"
 #include "Scene/RenderCam.h"
@@ -25,10 +26,8 @@ public:
 
 	void keyPressed(int key);
 	void dragEvent(ofDragInfo dragInfo);
-	void triRayTrace();
 	bool rayMarch(Ray r, glm::vec3 &p);
 	void RayMarching();
-	glm::vec3 getNormal(const glm::vec3 &p, int i);
 	glm::vec3 getNormalRM(const glm::vec3 &p);
 	float sceneSDF(glm::vec3 p);
 	float opRep(const glm::vec3 p, const glm::vec3 c, SceneObject &s);
@@ -45,6 +44,8 @@ public:
 	ofCamera sideCam;
 	ofCamera previewCam;
 	ofCamera  *theCam;    // set to current camera either mainCam or sideCam
+
+	RayTracer rayTracer;
 
 	RenderCam renderCam;
 	ofImage image;

@@ -37,7 +37,7 @@ void ofApp::setup() {
 	sp1.position = glm::vec3(-3, 4, 1);
 
 	//point light 
-	light1 = Light(glm::vec3(0, 5, 8), 70);
+	light1 = Light(glm::vec3(-4, 3, 5), 50);
 	light2 = Light(glm::vec3(0, 5, -25), 50);
 	light3 = Light(glm::vec3(0, 5, -50), 50);
 	light4 = Light(glm::vec3(0, 5, -75), 50);
@@ -53,10 +53,11 @@ void ofApp::setup() {
 	//texture.load("images/texture2.jpg");
 	//sphereTexture.load("images/WorldMap.jpg");
 
+	rayTracer = RayTracer(imageWidth, imageHeight, image);
 
 	nearestDistance = FLT_MAX;
 	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
-	sphere1 = Sphere(glm::vec3(0, 1, 0), .25, ofColor::mediumPurple);
+	sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
 	cube1 = Cube(glm::vec3(0, 0, 0), 3, ofColor::seaGreen);
 	f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
 	wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
@@ -70,6 +71,10 @@ void ofApp::setup() {
 	scene.push_back(&plane1);
 	//scene.push_back(&torus1);
 	//scene.push_back(&torus2);
+
+	rayTracer.addObject(sphere1);
+	rayTracer.addObject(plane1);
+	rayTracer.addLight(light1);
 }
 
 //--------------------------------------------------------------
@@ -174,7 +179,8 @@ void ofApp::keyPressed(int key) {
 		break;
 	case OF_KEY_F3: theCam = &previewCam;
 		break;
-	case 'r': triRayTrace();
+	case 'r': rayTracer.render();
+		cout << "done" << endl;
 		break;
 	case 'm': RayMarching();
 		cout << "done" << endl;
@@ -183,90 +189,6 @@ void ofApp::keyPressed(int key) {
 		break;
 	}
 }
-
-/**
-* To call the raytracing function, press the 'r' key
-* Raytrace function. It is similar to the ray tracing function from the first project
-* but it also allows for triangle-ray intersection. Also, it checks if the object is
-* a sphere or a plane in order to apply the correct texture. It also calls for lambert
-* shading because I thought that my scene looked better in lambert, but phong can also be used.
-*/
-void ofApp::triRayTrace() {
-	for (float i = 0; i < imageHeight; i++) {
-		for (float j = 0; j < imageWidth; j++) {
-			Ray ray = renderCam.getRay((j) / imageWidth, (i) / imageHeight);
-
-			bool hit = false;
-			float dist;
-			ofColor color;
-
-			for (int index = 0; index < scene.size(); index++) {
-
-				glm::vec3 point;
-				glm::vec3 normal;
-				if (scene[index]->intersect(ray, point, normal)) {
-					dist = glm::distance(renderCam.position, point);
-					if (dist < nearestDistance) {
-						nearestDistance = dist;
-						hit = true;
-						normal = glm::normalize(normal);
-						//if the object is a sphere
-						if (typeid(*scene[index]) == typeid(Sphere)) {
-							Sphere *globe = (Sphere*)scene[index];
-
-							glm::vec3 n = glm::normalize(point - globe->position);
-							float u = atan2(n.x, n.z) / (2 * PI) + 0.5;
-							float v = n.y * 0.5 + 0.5;
-
-
-							float uLookUp = u * sphereTexture.getWidth() - .5;
-							float pixelj = fmod(uLookUp, sphereTexture.getWidth());
-							float vLookUp = v * sphereTexture.getHeight() - .5;
-							float pixeli = fmod(vLookUp, sphereTexture.getHeight());
-
-							ofColor globeColor = sphereTexture.getColor(pixelj, sphereTexture.getHeight() - pixeli - 1);
-							color = lambert(point, normal, globeColor);
-						}
-						else if (typeid(*scene[index]) == typeid(Plane)) {
-							//10x10 tiles
-							int uvTileFactor = 10;
-
-							Plane *p1 = (Plane*)scene[index];
-
-							float u = (p1->width + point.x) / (p1->width / uvTileFactor);
-							float v = (p1->height + point.z) / (p1->height / uvTileFactor);
-
-							//find the color at the point of u and v
-							float uLookUp = u * texture.getWidth() - .5;
-							float pixelj = fmod(uLookUp, texture.getWidth());
-							float vLookUp = v * texture.getHeight() - .5;
-							float pixeli = fmod(vLookUp, texture.getHeight());
-
-							//apply the color of the texture using the shading algorithm
-							ofColor planeColor = texture.getColor(pixelj, texture.getHeight() - pixeli - 1);
-
-							//color = phong(point, normal, planeColor, scene[index]->specularColor, Power);
-							color = lambert(point, normal, planeColor);
-						}
-						else {
-							color = phong(point, normal, scene[index]->diffuseColor, scene[index]->specularColor, Power);
-							//color = lambert(point, normal, scene[index]->diffuseColor);
-						}
-					}
-				}
-			}
-			nearestDistance = FLT_MAX;
-
-			if (hit) {
-				image.setColor(j, imageHeight - i - 1, color);
-			}
-			else
-				image.setColor(j, imageHeight - i - 1, ofColor::black);
-		}
-	}
-	image.save("images/RayIntersectRender.jpg");
-}
-
 
 
 /******************************************** Ray Marching Functions ********************************************************/
@@ -362,16 +284,6 @@ glm::vec3 ofApp::getNormalRM(const glm::vec3 &p) {
 }
 
 
-//Regular hard-coded getNormal function
-glm::vec3 ofApp::getNormal(const glm::vec3 &p, int i) {
-	glm::vec3 pNormal;
-	if ((typeid(*scene[i]) == typeid(Sphere)))
-		pNormal = glm::normalize(p - scene[i]->position);
-	else if ((typeid(*scene[i]) == typeid(Plane)))
-		pNormal = glm::vec3(0, 1, 0);
-
-	return pNormal;
-}
 
 /**
 * File loader class from the first project. It reads a .obj file
