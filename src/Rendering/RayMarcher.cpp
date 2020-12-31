@@ -4,8 +4,6 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
 	this->imageWidth = imageWidth;
 	this->imageHeight = imageHeight;
 	this->image = image;
-
-	shader = Shader(lights, objects);
 }
 
 /*
@@ -13,8 +11,9 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
 * Also uses the normalRM so that phong shading can be applied to the scene
 */
 void RayMarcher::render() {
-	for (int row = 0; row < imageHeight; row++) {
-		for (int column = 0; column < imageWidth; column++) {
+	shader = Shader(lights, objects);
+	for (float row = 0; row < imageHeight; row++) {
+		for (float column = 0; column < imageWidth; column++) {
 			Ray ray = renderCam.getRay(column / imageWidth, row / imageHeight);
 
 			ofColor color;
@@ -22,8 +21,8 @@ void RayMarcher::render() {
 			bool hit = rayMarch(ray, p);
 			glm::vec3 normal = getNormalRM(p);
 
-			color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
-			//color = shader.lamber(p, normal, objects[indexHit]->diffuseColor;
+			//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
+			color = shader.lambert(p, normal, objects[indexHit]->diffuseColor);
 
 			if (hit) {
 				//cout << "*** Hit ****************************************** " << p << endl << endl;
@@ -34,7 +33,7 @@ void RayMarcher::render() {
 		}
 		//cout << i << "-";
 	}
-	image.save("images/RayMarch1.jpg");
+	image.save("images/RayMarch3.jpg");
 }
 
 bool RayMarcher::rayMarch(Ray r, glm::vec3 &p) {

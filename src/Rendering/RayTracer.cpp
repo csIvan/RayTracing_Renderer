@@ -88,7 +88,7 @@ void RayTracer::render() {
 				image.setColor(column, imageHeight - row - 1, ofColor::black);
 		}
 	}
-	image.save("images/RayIntersectRender.jpg");
+	image.save("images/RayTrace1.jpg");
 }
 
 

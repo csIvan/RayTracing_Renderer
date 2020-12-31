@@ -54,6 +54,7 @@ void ofApp::setup() {
 	//sphereTexture.load("images/WorldMap.jpg");
 
 	rayTracer = RayTracer(imageWidth, imageHeight, image);
+	rayMarcher = RayMarcher(imageWidth, imageHeight, image);
 
 	nearestDistance = FLT_MAX;
 	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
@@ -75,6 +76,10 @@ void ofApp::setup() {
 	rayTracer.addObject(sphere1);
 	rayTracer.addObject(plane1);
 	rayTracer.addLight(light1);
+
+	rayMarcher.addObject(sphere1);
+	rayMarcher.addObject(plane1);
+	rayMarcher.addLight(light1);
 }
 
 //--------------------------------------------------------------
@@ -102,74 +107,6 @@ void ofApp::draw() {
 	theCam->end();
 }
 
-
-ofColor ofApp::lambert(const glm::vec3 &point, const glm::vec3 &normal, const ofColor diffuse) {
-	float ambientCo = 0.08;
-	ofColor lambertColor = diffuse * ambientCo;
-	for (int i = 0; i < lights.size(); i++) {
-		glm::vec3 l = glm::normalize(lights[i]->position - point);
-		glm::vec3 lightToPixel = glm::normalize(point - lights[i]->position);
-		//float SpotFactor = glm::dot(lightToPixel, lights[i]->direction);
-		float distance = glm::distance(lights[i]->position, point);
-		Ray shadRay = Ray(glm::vec3(point.x, point.y, point.z + .001f), l);
-
-		//call to calculate the falloff factor for the spotlight
-		//float falloff = lights[i]->falloff(SpotFactor);
-
-		ofColor lambertCalculation = diffuse * (lights[i]->intensity / glm::pow(distance, 2)) * glm::max(0.0f, glm::dot(normal, l));
-
-		if (!inShadow(shadRay)) {
-			lambertColor += lambertCalculation;
-		}
-
-	}
-	return lambertColor;
-
-}
-
-ofColor ofApp::phong(const glm::vec3 &point, const glm::vec3 &normal, const ofColor diffuse, const ofColor specular, float power) {
-	float ambientCo = 0.05;
-	ofColor phongColor = diffuse * ambientCo;
-	for (int i = 0; i < lights.size(); i++) {
-		glm::vec3 l = glm::normalize(lights[i]->position - point);
-		glm::vec3 lightToPixel = glm::normalize(point - lights[i]->position);
-		//float SpotFactor = glm::dot(lightToPixel, lights[i]->direction);
-		float distance = glm::distance(lights[i]->position, point);
-		glm::vec3 v = -glm::normalize(point - renderCam.position);
-		glm::vec3 h = glm::normalize(v + l);
-		Ray shadRay = Ray(glm::vec3(point.x, point.y, point.z + 0.001f), l);;
-		//if (normal == glm::vec3(0, 1, 0))
-			//shadRay = Ray(glm::vec3(point.x, point.y + .01f, point.z), l);
-
-
-		//call to calculate the falloff factor for the spotlight
-		//float falloff = lights[i]->falloff(SpotFactor);
-
-		ofColor phongCalculation = diffuse * (lights[i]->intensity / glm::pow(distance, 2)) * glm::max(0.0f, glm::dot(normal, l)) +
-			specular * (lights[i]->intensity / glm::pow(distance, 2)) * (glm::pow(glm::max(0.0f, glm::dot(normal, h)), power));
-
-		//if (!inShadow(shadRay)) {
-		phongColor += phongCalculation;
-
-		//}
-	}
-	return phongColor;
-}
-
-bool ofApp::inShadow(const Ray &r) {
-	bool blocked = false;
-	for (int index = 0; index < scene.size(); index++) {
-		glm::vec3 point;
-		glm::vec3 normal;
-
-		//calculate shadows using rayMarch()
-		if (rayMarch(r, point)) {
-			blocked = true;
-		}
-	}
-	return blocked;
-}
-
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {
 	switch (key) {
@@ -182,108 +119,13 @@ void ofApp::keyPressed(int key) {
 	case 'r': rayTracer.render();
 		cout << "done" << endl;
 		break;
-	case 'm': RayMarching();
+	case 'm': rayMarcher.render();
 		cout << "done" << endl;
 		break;
 	default:
 		break;
 	}
 }
-
-
-/******************************************** Ray Marching Functions ********************************************************/
-bool ofApp::rayMarch(Ray r, glm::vec3 &p) {
-	bool hit = false;
-	p = r.p;
-	for (int i = 0; i < MAX_RAY_STEPS; i++) {
-		float dist = sceneSDF(p);
-		if (dist < DIST_THRESHOLD) {
-			hit = true;
-			break;
-		}
-		else if (dist > MAX_THRESHOLD) {
-			break;
-		}
-		else {
-			p = p + r.d*dist;
-		}
-	}
-	return hit;
-}
-
-/*
-* RayMarching function. Calls rayMarch instead of the object's ray intersect function.
-* Also uses the normalRM so that phong shading can be applied to the scene
-*/
-void ofApp::RayMarching() {
-	for (float i = 0; i < imageHeight; i++) {
-		for (float j = 0; j < imageWidth; j++) {
-			Ray ray = renderCam.getRay((j) / imageWidth, (i) / imageHeight);
-
-			ofColor color;
-			glm::vec3 p;
-			bool hit = rayMarch(ray, p);
-			glm::vec3 norm = getNormalRM(p);
-
-			color = phong(p, norm, scene[indexHit]->diffuseColor, ofColor::lightGray, 50);
-			//color = lambert(p, norm, scene[indexHit]->diffuseColor);
-
-			if (hit) {
-				//cout << "*** Hit ******************************************************* " << p << endl << endl;
-				image.setColor(j, imageHeight - i - 1, color);
-			}
-			else
-				image.setColor(j, imageHeight - i - 1, ofColor::black);
-		}
-		//cout << i << "-";
-	}
-	image.save("images/Render2.jpg");
-}
-
-//SceneSDF. Checks every primitive's sdf and determines the closest one to the point
-//also marks the index of the object hit
-float ofApp::sceneSDF(glm::vec3 p) {
-	nearestDistance = FLT_MAX;
-	float d = 0.0;
-	for (int i = 0; i < scene.size(); i++) {
-		//WaterPool *wp1 = (WaterPool*)scene[i];
-		//d = wp1->sdf(p, 1, 8);
-		//d = opRep(p, glm::vec3(20.0f, 20.0f, 20.0f), *scene[i]);
-		d = scene[i]->sdf(p);
-		if (d < nearestDistance) {
-			nearestDistance = d;
-			indexHit = i;
-		}
-	}
-	return nearestDistance;
-}
-
-//Midterm - opRep Function
-float ofApp::opRep(const glm::vec3 p, const glm::vec3 c, SceneObject &s) {
-	//glm::vec3 q = glm::mod(p,c) - 10.0f * c;
-	glm::vec3 q = glm::vec3(glm::mod(p.x, c.x) - 10.0f, glm::mod(p.y + 10.0f, c.y) - 10.0f, glm::mod(p.z + 10.0f, c.z) - 10.0f);
-
-	//round the hard edges before returning
-	return opRound(q, s, 0.3f);
-}
-
-//opRound Function - It rounds the edges based on a float variable
-float ofApp::opRound(const glm::vec3 p, SceneObject &s, float rad) {
-	return 2.0f;
-	//return s.sdf(p) - rad;
-}
-
-//Ray Marching getNormal Function
-glm::vec3 ofApp::getNormalRM(const glm::vec3 &p) {
-	float eps = 0.001;
-	float dp = sceneSDF(p);
-	glm::vec3 n(dp - sceneSDF(glm::vec3(p.x - eps, p.y, p.z)),
-		dp - sceneSDF(glm::vec3(p.x, p.y - eps, p.z)),
-		dp - sceneSDF(glm::vec3(p.x, p.y, p.z - eps)));
-	return glm::normalize(n);
-}
-
-
 
 /**
 * File loader class from the first project. It reads a .obj file

@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "Definitions.h"
 #include "Rendering/RayTracer.h"
+#include "Rendering/RayMarcher.h"
 #include "Scene/SceneObject.h"
 #include "Scene/ViewPlane.h"
 #include "Scene/RenderCam.h"
@@ -26,15 +27,6 @@ public:
 
 	void keyPressed(int key);
 	void dragEvent(ofDragInfo dragInfo);
-	bool rayMarch(Ray r, glm::vec3 &p);
-	void RayMarching();
-	glm::vec3 getNormalRM(const glm::vec3 &p);
-	float sceneSDF(glm::vec3 p);
-	float opRep(const glm::vec3 p, const glm::vec3 c, SceneObject &s);
-	float opRound(const glm::vec3 p, SceneObject &s, float rad);
-	ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse);
-	ofColor phong(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse, const ofColor specular, float power);
-	bool inShadow(const Ray &r);
 	bool FileLoader(char * path);
 
 	bool bHide = true;
@@ -46,6 +38,7 @@ public:
 	ofCamera  *theCam;    // set to current camera either mainCam or sideCam
 
 	RayTracer rayTracer;
+	RayMarcher rayMarcher;
 
 	RenderCam renderCam;
 	ofImage image;
