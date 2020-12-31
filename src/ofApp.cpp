@@ -65,7 +65,7 @@ void ofApp::setup() {
 	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
 	torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
 	torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 65.0f, glm::vec3(1, 0, 1), ofColor::orangeRed);
-	//scene.push_back(&sphere1);
+	scene.push_back(&sphere1);
 	scene.push_back(&cube1);
 	//scene.push_back(&f1);
 	//scene.push_back(&wp1);
@@ -77,18 +77,23 @@ void ofApp::setup() {
 	rayTracer.addObject(plane1);
 	rayTracer.addLight(light1);
 
-	rayMarcher.addObject(cube1);
+	rayMarcher.addObject(sphere1);
 	rayMarcher.addObject(plane1);
 	rayMarcher.addLight(light1);
+
+
+	gui.setup();
+	gui.add(gui_radius.setup("radius", 2, 0.2, 3));
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
-
+	sphere1.radius = (float)gui_radius;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+	gui.draw();
 	theCam->begin();
 	ofSetColor(ofColor::white);
 	//ofDrawAxis(3);

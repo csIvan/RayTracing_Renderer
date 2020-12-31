@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxGui.h"
 #include "Definitions.h"
 #include "Rendering/RayTracer.h"
 #include "Rendering/RayMarcher.h"
@@ -39,6 +40,10 @@ public:
 
 	RayTracer rayTracer;
 	RayMarcher rayMarcher;
+
+	ofxPanel gui;
+	ofxFloatSlider gui_radius;
+
 
 	RenderCam renderCam;
 	ofImage image;
