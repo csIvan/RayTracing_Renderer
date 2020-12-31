@@ -59,14 +59,14 @@ void ofApp::setup() {
 	nearestDistance = FLT_MAX;
 	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
 	sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
-	cube1 = Cube(glm::vec3(0, 0, 0), 3, ofColor::seaGreen);
+	cube1 = Cube(glm::vec3(0, 0, 0), 2, ofColor::seaGreen);
 	f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
 	wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
 	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
 	torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
 	torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 65.0f, glm::vec3(1, 0, 1), ofColor::orangeRed);
-	scene.push_back(&sphere1);
-	//scene.push_back(&cube1);
+	//scene.push_back(&sphere1);
+	scene.push_back(&cube1);
 	//scene.push_back(&f1);
 	//scene.push_back(&wp1);
 	scene.push_back(&plane1);
@@ -77,7 +77,7 @@ void ofApp::setup() {
 	rayTracer.addObject(plane1);
 	rayTracer.addLight(light1);
 
-	rayMarcher.addObject(sphere1);
+	rayMarcher.addObject(cube1);
 	rayMarcher.addObject(plane1);
 	rayMarcher.addLight(light1);
 }
