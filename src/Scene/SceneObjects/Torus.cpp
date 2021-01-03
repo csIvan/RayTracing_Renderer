@@ -18,19 +18,9 @@ Torus::Torus(glm::vec3 p, float l1, float l2, float a, glm::vec3 r, ofColor diff
 }
 
 void Torus::draw() {
-	// Proxy object in 3D view
-	//ofDrawSphere(position, innerRadius);	
-
 	ofPushMatrix();
 		ofTranslate(position);
-
-		ofPushMatrix();
 		ofRotate(angle, axisR.x, axisR.y, axisR.z);
-		//ofRotateY(-angle * axisR.y);
-		//ofRotateX(-angle * axisR.x);
-		//ofRotateZ(-angle * axisR.z);
-		ofDrawAxis(2);
-		//ofDrawRotationAxes(0.05);
 
 		double s, x, y, z;
 
@@ -48,7 +38,6 @@ void Torus::draw() {
 			}
 			glEnd();
 		}
-		ofPopMatrix();
 	ofPopMatrix();
 }
 
