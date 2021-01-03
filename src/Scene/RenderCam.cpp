@@ -11,10 +11,13 @@ Ray RenderCam::getRay(float u, float v) {
 }
 
 void RenderCam::draw() {
-	ofDrawBox(position, 1.0);
+	drawFrustum();
 }
 
 void RenderCam::drawFrustum() {
-	// Currently draws proxy frustum
+	ofDrawLine(position, glm::vec3(view.bottomLeft().x, view.bottomLeft().y, view.position.z));
+	ofDrawLine(position, glm::vec3(view.topLeft().x, view.topLeft().y, view.position.z));
+	ofDrawLine(position, glm::vec3(view.topRight().x, view.topRight().y, view.position.z));
+	ofDrawLine(position, glm::vec3(view.bottomRight().x, view.bottomRight().y, view.position.z));
 	view.draw();
 }
