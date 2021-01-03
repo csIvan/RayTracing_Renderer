@@ -8,7 +8,7 @@ class Torus : public SceneObject {
 public:
 	float innerRadius;
 	float outerRadius;
-	float angle = 45.0f;
+	float angle = -45.0f;
 	glm::vec3 axisR = glm::vec3(1, 0, 0);
 
 	int numc = 20;

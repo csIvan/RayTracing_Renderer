@@ -14,8 +14,16 @@ bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 void Cube::draw() {
 	// Placeholder scene object
-	ofDrawBox(position, side);
+	ofPushMatrix();
+		//ofRotate(angle, -axisR.x, axisR.y, -axisR.z);
 
+		ofRotateZ(-angle * axisR.z);
+		ofRotateX(-angle * axisR.x);
+		ofRotateY(-angle * axisR.y);
+		ofDrawAxis(2);
+		ofDrawBox(position, side);
+
+	ofPopMatrix();
 }
 
 float Cube::sdf(const glm::vec3 p) {

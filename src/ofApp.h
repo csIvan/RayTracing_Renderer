@@ -45,7 +45,8 @@ public:
 	ofxVec3Slider slider_rotation;
 	ofxVec3Slider slider_scale;
 	ofxFloatSlider gui_radius;
-	ofxIntSlider gui_angle;
+	ofxIntSlider gui_angle1;
+	ofxIntSlider gui_angle2;
 	ofxColorSlider color;
 	ofxGuiGroup group_create;
 	ofxGuiGroup group_lights;

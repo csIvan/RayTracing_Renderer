@@ -25,10 +25,10 @@ void Torus::draw() {
 		ofTranslate(position);
 
 		ofPushMatrix();
-		//ofRotateDeg(angle, -axisR.x, axisR.y, axisR.z);
-		ofRotateX(-angle * axisR.x);
-		ofRotateZ(-angle * axisR.z);
-		ofRotateY(-angle * axisR.y);
+		ofRotate(angle, axisR.x, axisR.y, axisR.z);
+		//ofRotateY(-angle * axisR.y);
+		//ofRotateX(-angle * axisR.x);
+		//ofRotateZ(-angle * axisR.z);
 		ofDrawAxis(2);
 		//ofDrawRotationAxes(0.05);
 
@@ -58,6 +58,6 @@ float Torus::sdf(glm::vec3 p1) {
 	glm::mat4 m = glm::translate(glm::mat4(1.0), position);
 	glm::mat4 M = glm::rotate(m, glm::radians(angle), axisR);
 	glm::vec4 p = glm::inverse(M) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
-	glm::vec2 q = glm::vec2(glm::length(glm::vec2(p.x, p.z)) - innerRadius, p.y);
+	glm::vec2 q = glm::vec2(glm::length(glm::vec2(p.x, p.y)) - innerRadius, p.z);
 	return glm::length(q) - outerRadius;
 }
