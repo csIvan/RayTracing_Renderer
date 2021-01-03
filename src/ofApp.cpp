@@ -21,7 +21,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	ofSetBackgroundColor(ofColor::black);
+	ofSetBackgroundColor(ofColor(35, 35, 35));
 	theCam = &mainCam;
 	mainCam.setDistance(12);
 	mainCam.setNearClip(.1);
@@ -82,18 +82,73 @@ void ofApp::setup() {
 	rayMarcher.addLight(light1);
 
 
-	gui.setup();
-	gui.add(gui_radius.setup("radius", 2, 0.2, 3));
+	sceneGUI.setup("Scene");
+	sceneGUI.setBorderColor(ofColor::black);
+	group_create.setDefaultHeight(20);
+	label_sphere.loadFont("fonts/Verdana.ttf", 10);
+	sceneGUI.add(group_create.setup("Create Object"));
+	label_sphere.setDefaultHeight(30);
+	label_sphere.setDefaultTextColor(ofColor(0, 239, 255));
+	group_create.setBorderColor(ofColor(25, 25, 25));
+	group_create.add(label_sphere.setup("", " - Sphere"));
+	group_create.add(label_cube.setup("", " - Cube"));
+	group_create.add(label_plane.setup("", " - Plane"));
+	group_create.add(label_cylinder.setup("", " - Cylinder"));
+	group_create.add(label_cone.setup("", " - Cone"));
+	group_create.add(label_torus.setup("", " - Torus"));
+	group_create.add(label_mesh.setup("", " - Mesh"));
+	group_create.add(label_lsystem.setup("", " - LSystem"));
+	group_create.add(group_lights.setup(" - Lights"));
+	group_lights.setShape(14, 10, 196, 30);
+	group_lights.setHeaderBackgroundColor(ofColor::black);
+	group_lights.minimize();
+	group_lights.setBorderColor(ofColor(20, 20, 20));
+	group_lights.add(label_point_light.setup("", " - Point Light"));
+	group_lights.add(label_spot_light.setup("", " - Spot Light"));
+	group_lights.add(label_area_light.setup("", " - Area Light"));
+
+	//newObject.setBackgroundColor(ofColor(40, 40, 40));
+
+
+
+	objectGUI.setup("Sphere");
+	objectGUI.setBorderColor(ofColor::black);
+	objectGUI.add(gui_radius.setup("radius", 2, 0.2, 3));
+	objectGUI.add(slider_location.setup("Location", sphere1.position, glm::vec3(-5, -5, -5),
+		glm::vec3(5, 5, 5)));
+	slider_location.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.add(slider_rotation.setup("Rotation", sphere1.position, glm::vec3(-5, -5, -5),
+		glm::vec3(5, 5, 5)));
+	slider_rotation.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.add(slider_scale.setup("Scale", sphere1.position, glm::vec3(-5, -5, -5),
+		glm::vec3(5, 5, 5)));
+	slider_scale.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.add(color.setup("Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
+	color.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.getGroup("Color").maximize();
+	objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
+
+
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
 	sphere1.radius = (float)gui_radius;
+	sphere1.position = (glm::vec3)slider_location;
 }
 
 //--------------------------------------------------------------
 void ofApp::draw() {
-	gui.draw();
+	sceneGUI.draw();
+	if (!hideGUI) {
+		objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
+		for (int i = 0; i < objectGUI.getNumControls(); i++) {
+			string objectName = objectGUI.getControlNames()[i];
+			objectGUI.getControl(objectName)->setPosition(glm::vec3(objectGUI.getPosition().x, objectGUI.getControl(objectName)->getPosition().y, 0));
+		}
+		objectGUI.draw();
+	}
+
 	theCam->begin();
 	ofSetColor(ofColor::white);
 	//ofDrawAxis(3);
@@ -126,6 +181,12 @@ void ofApp::keyPressed(int key) {
 		break;
 	case 'm': rayMarcher.render();
 		cout << "done" << endl;
+		break;
+	case 'b': 
+		hideGUI = !hideGUI;
+		break;
+	case 'a':
+		cout << "pos: " << objectGUI.getControlNames()[0] << endl;
 		break;
 	default:
 		break;

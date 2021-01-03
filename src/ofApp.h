@@ -41,8 +41,29 @@ public:
 	RayTracer rayTracer;
 	RayMarcher rayMarcher;
 
-	ofxPanel gui;
+	ofxVec3Slider slider_location;
+	ofxVec3Slider slider_rotation;
+	ofxVec3Slider slider_scale;
 	ofxFloatSlider gui_radius;
+	ofxColorSlider color;
+	ofxGuiGroup group_create;
+	ofxGuiGroup group_lights;
+	ofxLabel label_sphere;
+	ofxLabel label_cube;
+	ofxLabel label_plane;
+	ofxLabel label_cylinder;
+	ofxLabel label_cone;
+	ofxLabel label_torus;
+	ofxLabel label_mesh;
+	ofxLabel label_lsystem;
+	ofxLabel label_point_light;
+	ofxLabel label_spot_light;
+	ofxLabel label_area_light;
+
+	ofxGuiGroup objectGUI;
+	ofxGuiGroup sceneGUI;
+	ofxPanel p;
+	bool hideGUI = true;
 
 
 	RenderCam renderCam;
