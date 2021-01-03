@@ -35,6 +35,8 @@ void ofApp::setup() {
 	//spotlight
 	sp1 = SpotLight(glm::vec3(.5, -1, -.55), .1, 4);
 	sp1.position = glm::vec3(-3, 4, 1);
+	//sp1 = Spotlight(glm::vec3(.5, -1, -.55), .3, 3);
+	//sp1.position = glm::vec3(-3, 4, 1);
 
 	//point light 
 	light1 = Light(glm::vec3(-4, 3, 5), 50);
@@ -57,8 +59,8 @@ void ofApp::setup() {
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image);
 
 	nearestDistance = FLT_MAX;
-	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
-	sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
+	sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
+	//sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
 	cube1 = Cube(glm::vec3(0, 0, 0), 2, ofColor::seaGreen);
 	f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
 	wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
@@ -66,18 +68,19 @@ void ofApp::setup() {
 	torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
 	torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 65.0f, glm::vec3(1, 0, 1), ofColor::orangeRed);
 	scene.push_back(&sphere1);
-	scene.push_back(&cube1);
+	//scene.push_back(&cube1);
 	//scene.push_back(&f1);
 	//scene.push_back(&wp1);
 	scene.push_back(&plane1);
-	//scene.push_back(&torus1);
-	//scene.push_back(&torus2);
+	scene.push_back(&torus1);
+	scene.push_back(&torus2);
 
 	rayTracer.addObject(sphere1);
 	rayTracer.addObject(plane1);
 	rayTracer.addLight(light1);
 
-	rayMarcher.addObject(sphere1);
+	rayMarcher.addObject(torus1);
+	rayMarcher.addObject(torus2);
 	rayMarcher.addObject(plane1);
 	rayMarcher.addLight(light1);
 
@@ -117,8 +120,9 @@ void ofApp::setup() {
 	objectGUI.add(slider_location.setup("Location", sphere1.position, glm::vec3(-5, -5, -5),
 		glm::vec3(5, 5, 5)));
 	slider_location.setBorderColor(ofColor(25, 25, 25));
-	objectGUI.add(slider_rotation.setup("Rotation", sphere1.position, glm::vec3(-5, -5, -5),
-		glm::vec3(5, 5, 5)));
+	objectGUI.add(gui_angle.setup("angle", 45, 0, 90));
+	objectGUI.add(slider_rotation.setup("Rotation", torus2.axisR, glm::vec3(-1, -1, -1),
+		glm::vec3(1, 1, 1)));
 	slider_rotation.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(slider_scale.setup("Scale", sphere1.position, glm::vec3(-5, -5, -5),
 		glm::vec3(5, 5, 5)));
@@ -133,8 +137,10 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
-	sphere1.radius = (float)gui_radius;
+	//sphere1.radius = (float)gui_radius;
 	sphere1.position = (glm::vec3)slider_location;
+	torus2.angle = (int)gui_angle;
+	torus2.axisR = (glm::vec3)slider_rotation;
 }
 
 //--------------------------------------------------------------
