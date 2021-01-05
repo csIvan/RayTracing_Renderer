@@ -7,6 +7,7 @@
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Light.h"
 #include "../Scene/SceneObjects/Sphere.h"
+#include "../Scene/SceneObjects/Cube.h"
 #include "../Scene/SceneObjects/Plane.h"
 
 class RayTracer {

@@ -77,8 +77,10 @@ public:
 	vector<Light *> lights;
 	float Power = 10;
 
-	int imageWidth = 1200;
-	int imageHeight = 800;
+	//int imageWidth = 1200;
+	//int imageHeight = 800;
+	int imageWidth = 150;
+	int imageHeight = 100;
 
 	//scene objects and lights
 	Sphere sphere1;
