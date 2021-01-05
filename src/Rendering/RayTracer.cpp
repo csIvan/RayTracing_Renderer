@@ -92,7 +92,7 @@ void RayTracer::render() {
 				image.setColor(column, imageHeight - row - 1, ofColor::black);
 		}
 	}
-	image.save("images/RayTrace13.jpg");
+	image.save("images/RayTrace17.jpg");
 }
 
 

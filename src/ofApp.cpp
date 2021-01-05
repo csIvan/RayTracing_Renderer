@@ -61,7 +61,7 @@ void ofApp::setup() {
 	nearestDistance = FLT_MAX;
 	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
 	sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
-	cube1 = Cube(glm::vec3(0, 0, 0), 1, ofColor::seaGreen);
+	cube1 = Cube(glm::vec3(-1, 0, 0), 2, ofColor::seaGreen);
 	f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
 	wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
 	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
@@ -119,7 +119,7 @@ void ofApp::setup() {
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
 	objectGUI.add(gui_radius.setup("radius", 2, 0.2, 3));
-	objectGUI.add(slider_location.setup("Location", sphere1.position, glm::vec3(-5, -5, -5),
+	objectGUI.add(slider_location.setup("Location", cube1.position, glm::vec3(-5, -5, -5),
 		glm::vec3(5, 5, 5)));
 	slider_location.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(gui_angle1.setup("angle", torus1.angle, -90, 90));
@@ -141,9 +141,9 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	sphere1.radius = (float)gui_radius;
-	sphere1.position = (glm::vec3)slider_location;
-	//cube1.angle = (int)gui_angle1;
-	//cube1.axisR = (glm::vec3)slider_rotation;
+	cube1.position = (glm::vec3)slider_location;
+	cube1.angle = (int)gui_angle1;
+	cube1.axisR = (glm::vec3)slider_rotation;
 	torus2.angle = (int)gui_angle2;
 	torus2.axisR = (glm::vec3)slider_scale;
 }

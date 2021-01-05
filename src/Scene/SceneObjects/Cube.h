@@ -7,7 +7,7 @@
 class Cube : public SceneObject {
 public:
 	float side = 1.0f;
-	float angle = -45.0f;
+	float angle = 0.0f;
 	glm::vec3 axisR = glm::vec3(1, 0, 0);
 	glm::vec3 minv, maxv;
 	glm::vec3 bounds[2];

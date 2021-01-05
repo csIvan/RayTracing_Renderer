@@ -79,8 +79,8 @@ public:
 
 	//int imageWidth = 1200;
 	//int imageHeight = 800;
-	int imageWidth = 150;
-	int imageHeight = 100;
+	int imageWidth = 1200;
+	int imageHeight = 800;
 
 	//scene objects and lights
 	Sphere sphere1;
