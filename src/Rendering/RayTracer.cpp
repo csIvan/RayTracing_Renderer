@@ -27,11 +27,6 @@ void RayTracer::render() {
 			ofColor color;
 
 			for (int index = 0; index < objects.size(); index++) {
-				if (typeid(*objects[index]) == typeid(Cube)) {
-					Cube *cubo = (Cube*)objects[index];
-					cubo->imageX = row;
-					cubo->imageY = column;
-				}
 				glm::vec3 point, normal;
 				if (objects[index]->intersect(ray, point, normal)) {
 					dist = glm::distance(renderCam.position, point);

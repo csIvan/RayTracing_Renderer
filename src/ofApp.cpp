@@ -61,7 +61,7 @@ void ofApp::setup() {
 	nearestDistance = FLT_MAX;
 	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
 	sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
-	cube1 = Cube(glm::vec3(0, 1, 0), 2, ofColor::seaGreen);
+	cube1 = Cube(glm::vec3(-1, 0, 0), 2, ofColor::seaGreen);
 	f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
 	wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
 	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
