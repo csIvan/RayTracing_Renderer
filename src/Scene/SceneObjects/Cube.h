@@ -7,7 +7,7 @@
 class Cube : public SceneObject {
 public:
 	float side = 1.0f;
-	float angle = 0.0f;
+	float angle = -45.0f;
 	glm::vec3 axisR = glm::vec3(1, 0, 0);
 
 	Cube(glm::vec3 p, float s, ofColor diffuse = ofColor::lightGray);
