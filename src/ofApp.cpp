@@ -31,7 +31,12 @@ void ofApp::setup() {
 	previewCam.setPosition(glm::vec3(0, 0, 10));
 	previewCam.lookAt(glm::vec3(0, 0, -1));
 	previewCam.setNearClip(.1);
+	ofSetSmoothLighting(true);
 
+	lightScene.enable();
+	lightScene.setPosition(5, 5, 0);
+	lightScene.setDiffuseColor(ofColor(255.f, 255.f, 255.f));
+	lightScene.setSpecularColor(ofColor(255.f, 255.f, 255.f));
 	//spotlight
 	sp1 = SpotLight(glm::vec3(.5, -1, -.55), .1, 4);
 	sp1.position = glm::vec3(-3, 4, 1);
@@ -78,14 +83,14 @@ void ofApp::setup() {
 	//rayTracer.addObject(cube1);
 	//rayTracer.addObject(sphere1);
 	//rayTracer.addObject(plane1);
-	//rayTracer.addLight(light1);
+	rayTracer.addLight(light1);
 
 	//rayMarcher.addObject(sphere1);
 	//rayMarcher.addObject(cube1);
 	//rayMarcher.addObject(torus1);
 	//rayMarcher.addObject(torus2);
 	//rayMarcher.addObject(plane1);
-	//rayMarcher.addLight(light1);
+	rayMarcher.addLight(light1);
 
 
 	//label_sphere.registerMouseEvents();
@@ -102,29 +107,30 @@ void ofApp::setup() {
 
 	sceneGUI.setup("Scene");
 	sceneGUI.setBorderColor(ofColor::black);
-	group_create.setDefaultHeight(20);
 	button_sphere.loadFont("fonts/Verdana.ttf", 10);
-	sceneGUI.add(group_create.setup("Create Object"));
-	button_sphere.setDefaultHeight(30);
-	button_sphere.setDefaultTextColor(ofColor(0, 239, 255));
 	group_create.setBorderColor(ofColor(25, 25, 25));
-	group_create.add(button_sphere.setup(" Sphere"));
-	group_create.add(button_cube.setup(" Cube"));
-	group_create.add(button_plane.setup(" Plane"));
-	group_create.add(button_cylinder.setup(" Cylinder"));
-	group_create.add(button_cone.setup(" Cone"));
-	group_create.add(button_torus.setup(" Torus"));
-	group_create.add(button_mesh.setup(" Mesh"));
-	group_create.add(button_lsystem.setup(" LSystem"));
+	sceneGUI.add(group_create.setup("Add"));
+	group_objects.setDefaultHeight(30);
+	group_objects.setBorderColor(ofColor(25, 25, 25));
+	group_objects.setHeaderBackgroundColor(ofColor::black);
+	group_create.add(group_objects.setup(" Objects"));
+	button_sphere.setDefaultTextColor(ofColor(0, 239, 255));
+	group_objects.add(button_sphere.setup(" Sphere"));
+	group_objects.add(button_cube.setup(" Cube"));
+	group_objects.add(button_plane.setup(" Plane"));
+	group_objects.add(button_cylinder.setup(" Cylinder"));
+	group_objects.add(button_cone.setup(" Cone"));
+	group_objects.add(button_torus.setup(" Torus"));
+	group_objects.add(button_mesh.setup(" Mesh"));
+	group_objects.add(button_lsystem.setup(" LSystem"));
 	//group_create.add(labelTest.set("", " - Testing"));
-	group_create.add(group_lights.setup(" - Lights"));
-	group_lights.setShape(14, 10, 196, 30);
+	group_create.add(group_lights.setup(" Lights"));;
 	group_lights.setHeaderBackgroundColor(ofColor::black);
 	group_lights.minimize();
 	group_lights.setBorderColor(ofColor(20, 20, 20));
-	group_lights.add(label_point_light.setup("", " - Point Light"));
-	group_lights.add(label_spot_light.setup("", " - Spot Light"));
-	group_lights.add(label_area_light.setup("", " - Area Light"));
+	group_lights.add(button_point_light.setup(" Point Light"));
+	group_lights.add(button_spot_light.setup(" Spot Light"));
+	group_lights.add(button_area_light.setup(" Area Light"));
 
 	//newObject.setBackgroundColor(ofColor(40, 40, 40));
 
@@ -176,7 +182,7 @@ void ofApp::addCube() {
 	addObject(new Cube(glm::vec3(0, 0, 0), 1, ofColor::mediumPurple));
 }
 void ofApp::addPlane() {
-	addObject(new Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue));
+	addObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), ofColor::lightBlue));
 }
 void ofApp::addTorus() {
 	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, ofColor::seaGreen));
@@ -203,6 +209,28 @@ void ofApp::update() {
 
 //--------------------------------------------------------------
 void ofApp::draw() {
+	ofEnableDepthTest();
+	theCam->begin();
+	ofEnableLighting();
+	material.begin();
+	ofFill();
+	ofSetColor(ofColor::white);
+	//ofDrawAxis(3);
+
+	for (int i = 0; i < scene.size(); i++) {
+		scene[i]->draw();
+	}
+
+	material.end();
+	ofDisableLighting();
+	for (int i = 0; i < lights.size(); i++) {
+		lights[i]->draw();
+	}
+	renderCam.draw();
+	renderCam.drawFrustum();
+	theCam->end();
+	ofDisableDepthTest();
+
 	sceneGUI.draw();
 	if (!hideGUI) {
 		objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
@@ -212,23 +240,6 @@ void ofApp::draw() {
 		}
 		objectGUI.draw();
 	}
-
-	theCam->begin();
-	ofSetColor(ofColor::white);
-	//ofDrawAxis(3);
-
-	for (int i = 0; i < lights.size(); i++) {
-		lights[i]->draw();
-	}
-
-	for (int i = 0; i < scene.size(); i++) {
-		scene[i]->draw();
-	}
-
-	ofNoFill();
-	renderCam.draw();
-	renderCam.drawFrustum();
-	theCam->end();
 }
 
 //--------------------------------------------------------------

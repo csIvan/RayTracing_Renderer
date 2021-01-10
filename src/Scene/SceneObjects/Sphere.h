@@ -6,6 +6,7 @@
 // General purpose sphere  (assume parametric)
 class Sphere : public SceneObject {
 public:
+	ofMaterial material;
 	float radius = 1.0;
 
 	Sphere(glm::vec3 p, float r, ofColor diffuse = ofColor::lightGray);

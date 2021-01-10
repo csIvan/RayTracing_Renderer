@@ -18,6 +18,8 @@ Torus::Torus(glm::vec3 p, float l1, float l2, float a, glm::vec3 r, ofColor diff
 }
 
 void Torus::draw() {
+	material.begin();
+	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
 		ofTranslate(position);
 		ofRotate(angle, axisR.x, axisR.y, axisR.z);
@@ -39,6 +41,7 @@ void Torus::draw() {
 			glEnd();
 		}
 	ofPopMatrix();
+	material.end();
 }
 
 // Calculate the sdf of the torus scene object while applying transformations

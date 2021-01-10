@@ -6,6 +6,7 @@
 //************************************** Torus Class *********************************
 class Torus : public SceneObject {
 public:
+	ofMaterial material;
 	float innerRadius;
 	float outerRadius;
 	float angle = -45.0f;

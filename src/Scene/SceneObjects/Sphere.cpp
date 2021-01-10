@@ -11,7 +11,10 @@ bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 }
 
 void Sphere::draw() {
+	material.begin();
+	material.setDiffuseColor(diffuseColor);
 	ofDrawSphere(position, radius);
+	material.end();
 }
 
 float Sphere::sdf(glm::vec3 p) {

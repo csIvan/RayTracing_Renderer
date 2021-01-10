@@ -30,10 +30,15 @@ public:
 	void addSphere();
 	void addCube();
 	void addPlane(); 
+	void addCylinder();
+	void addCone();
 	void addTorus();  
 	void addMesh();
 	void addLSystem();
 	void addWaterPool();
+	void addPointLight();
+	void addSpotLight();
+	void addAreaLight();
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
 	void keyPressed(int key);
@@ -61,6 +66,7 @@ public:
 	ofxIntSlider gui_angle2;
 	ofxColorSlider color;
 	ofxGuiGroup group_create;
+	ofxGuiGroup group_objects;
 	ofxGuiGroup group_lights;
 	ofxButton button_sphere;
 	ofxButton button_cube;
@@ -70,9 +76,9 @@ public:
 	ofxButton button_torus;
 	ofxButton button_mesh;
 	ofxButton button_lsystem;
-	ofxLabel label_point_light;
-	ofxLabel label_spot_light;
-	ofxLabel label_area_light;
+	ofxButton button_point_light;
+	ofxButton button_spot_light;
+	ofxButton button_area_light;
 
 	ofxGuiGroup objectGUI;
 	ofxGuiGroup sceneGUI;
@@ -111,8 +117,8 @@ public:
 	SpotLight sp1;
 
 	float nearestDistance;
-
-
+	ofLight lightScene;
+	ofMaterial material;
 	Mesh mesh;
 	Triangle tri;
 	Triangle tri2;

@@ -6,6 +6,7 @@
 //Light class with an intensity variable
 class Light : public SceneObject {
 public:
+	ofMaterial material;
 	float intensity = 100;
 	float radius = 0.1;
 
@@ -15,5 +16,11 @@ public:
 	}
 
 	Light() {}
-	void draw() { ofDrawSphere(position, radius); };
+	void draw() { 
+		//material.begin();
+		//material.setDiffuseColor(ofColor::yellow);
+		ofSetColor(ofColor::cyan);
+		ofDrawSphere(position, radius); 
+		//material.end();
+	};
 };

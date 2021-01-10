@@ -11,6 +11,7 @@ public:
 
 class Mesh : public SceneObject {
 public:
+	ofMaterial material;
 	vector<glm::vec3> vertices;
 	vector<Triangle> tris;
 	vector<glm::vec3> vertNormals;

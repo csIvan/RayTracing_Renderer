@@ -54,12 +54,15 @@ bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 }
 
 void Cube::draw() {
+	material.begin();
+	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
 		ofTranslate(position);
 		ofRotate(angle, -axisR.x, axisR.y, axisR.z);
 		ofDrawAxis(2);
 		ofDrawBox(ofVec3f::zero(), side*2);
 	ofPopMatrix();
+	material.end();
 }
 
 float Cube::sdf(const glm::vec3 p1) {

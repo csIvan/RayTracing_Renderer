@@ -38,7 +38,11 @@ void Plane::draw() {
 	plane.setWidth(width);
 	plane.setHeight(height);
 	plane.setResolution(4, 4);
-	plane.drawWireframe();
+	plane.setOrientation(glm::vec3(270, 0, 0));
+	material.begin();
+	material.setDiffuseColor(diffuseColor);
+	plane.drawFaces();
+	material.end();
 }
 
 float Plane::sdf(const glm::vec3 p) {

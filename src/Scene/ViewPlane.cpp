@@ -14,7 +14,9 @@ ViewPlane::ViewPlane() {			// create reasonable defaults (6x4 aspect)
 }
 
 void ViewPlane::draw() {
+	ofNoFill();
 	ofDrawRectangle(glm::vec3(min.x, min.y, position.z), width(), height());
+	ofFill();
 }
 
 glm::vec3 ViewPlane::toWorld(float u, float v) {	 // (u, v) --> (x, y, z) [ world space ]
