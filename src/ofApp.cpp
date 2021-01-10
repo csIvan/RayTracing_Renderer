@@ -21,7 +21,7 @@
 
 //--------------------------------------------------------------
 void ofApp::setup() {
-	ofSetBackgroundColor(ofColor(35, 35, 35));
+	ofSetBackgroundColor(ofColor(30, 30, 30));
 	theCam = &mainCam;
 	mainCam.setDistance(12);
 	mainCam.setNearClip(.1);
@@ -67,43 +67,56 @@ void ofApp::setup() {
 	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
 	torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
 	torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 40.0f, glm::vec3(1, -1, 0), ofColor::orangeRed);
-	scene.push_back(&sphere1);
-	scene.push_back(&cube1);
+	//scene.push_back(&sphere1);
+	//scene.push_back(&cube1);
 	//scene.push_back(&f1);
 	//scene.push_back(&wp1);
-	scene.push_back(&plane1);
+	//scene.push_back(&plane1);
 	//scene.push_back(&torus1);
 	//scene.push_back(&torus2);
 
-	rayTracer.addObject(cube1);
-	rayTracer.addObject(sphere1);
-	rayTracer.addObject(plane1);
-	rayTracer.addLight(light1);
+	//rayTracer.addObject(cube1);
+	//rayTracer.addObject(sphere1);
+	//rayTracer.addObject(plane1);
+	//rayTracer.addLight(light1);
 
 	//rayMarcher.addObject(sphere1);
-	rayMarcher.addObject(cube1);
+	//rayMarcher.addObject(cube1);
 	//rayMarcher.addObject(torus1);
 	//rayMarcher.addObject(torus2);
 	//rayMarcher.addObject(plane1);
-	rayMarcher.addLight(light1);
+	//rayMarcher.addLight(light1);
 
+
+	//label_sphere.registerMouseEvents();
+	button_sphere.addListener(this, &ofApp::addSphere);
+	button_cube.addListener(this, &ofApp::addCube);
+	button_plane.addListener(this, &ofApp::addPlane);
+	button_torus.addListener(this, &ofApp::addTorus);
+	button_mesh.addListener(this, &ofApp::addMesh);
+	button_lsystem.addListener(this, &ofApp::addLSystem);
+	//label_sphere.addListener(this, &ofApp::addNewObject);
+	//label_sphere.setup("hey", "buy");
+	//labelTest.set(label_sphere);
+	
 
 	sceneGUI.setup("Scene");
 	sceneGUI.setBorderColor(ofColor::black);
 	group_create.setDefaultHeight(20);
-	label_sphere.loadFont("fonts/Verdana.ttf", 10);
+	button_sphere.loadFont("fonts/Verdana.ttf", 10);
 	sceneGUI.add(group_create.setup("Create Object"));
-	label_sphere.setDefaultHeight(30);
-	label_sphere.setDefaultTextColor(ofColor(0, 239, 255));
+	button_sphere.setDefaultHeight(30);
+	button_sphere.setDefaultTextColor(ofColor(0, 239, 255));
 	group_create.setBorderColor(ofColor(25, 25, 25));
-	group_create.add(label_sphere.setup("", " - Sphere"));
-	group_create.add(label_cube.setup("", " - Cube"));
-	group_create.add(label_plane.setup("", " - Plane"));
-	group_create.add(label_cylinder.setup("", " - Cylinder"));
-	group_create.add(label_cone.setup("", " - Cone"));
-	group_create.add(label_torus.setup("", " - Torus"));
-	group_create.add(label_mesh.setup("", " - Mesh"));
-	group_create.add(label_lsystem.setup("", " - LSystem"));
+	group_create.add(button_sphere.setup(" Sphere"));
+	group_create.add(button_cube.setup(" Cube"));
+	group_create.add(button_plane.setup(" Plane"));
+	group_create.add(button_cylinder.setup(" Cylinder"));
+	group_create.add(button_cone.setup(" Cone"));
+	group_create.add(button_torus.setup(" Torus"));
+	group_create.add(button_mesh.setup(" Mesh"));
+	group_create.add(button_lsystem.setup(" LSystem"));
+	//group_create.add(labelTest.set("", " - Testing"));
 	group_create.add(group_lights.setup(" - Lights"));
 	group_lights.setShape(14, 10, 196, 30);
 	group_lights.setHeaderBackgroundColor(ofColor::black);
@@ -114,8 +127,6 @@ void ofApp::setup() {
 	group_lights.add(label_area_light.setup("", " - Area Light"));
 
 	//newObject.setBackgroundColor(ofColor(40, 40, 40));
-
-
 
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
@@ -137,6 +148,47 @@ void ofApp::setup() {
 	objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
 
 
+}
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button) {
+	//cout << "Yo its me" << endl;
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button) {
+	//bDrag = false;
+
+}
+
+
+void ofApp::addObject(SceneObject *s) {
+	scene.push_back(s);
+	rayTracer.addObject(*s);
+	rayMarcher.addObject(*s);
+}
+
+void ofApp::addSphere() {
+	addObject(new Sphere(glm::vec3(0, 0, 0), 1, ofColor::mediumPurple));
+}
+void ofApp::addCube() {
+	addObject(new Cube(glm::vec3(0, 0, 0), 1, ofColor::mediumPurple));
+}
+void ofApp::addPlane() {
+	addObject(new Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue));
+}
+void ofApp::addTorus() {
+	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, ofColor::seaGreen));
+}
+void ofApp::addMesh() {
+	addObject(new Mesh());
+}
+void ofApp::addLSystem() {
+	addObject(new LSystem(glm::vec3(0,0,0), 1));
+}
+void ofApp::addWaterPool() {
+	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, ofColor::mediumPurple));
 }
 
 //--------------------------------------------------------------

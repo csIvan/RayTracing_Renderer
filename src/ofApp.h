@@ -26,6 +26,16 @@ public:
 	void update();
 	void draw();
 
+	void addObject(SceneObject *s);
+	void addSphere();
+	void addCube();
+	void addPlane(); 
+	void addTorus();  
+	void addMesh();
+	void addLSystem();
+	void addWaterPool();
+	void mousePressed(int x, int y, int button);
+	void mouseReleased(int x, int y, int button);
 	void keyPressed(int key);
 	void dragEvent(ofDragInfo dragInfo);
 	bool FileLoader(char * path);
@@ -41,6 +51,8 @@ public:
 	RayTracer rayTracer;
 	RayMarcher rayMarcher;
 
+
+	// GUI variables
 	ofxVec3Slider slider_location;
 	ofxVec3Slider slider_rotation;
 	ofxVec3Slider slider_scale;
@@ -50,14 +62,14 @@ public:
 	ofxColorSlider color;
 	ofxGuiGroup group_create;
 	ofxGuiGroup group_lights;
-	ofxLabel label_sphere;
-	ofxLabel label_cube;
-	ofxLabel label_plane;
-	ofxLabel label_cylinder;
-	ofxLabel label_cone;
-	ofxLabel label_torus;
-	ofxLabel label_mesh;
-	ofxLabel label_lsystem;
+	ofxButton button_sphere;
+	ofxButton button_cube;
+	ofxButton button_plane;
+	ofxButton button_cylinder;
+	ofxButton button_cone;
+	ofxButton button_torus;
+	ofxButton button_mesh;
+	ofxButton button_lsystem;
 	ofxLabel label_point_light;
 	ofxLabel label_spot_light;
 	ofxLabel label_area_light;
