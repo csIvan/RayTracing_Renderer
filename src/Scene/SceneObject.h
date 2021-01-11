@@ -22,4 +22,5 @@ public:
 	// material properties (we will ultimately replace this with a Material class - TBD)
 	ofColor diffuseColor = ofColor::grey;    // default colors - can be changed.
 	ofColor specularColor = ofColor::lightGray;
+	string objName = "SceneObject_";
 };

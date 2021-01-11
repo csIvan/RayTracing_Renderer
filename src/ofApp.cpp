@@ -33,10 +33,7 @@ void ofApp::setup() {
 	previewCam.setNearClip(.1);
 	ofSetSmoothLighting(true);
 
-	lightScene.enable();
-	lightScene.setPosition(5, 5, 0);
-	lightScene.setDiffuseColor(ofColor(255.f, 255.f, 255.f));
-	lightScene.setSpecularColor(ofColor(255.f, 255.f, 255.f));
+
 	//spotlight
 	sp1 = SpotLight(glm::vec3(.5, -1, -.55), .1, 4);
 	sp1.position = glm::vec3(-3, 4, 1);
@@ -48,6 +45,11 @@ void ofApp::setup() {
 	light2 = Light(glm::vec3(0, 5, -25), 50);
 	light3 = Light(glm::vec3(0, 5, -50), 50);
 	light4 = Light(glm::vec3(0, 5, -75), 50);
+
+	lightScene.enable();
+	lightScene.setPosition(light1.position);
+	lightScene.setDiffuseColor(ofColor(255.f, 255.f, 255.f));
+	lightScene.setSpecularColor(ofColor(255.f, 255.f, 255.f));
 
 	//lights.push_back(&sp1);
 	lights.push_back(&light1);
@@ -64,14 +66,14 @@ void ofApp::setup() {
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image);
 
 	nearestDistance = FLT_MAX;
-	sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
-	//sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
-	cube1 = Cube(glm::vec3(-1, 0, 0), 2, ofColor::seaGreen);
-	f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
-	wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
-	plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
-	torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
-	torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 40.0f, glm::vec3(1, -1, 0), ofColor::orangeRed);
+	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
+	////sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
+	//cube1 = Cube(glm::vec3(-1, 0, 0), 2, ofColor::seaGreen);
+	//f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
+	//wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
+	//plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
+	//torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
+	//torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 40.0f, glm::vec3(1, -1, 0), ofColor::orangeRed);
 	//scene.push_back(&sphere1);
 	//scene.push_back(&cube1);
 	//scene.push_back(&f1);
@@ -104,7 +106,7 @@ void ofApp::setup() {
 	//label_sphere.setup("hey", "buy");
 	//labelTest.set(label_sphere);
 	
-
+	// Setup Scene Interface
 	sceneGUI.setup("Scene");
 	sceneGUI.setBorderColor(ofColor::black);
 	button_sphere.loadFont("fonts/Verdana.ttf", 10);
@@ -113,6 +115,7 @@ void ofApp::setup() {
 	group_objects.setDefaultHeight(30);
 	group_objects.setBorderColor(ofColor(25, 25, 25));
 	group_objects.setHeaderBackgroundColor(ofColor::black);
+
 	group_create.add(group_objects.setup(" Objects"));
 	button_sphere.setDefaultTextColor(ofColor(0, 239, 255));
 	group_objects.add(button_sphere.setup(" Sphere"));
@@ -123,7 +126,7 @@ void ofApp::setup() {
 	group_objects.add(button_torus.setup(" Torus"));
 	group_objects.add(button_mesh.setup(" Mesh"));
 	group_objects.add(button_lsystem.setup(" LSystem"));
-	//group_create.add(labelTest.set("", " - Testing"));
+
 	group_create.add(group_lights.setup(" Lights"));;
 	group_lights.setHeaderBackgroundColor(ofColor::black);
 	group_lights.minimize();
@@ -136,75 +139,72 @@ void ofApp::setup() {
 
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
-	objectGUI.add(gui_radius.setup("radius", 2, 0.2, 3));
-	objectGUI.add(slider_location.setup("Location", cube1.position, glm::vec3(-5, -5, -5),
-		glm::vec3(5, 5, 5)));
-	slider_location.setBorderColor(ofColor(25, 25, 25));
-	objectGUI.add(gui_angle1.setup("angle", torus1.angle, -90, 90));
-	objectGUI.add(slider_rotation.setup("Rotation", torus1.axisR, glm::vec3(-1, -1, -1),
-		glm::vec3(1, 1, 1)));
-	slider_rotation.setBorderColor(ofColor(25, 25, 25));
-	objectGUI.add(gui_angle2.setup("angle", torus2.angle, -90, 90));
-	objectGUI.add(slider_scale.setup("Scale", torus2.axisR, glm::vec3(-1, -1, -1),
-		glm::vec3(1, 1, 1)));
-	slider_scale.setBorderColor(ofColor(25, 25, 25));
-	objectGUI.add(color.setup("Color", ofColor(100, 100, 140), ofColor(0, 0), ofColor(255, 255)));
-	color.setBorderColor(ofColor(25, 25, 25));
-	objectGUI.getGroup("Color").maximize();
-	objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
-
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button) {
-	//cout << "Yo its me" << endl;
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button) {
-	//bDrag = false;
-
-}
-
-
-void ofApp::addObject(SceneObject *s) {
-	scene.push_back(s);
-	rayTracer.addObject(*s);
-	rayMarcher.addObject(*s);
-}
-
-void ofApp::addSphere() {
-	addObject(new Sphere(glm::vec3(0, 0, 0), 1, ofColor::mediumPurple));
-}
-void ofApp::addCube() {
-	addObject(new Cube(glm::vec3(0, 0, 0), 1, ofColor::mediumPurple));
-}
-void ofApp::addPlane() {
-	addObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), ofColor::lightBlue));
-}
-void ofApp::addTorus() {
-	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, ofColor::seaGreen));
-}
-void ofApp::addMesh() {
-	addObject(new Mesh());
-}
-void ofApp::addLSystem() {
-	addObject(new LSystem(glm::vec3(0,0,0), 1));
-}
-void ofApp::addWaterPool() {
-	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, ofColor::mediumPurple));
+	//objectGUI.add(gui_angle1.setup("angle", torus1.angle, -90, 90));
+	//objectGUI.add(slider_rotation.setup("Rotation", torus1.axisR, glm::vec3(-1, -1, -1),
+	//	glm::vec3(1, 1, 1)));
+	//slider_rotation.setBorderColor(ofColor(25, 25, 25));
+	//objectGUI.add(gui_angle2.setup("angle", torus2.angle, -90, 90));
+	//objectGUI.add(slider_scale.setup("Scale", torus2.axisR, glm::vec3(-1, -1, -1),
+	//	glm::vec3(1, 1, 1)));
+	//slider_scale.setBorderColor(ofColor(25, 25, 25));
+	//objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
 }
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	if (selected.size() > 0) {
+		updateSelected(selected[0]);
+	}
 	sphere1.radius = (float)gui_radius;
 	cube1.position = (glm::vec3)slider_location;
 	cube1.angle = (int)gui_angle1;
 	cube1.axisR = (glm::vec3)slider_rotation;
 	torus2.angle = (int)gui_angle2;
 	torus2.axisR = (glm::vec3)slider_scale;
+}
+
+void ofApp::updateSelected(SceneObject *s) {
+	if (typeid(*s) == typeid(Sphere)) {
+		Sphere *sphereSelected = (Sphere*)s;
+		sphereSelected->radius = (float)gui_radius;
+	}
+	else if (typeid(*s) == typeid(Cube)) {
+		Cube *cubeSelected = (Cube*)s;
+		cubeSelected->side = (float)gui_radius;
+	}
+	else if (typeid(*s) == typeid(Plane)) {
+		Plane *planeSelected = (Plane*)s;
+	}
+	else if (typeid(*s) == typeid(Torus)) {
+		Torus *torusSelected = (Torus*)s;
+	}
+
+	s->position = (glm::vec3)slider_location;
+	s->diffuseColor = (ofColor)color;
+}
+
+void ofApp::updateGUI(SceneObject *s) {
+	objectGUI.setName("			" + s->objName);
+	if (typeid(*s) == typeid(Sphere)) {
+		Sphere *sphereSelected = (Sphere*)s;
+		objectGUI.add(gui_radius.setup("Radius", sphereSelected->radius, 0.2, 3));
+	}
+	else if (typeid(*s) == typeid(Cube)) {
+		Cube *cubeSelected = (Cube*)s;
+		objectGUI.add(gui_radius.setup("Length", cubeSelected->side, 0.2, 3));
+	}
+	else if (typeid(*s) == typeid(Plane)) {
+		Plane *planeSelected = (Plane*)s;
+	}
+	else if (typeid(*s) == typeid(Torus)) {
+		Torus *torusSelected = (Torus*)s;
+	}
+
+	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5)));
+	slider_location.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.add(color.setup("Color", s->diffuseColor, ofColor(0, 0), ofColor(255, 255)));
+	color.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.getGroup("Color").maximize();
 }
 
 //--------------------------------------------------------------
@@ -241,6 +241,87 @@ void ofApp::draw() {
 		objectGUI.draw();
 	}
 }
+
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button) {
+	selected.clear();
+	objectGUI.clear();
+
+	vector<SceneObject *> hits;
+
+	glm::vec3 p = theCam->screenToWorld(glm::vec3(x, y, 0));
+	glm::vec3 d = p - theCam->getPosition();
+	glm::vec3 dn = glm::normalize(d);
+
+	for (int i = 0; i < scene.size(); i++) {
+		glm::vec3 point, normal;
+
+		if (scene[i]->intersect(Ray(p, dn), point, normal)) {
+			hits.push_back(scene[i]);
+		}
+	}
+
+	SceneObject *selectedObj = NULL;
+	if (hits.size() > 0) {
+		selectedObj = hits[0];
+		float nearestDist = FLT_MAX;
+		for (int n = 0; n < hits.size(); n++) {
+			float dist = glm::length(hits[n]->position - theCam->getPosition());
+			if (dist < nearestDist) {
+				nearestDist = dist;
+				selectedObj = hits[n];
+			}
+		}
+	}
+	if (selectedObj) {
+		selected.push_back(selectedObj);
+		hideGUI = false;
+		updateGUI(selectedObj);
+	}
+	else {
+		selected.clear();
+		objectGUI.clear();
+		hideGUI = true;
+	}
+
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseReleased(int x, int y, int button) {
+	//bDrag = false;
+
+}
+
+
+void ofApp::addObject(SceneObject *s) {
+	scene.push_back(s);
+	rayTracer.addObject(*s);
+	rayMarcher.addObject(*s);
+}
+
+void ofApp::addSphere() {
+	string nameString = "Sphere_" + to_string(2);
+	addObject(new Sphere(glm::vec3(0, 0, 0), 1, "Sphere_" + to_string(++sphereCount), ofColor::seaGreen));
+}
+void ofApp::addCube() {
+	addObject(new Cube(glm::vec3(0, 0, 0), 1, "Cube_" + to_string(++cubeCount), ofColor::seaGreen));
+}
+void ofApp::addPlane() {
+	addObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), "Plane_" + to_string(++planeCount), ofColor::lightGray));
+}
+void ofApp::addTorus() {
+	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, "Torus_" + to_string(++torusCount), ofColor::seaGreen));
+}
+void ofApp::addMesh() {
+	addObject(new Mesh());
+}
+void ofApp::addLSystem() {
+	addObject(new LSystem(glm::vec3(0, 0, 0), 1, "LSystem_" + to_string(++lsystemCount)));
+}
+void ofApp::addWaterPool() {
+	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, "WaterPool_" + to_string(++waterpoolCount), ofColor::seaGreen));
+}
+
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {

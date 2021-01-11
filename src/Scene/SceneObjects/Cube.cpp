@@ -1,8 +1,9 @@
 #include "Cube.h"
 
-Cube::Cube(glm::vec3 p, float s, ofColor diffuse) {
+Cube::Cube(glm::vec3 p, float s, string name, ofColor diffuse) {
 	position = p;
 	side = s / 2;
+	objName = name;
 	diffuseColor = diffuse;
 }
 

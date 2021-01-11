@@ -26,6 +26,8 @@ public:
 	void update();
 	void draw();
 
+	void updateSelected(SceneObject *s);
+	void updateGUI(SceneObject *s);
 	void addObject(SceneObject *s);
 	void addSphere();
 	void addCube();
@@ -91,6 +93,7 @@ public:
 	ofImage texture;
 	ofImage sphereTexture;
 
+	vector<SceneObject *> selected;
 	vector<SceneObject *> scene;
 	vector<Light *> lights;
 	float Power = 10;
@@ -135,5 +138,7 @@ public:
 
 	int count;
 	int indexHit;
+	int mouseX, mouseY;
+	int sphereCount, cubeCount, planeCount, torusCount, meshCount, lsystemCount, waterpoolCount;
 
 };

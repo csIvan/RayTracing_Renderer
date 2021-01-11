@@ -1,8 +1,9 @@
 #include "Sphere.h"
 
-Sphere::Sphere(glm::vec3 p, float r, ofColor diffuse) {
+Sphere::Sphere(glm::vec3 p, float r, string name, ofColor diffuse) {
 	position = p;
 	radius = r;
+	objName = name;
 	diffuseColor = diffuse;
 }
 

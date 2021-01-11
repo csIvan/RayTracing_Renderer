@@ -12,7 +12,7 @@ public:
 	float width = 20;
 	float height = 20;
 
-	Plane(glm::vec3 p, glm::vec3 n, ofColor diffuse = ofColor::darkOliveGreen, float w = 50, float h = 50);
+	Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse = ofColor::darkOliveGreen, float w = 50, float h = 50);
 	Plane();
 
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);

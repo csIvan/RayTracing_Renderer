@@ -1,17 +1,19 @@
 #include "Torus.h"
 
-Torus::Torus(glm::vec3 p, float l1, float l2, ofColor diffuse) {
+Torus::Torus(glm::vec3 p, float l1, float l2, string name, ofColor diffuse) {
 	position = p;
 	innerRadius = l1;
 	outerRadius = l2;
+	objName = name;
 	diffuseColor = diffuse;
 }
 
 // Constructor with angle and axis of ratation parameters
-Torus::Torus(glm::vec3 p, float l1, float l2, float a, glm::vec3 r, ofColor diffuse) {
+Torus::Torus(glm::vec3 p, float l1, float l2, float a, glm::vec3 r, string name, ofColor diffuse) {
 	position = p;
 	innerRadius = l1;
 	outerRadius = l2;
+	objName = name;
 	diffuseColor = diffuse;
 	angle = a;
 	axisR = r;

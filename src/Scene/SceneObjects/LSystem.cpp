@@ -1,8 +1,9 @@
 #include "LSystem.h"
 
-LSystem::LSystem(glm::vec3 p, float t, ofColor diffuse) {
+LSystem::LSystem(glm::vec3 p, float t, string name, ofColor diffuse) {
 	position = p;
 	temp = t;
+	objName = name;
 	diffuseColor = diffuse;
 	//rule1.a = 'X';
 	rule1.a = 'A';

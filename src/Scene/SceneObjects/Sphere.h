@@ -9,7 +9,7 @@ public:
 	ofMaterial material;
 	float radius = 1.0;
 
-	Sphere(glm::vec3 p, float r, ofColor diffuse = ofColor::lightGray);
+	Sphere(glm::vec3 p, float r, string name, ofColor diffuse = ofColor::lightGray);
 	Sphere() {}
 
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);

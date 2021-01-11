@@ -33,7 +33,7 @@ public:
 	float Offset = 8.0f;
 	float temp = 1.0f;
 
-	LSystem(glm::vec3 p, float t, ofColor diffuse = ofColor::lightGray);
+	LSystem(glm::vec3 p, float t, string name, ofColor diffuse = ofColor::lightGray);
 	LSystem() {};
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);
 	void draw();

@@ -5,11 +5,12 @@ Plane::Plane() {
 	plane.rotateDeg(90, 1, 0, 0);
 }
 
-Plane::Plane(glm::vec3 p, glm::vec3 n, ofColor diffuse, float w, float h) {
+Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, float h) {
 	position = p;
 	normal = n;
 	width = w;
 	height = h;
+	objName = name;
 	diffuseColor = diffuse;
 	if (normal == glm::vec3(0, 1, 0)) {
 		plane.rotateDeg(90, 1, 0, 0);
