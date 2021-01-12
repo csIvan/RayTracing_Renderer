@@ -86,6 +86,7 @@ public:
 	ofxGuiGroup sceneGUI;
 	ofxPanel p;
 	bool hideGUI = true;
+	bool hideGrid = false;
 
 
 	RenderCam renderCam;

@@ -59,9 +59,6 @@ void ofApp::setup() {
 
 	image.allocate(imageWidth, imageHeight, ofImageType::OF_IMAGE_COLOR);
 
-	//texture.load("images/texture2.jpg");
-	//sphereTexture.load("images/WorldMap.jpg");
-
 	rayTracer = RayTracer(imageWidth, imageHeight, image);
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image);
 
@@ -94,17 +91,13 @@ void ofApp::setup() {
 	//rayMarcher.addObject(plane1);
 	rayMarcher.addLight(light1);
 
-
-	//label_sphere.registerMouseEvents();
+	// Button Listeners
 	button_sphere.addListener(this, &ofApp::addSphere);
 	button_cube.addListener(this, &ofApp::addCube);
 	button_plane.addListener(this, &ofApp::addPlane);
 	button_torus.addListener(this, &ofApp::addTorus);
 	button_mesh.addListener(this, &ofApp::addMesh);
 	button_lsystem.addListener(this, &ofApp::addLSystem);
-	//label_sphere.addListener(this, &ofApp::addNewObject);
-	//label_sphere.setup("hey", "buy");
-	//labelTest.set(label_sphere);
 	
 	// Setup Scene Interface
 	sceneGUI.setup("Scene");
@@ -135,8 +128,6 @@ void ofApp::setup() {
 	group_lights.add(button_spot_light.setup(" Spot Light"));
 	group_lights.add(button_area_light.setup(" Area Light"));
 
-	//newObject.setBackgroundColor(ofColor(40, 40, 40));
-
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
 	//objectGUI.add(gui_angle1.setup("angle", torus1.angle, -90, 90));
@@ -155,27 +146,26 @@ void ofApp::update() {
 	if (selected.size() > 0) {
 		updateSelected(selected[0]);
 	}
-	sphere1.radius = (float)gui_radius;
-	cube1.position = (glm::vec3)slider_location;
 	cube1.angle = (int)gui_angle1;
 	cube1.axisR = (glm::vec3)slider_rotation;
 	torus2.angle = (int)gui_angle2;
 	torus2.axisR = (glm::vec3)slider_scale;
 }
 
+// Use the interface to manipulate scene object attributes
 void ofApp::updateSelected(SceneObject *s) {
-	if (typeid(*s) == typeid(Sphere)) {
+	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
 		sphereSelected->radius = (float)gui_radius;
 	}
-	else if (typeid(*s) == typeid(Cube)) {
+	else if (dynamic_cast<Cube*>(s) != nullptr) {
 		Cube *cubeSelected = (Cube*)s;
 		cubeSelected->side = (float)gui_radius;
 	}
-	else if (typeid(*s) == typeid(Plane)) {
+	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
 	}
-	else if (typeid(*s) == typeid(Torus)) {
+	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 	}
 
@@ -183,20 +173,21 @@ void ofApp::updateSelected(SceneObject *s) {
 	s->diffuseColor = (ofColor)color;
 }
 
+// Load scene object attributes to interface
 void ofApp::updateGUI(SceneObject *s) {
 	objectGUI.setName("			" + s->objName);
-	if (typeid(*s) == typeid(Sphere)) {
+	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
 		objectGUI.add(gui_radius.setup("Radius", sphereSelected->radius, 0.2, 3));
 	}
-	else if (typeid(*s) == typeid(Cube)) {
+	else if (dynamic_cast<Cube*>(s) != nullptr) {
 		Cube *cubeSelected = (Cube*)s;
 		objectGUI.add(gui_radius.setup("Length", cubeSelected->side, 0.2, 3));
 	}
-	else if (typeid(*s) == typeid(Plane)) {
+	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
 	}
-	else if (typeid(*s) == typeid(Torus)) {
+	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 	}
 
@@ -211,12 +202,27 @@ void ofApp::updateGUI(SceneObject *s) {
 void ofApp::draw() {
 	ofEnableDepthTest();
 	theCam->begin();
+
+	// Draw Grid
+	if (!hideGrid) {
+		ofSetColor(ofColor::cadetBlue);
+		ofDrawLine(glm::vec3(0, 0, GRID_LINES), glm::vec3(0, 0, -GRID_LINES));
+		ofSetColor(ofColor::paleVioletRed);
+		ofDrawLine(glm::vec3(GRID_LINES, 0, 0), glm::vec3(-GRID_LINES, 0, 0));
+		ofSetColor(ofColor::dimGrey);
+		for (int i = -GRID_LINES; i < GRID_LINES; i++) {
+			ofDrawLine(glm::vec3(GRID_LINES, 0, i), glm::vec3(-GRID_LINES, 0, i));
+			ofDrawLine(glm::vec3(i, 0, GRID_LINES), glm::vec3(i, 0, -GRID_LINES));
+		}
+	}
+	ofSetColor(ofColor::white);
+
 	ofEnableLighting();
 	material.begin();
 	ofFill();
 	ofSetColor(ofColor::white);
 	//ofDrawAxis(3);
-
+	
 	for (int i = 0; i < scene.size(); i++) {
 		scene[i]->draw();
 	}
@@ -304,7 +310,7 @@ void ofApp::addSphere() {
 	addObject(new Sphere(glm::vec3(0, 0, 0), 1, "Sphere_" + to_string(++sphereCount), ofColor::seaGreen));
 }
 void ofApp::addCube() {
-	addObject(new Cube(glm::vec3(0, 0, 0), 1, "Cube_" + to_string(++cubeCount), ofColor::seaGreen));
+	addObject(new Cube(glm::vec3(0, 0, 0), 2, "Cube_" + to_string(++cubeCount), ofColor::seaGreen));
 }
 void ofApp::addPlane() {
 	addObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), "Plane_" + to_string(++planeCount), ofColor::lightGray));
@@ -339,7 +345,7 @@ void ofApp::keyPressed(int key) {
 		cout << "done" << endl;
 		break;
 	case 'b': 
-		hideGUI = !hideGUI;
+		hideGrid = !hideGrid;
 		break;
 	case 'a':
 		cout << "pos: " << objectGUI.getControlNames()[0] << endl;

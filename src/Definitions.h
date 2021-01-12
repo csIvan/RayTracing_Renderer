@@ -8,3 +8,5 @@
 #define MAX_RAY_STEPS 1000
 #define DIST_THRESHOLD .001
 #define MAX_THRESHOLD 100
+
+#define GRID_LINES 100
