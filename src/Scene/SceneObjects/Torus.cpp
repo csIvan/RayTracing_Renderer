@@ -20,30 +20,49 @@ Torus::Torus(glm::vec3 p, float l1, float l2, float a, glm::vec3 r, string name,
 }
 
 void Torus::draw() {
+	if (isSelected) {
+		ofDisableLighting();
+		ofSetColor(ofColor::yellow);
+		ofNoFill();
+		ofPushMatrix();
+			ofTranslate(position);
+			ofRotate(angle, axisR.x, axisR.y, axisR.z);
+			ofDrawAxis(outerRadius * 1.5);
+			drawTorus();
+		ofPopMatrix();
+		ofFill();
+		ofEnableLighting();
+	}
+
+	ofSetColor(ofColor::white);
+
 	material.begin();
 	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
 		ofTranslate(position);
 		ofRotate(angle, axisR.x, axisR.y, axisR.z);
-
-		double s, x, y, z;
-
-		for (int i = 0; i < numc; i++) {
-			glBegin(GL_QUAD_STRIP);
-			for (int j = 0; j <= numt; j++) {
-				for (int k = 1; k >= 0; k--) {
-					s = (i + k) % numc; 
-					x = (innerRadius + outerRadius *cos(s* 2 * PI / numc))*cos(j* 2 * PI / numt);
-					y = (innerRadius + outerRadius *cos(s* 2 * PI / numc))*sin(j* 2 * PI / numt);
-					z = outerRadius * sin(s * 2 * PI / numc);
-					glVertex3f(x, y, z);
-
-				}
-			}
-			glEnd();
-		}
+		drawTorus();
 	ofPopMatrix();
 	material.end();
+}
+
+void Torus::drawTorus() {
+	double s, x, y, z;
+
+	for (int i = 0; i < numc; i++) {
+		glBegin(GL_QUAD_STRIP);
+		for (int j = 0; j <= numt; j++) {
+			for (int k = 1; k >= 0; k--) {
+				s = (i + k) % numc;
+				x = (innerRadius + outerRadius * cos(s * 2 * PI / numc))*cos(j * 2 * PI / numt);
+				y = (innerRadius + outerRadius * cos(s * 2 * PI / numc))*sin(j * 2 * PI / numt);
+				z = outerRadius * sin(s * 2 * PI / numc);
+				glVertex3f(x, y, z);
+
+			}
+		}
+		glEnd();
+	}
 }
 
 // Calculate the sdf of the torus scene object while applying transformations

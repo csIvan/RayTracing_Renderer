@@ -20,5 +20,6 @@ public:
 	Torus(glm::vec3 p, float l1, float l2, float a, glm::vec3 r, string name, ofColor diffuse = ofColor::azure);
 
 	void draw();
+	void drawTorus();
 	float sdf(glm::vec3 p1);
 };

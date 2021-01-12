@@ -40,6 +40,14 @@ void Plane::draw() {
 	plane.setHeight(height);
 	plane.setResolution(4, 4);
 	plane.setOrientation(glm::vec3(270, 0, 0));
+
+	if (isSelected) {
+		ofDisableLighting();
+		ofSetColor(ofColor::yellow);
+		plane.drawWireframe();
+		ofEnableLighting();
+	}
+	ofSetColor(ofColor::white);
 	material.begin();
 	material.setDiffuseColor(diffuseColor);
 	plane.drawFaces();

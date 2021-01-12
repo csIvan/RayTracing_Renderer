@@ -279,12 +279,17 @@ void ofApp::mousePressed(int x, int y, int button) {
 			}
 		}
 	}
+	for (int i = 0; i < scene.size(); i++) {
+		scene[i]->isSelected = false;
+	}
 	if (selectedObj) {
+		selectedObj->isSelected = true;
 		selected.push_back(selectedObj);
 		hideGUI = false;
 		updateGUI(selectedObj);
 	}
 	else {
+		
 		selected.clear();
 		objectGUI.clear();
 		hideGUI = true;

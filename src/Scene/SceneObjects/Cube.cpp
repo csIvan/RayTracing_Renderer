@@ -55,12 +55,26 @@ bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 }
 
 void Cube::draw() {
+	if (isSelected) {
+		ofDisableLighting();
+		ofSetColor(ofColor::yellow);
+		ofNoFill();
+		ofPushMatrix();
+			ofTranslate(position);
+			ofRotate(angle, -axisR.x, axisR.y, axisR.z);
+			ofDrawAxis(side * 1.5);
+			ofDrawBox(ofVec3f::zero(), side * 2);
+		ofPopMatrix();
+		ofFill();
+		ofEnableLighting();
+	}
+
+	ofSetColor(ofColor::white);
 	material.begin();
 	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
 		ofTranslate(position);
 		ofRotate(angle, -axisR.x, axisR.y, axisR.z);
-		ofDrawAxis(2);
 		ofDrawBox(ofVec3f::zero(), side*2);
 	ofPopMatrix();
 	material.end();

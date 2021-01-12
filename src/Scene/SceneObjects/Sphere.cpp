@@ -12,6 +12,16 @@ bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 }
 
 void Sphere::draw() {
+	if (isSelected) {
+		ofDisableLighting();
+		ofSetColor(ofColor::yellow);
+		ofNoFill();
+		ofDrawAxis(radius * 1.5);
+		ofDrawSphere(position, radius);
+		ofFill();
+		ofEnableLighting();
+	}
+	ofSetColor(ofColor::white);
 	material.begin();
 	material.setDiffuseColor(diffuseColor);
 	ofDrawSphere(position, radius);
