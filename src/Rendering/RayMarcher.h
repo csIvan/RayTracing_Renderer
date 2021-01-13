@@ -21,7 +21,7 @@ public:
 
 	RayMarcher(int imageWidth, int imageHeight, ofImage image);
 	RayMarcher() {};
-	void render();
+	ofImage render();
 	bool rayMarch(Ray r, glm::vec3 &p);
 
 	float sceneSDF(glm::vec3 p);

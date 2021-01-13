@@ -10,7 +10,7 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
 * RayMarching function. Calls rayMarch instead of the object's ray intersect function.
 * Also uses the normalRM so that phong shading can be applied to the scene
 */
-void RayMarcher::render() {
+ofImage RayMarcher::render() {
 	shader = Shader(lights, objects);
 	for (float row = 0; row < imageHeight; row++) {
 		for (float column = 0; column < imageWidth; column++) {
@@ -34,6 +34,7 @@ void RayMarcher::render() {
 		//cout << i << "-";
 	}
 	image.save("images/RayMarch3.jpg");
+	return image;
 }
 
 bool RayMarcher::rayMarch(Ray r, glm::vec3 &p) {

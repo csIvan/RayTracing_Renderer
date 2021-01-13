@@ -28,7 +28,12 @@ public:
 
 	void updateSelected(SceneObject *s);
 	void updateGUI(SceneObject *s);
+
+	void handleRayTrace();
+	void handleRayMarch();
+	void handleSaveImage();
 	void addObject(SceneObject *s);
+	void addLight(Light *light);
 	void addSphere();
 	void addCube();
 	void addPlane(); 
@@ -67,9 +72,17 @@ public:
 	ofxIntSlider gui_angle1;
 	ofxIntSlider gui_angle2;
 	ofxColorSlider color;
+	ofxGuiGroup group_scene;
 	ofxGuiGroup group_create;
 	ofxGuiGroup group_objects;
 	ofxGuiGroup group_lights;
+	ofxButton button_rayTrace;
+	ofxButton button_rayMarch;
+	ofxButton button_saveImage;
+	ofxToggle toggle_image;
+	ofxToggle toggle_grid;
+
+
 	ofxButton button_sphere;
 	ofxButton button_cube;
 	ofxButton button_plane;
@@ -141,5 +154,5 @@ public:
 	int indexHit;
 	int mouseX, mouseY;
 	int sphereCount, cubeCount, planeCount, torusCount, meshCount, lsystemCount, waterpoolCount;
-
+	bool renderFinished;
 };

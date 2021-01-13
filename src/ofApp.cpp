@@ -47,15 +47,9 @@ void ofApp::setup() {
 	light4 = Light(glm::vec3(0, 5, -75), 50);
 
 	lightScene.enable();
-	lightScene.setPosition(light1.position);
 	lightScene.setDiffuseColor(ofColor(255.f, 255.f, 255.f));
 	lightScene.setSpecularColor(ofColor(255.f, 255.f, 255.f));
 
-	//lights.push_back(&sp1);
-	lights.push_back(&light1);
-	//lights.push_back(&light2);
-	//lights.push_back(&light3);
-	//lights.push_back(&light4);
 
 	image.allocate(imageWidth, imageHeight, ofImageType::OF_IMAGE_COLOR);
 
@@ -71,41 +65,34 @@ void ofApp::setup() {
 	//plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
 	//torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
 	//torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 40.0f, glm::vec3(1, -1, 0), ofColor::orangeRed);
-	//scene.push_back(&sphere1);
-	//scene.push_back(&cube1);
-	//scene.push_back(&f1);
-	//scene.push_back(&wp1);
-	//scene.push_back(&plane1);
-	//scene.push_back(&torus1);
-	//scene.push_back(&torus2);
-
-	//rayTracer.addObject(cube1);
-	//rayTracer.addObject(sphere1);
-	//rayTracer.addObject(plane1);
-	rayTracer.addLight(light1);
-
-	//rayMarcher.addObject(sphere1);
-	//rayMarcher.addObject(cube1);
-	//rayMarcher.addObject(torus1);
-	//rayMarcher.addObject(torus2);
-	//rayMarcher.addObject(plane1);
-	rayMarcher.addLight(light1);
 
 	// Button Listeners
+	button_rayTrace.addListener(this, &ofApp::handleRayTrace);
+	button_rayMarch.addListener(this, &ofApp::handleRayMarch);
+	button_saveImage.addListener(this, &ofApp::handleSaveImage);
+
 	button_sphere.addListener(this, &ofApp::addSphere);
 	button_cube.addListener(this, &ofApp::addCube);
 	button_plane.addListener(this, &ofApp::addPlane);
 	button_torus.addListener(this, &ofApp::addTorus);
 	button_mesh.addListener(this, &ofApp::addMesh);
 	button_lsystem.addListener(this, &ofApp::addLSystem);
+
+	button_point_light.addListener(this, &ofApp::addPointLight);
 	
 	// Setup Scene Interface
-	sceneGUI.setup("Scene");
+	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
+	sceneGUI.setDefaultHeight(30);
+	sceneGUI.setup("Render");
 	sceneGUI.setBorderColor(ofColor::black);
 	button_sphere.loadFont("fonts/Verdana.ttf", 10);
 	group_create.setBorderColor(ofColor(25, 25, 25));
+	button_rayTrace.setTextColor(ofColor(0,153, 76));
+	button_rayMarch.setTextColor(ofColor(111, 169, 255));
+	sceneGUI.add(button_rayTrace.setup(" RayTrace"));
+	sceneGUI.add(button_rayMarch.setup(" RayMarch"));
+	group_create.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	sceneGUI.add(group_create.setup("Add"));
-	group_objects.setDefaultHeight(30);
 	group_objects.setBorderColor(ofColor(25, 25, 25));
 	group_objects.setHeaderBackgroundColor(ofColor::black);
 
@@ -128,6 +115,17 @@ void ofApp::setup() {
 	group_lights.add(button_spot_light.setup(" Spot Light"));
 	group_lights.add(button_area_light.setup(" Area Light"));
 
+	group_scene.setHeaderBackgroundColor(ofColor(50, 50, 50));
+	group_scene.setBorderColor(ofColor(25, 25, 25));
+	sceneGUI.add(group_scene.setup("Scene"));
+	button_saveImage.setTextColor(ofColor(255, 192, 81));
+	toggle_image.setFillColor(ofColor(108, 176, 94));
+	toggle_grid.setFillColor(ofColor(94, 132, 176));
+	group_scene.add(button_saveImage.setup(" Save Image", false));
+	group_scene.add(toggle_image.setup(" Show Render", false));
+	group_scene.add(toggle_grid.setup(" Toggle Grid", true));
+
+
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
 	//objectGUI.add(gui_angle1.setup("angle", torus1.angle, -90, 90));
@@ -143,6 +141,7 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	lightScene.setGlobalPosition(theCam->getPosition());
 	if (selected.size() > 0) {
 		updateSelected(selected[0]);
 	}
@@ -202,14 +201,16 @@ void ofApp::updateGUI(SceneObject *s) {
 void ofApp::draw() {
 	ofEnableDepthTest();
 	theCam->begin();
-
+	if ((bool)toggle_image && renderFinished) {
+		image.draw(glm::vec3(-3, -2, 5), 6, 4);
+	}
 	// Draw Grid
-	if (!hideGrid) {
-		ofSetColor(ofColor::cadetBlue);
+	if ((bool)toggle_grid) {
+		ofSetColor(ofColor(111, 169, 255));
 		ofDrawLine(glm::vec3(0, 0, GRID_LINES), glm::vec3(0, 0, -GRID_LINES));
-		ofSetColor(ofColor::paleVioletRed);
+		ofSetColor(ofColor(255, 81, 81));
 		ofDrawLine(glm::vec3(GRID_LINES, 0, 0), glm::vec3(-GRID_LINES, 0, 0));
-		ofSetColor(ofColor::dimGrey);
+		ofSetColor(ofColor(178, 178, 178, 50));
 		for (int i = -GRID_LINES; i < GRID_LINES; i++) {
 			ofDrawLine(glm::vec3(GRID_LINES, 0, i), glm::vec3(-GRID_LINES, 0, i));
 			ofDrawLine(glm::vec3(i, 0, GRID_LINES), glm::vec3(i, 0, -GRID_LINES));
@@ -303,11 +304,33 @@ void ofApp::mouseReleased(int x, int y, int button) {
 
 }
 
+void ofApp::handleRayTrace() {
+	image = rayTracer.render();
+	renderFinished = true;
+	cout << "done" << endl;
+}
+
+void ofApp::handleRayMarch() {
+	image = rayMarcher.render();
+	renderFinished = true;
+	cout << "done" << endl;
+}
+
+void ofApp::handleSaveImage() {
+	// TODO: Save image to specified directory
+}
+
 
 void ofApp::addObject(SceneObject *s) {
 	scene.push_back(s);
 	rayTracer.addObject(*s);
 	rayMarcher.addObject(*s);
+}
+
+void ofApp::addLight(Light *light) {
+	lights.push_back(light);
+	rayTracer.addLight(*light);
+	rayMarcher.addLight(*light);
 }
 
 void ofApp::addSphere() {
@@ -331,6 +354,9 @@ void ofApp::addLSystem() {
 }
 void ofApp::addWaterPool() {
 	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, "WaterPool_" + to_string(++waterpoolCount), ofColor::seaGreen));
+}
+void ofApp::addPointLight() {
+	addLight(new Light(glm::vec3(-4, 3, 5), 50));
 }
 
 

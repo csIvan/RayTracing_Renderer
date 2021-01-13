@@ -23,7 +23,7 @@ public:
 
 	RayTracer(int imageWidth, int imageHeight, ofImage &image);
 	RayTracer() {};
-	void render();
+	ofImage render();
 
 	void addObject(SceneObject &object);
 	void addLight(Light &light);

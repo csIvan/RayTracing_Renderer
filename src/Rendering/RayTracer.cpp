@@ -16,7 +16,7 @@ RayTracer::RayTracer(int imageWidth, int imageHeight, ofImage &image) {
 * a sphere or a plane in order to apply the correct texture. It also calls for lambert
 * shading because I thought that my scene looked better in lambert, but phong can also be used.
 */
-void RayTracer::render() {
+ofImage RayTracer::render() {
 	shader = Shader(lights, objects);
 	for (float row = 0; row < imageHeight; row++) {
 		for (float column = 0; column < imageWidth; column++) {
@@ -88,6 +88,7 @@ void RayTracer::render() {
 		}
 	}
 	image.save("images/RayTrace22.jpg");
+	return image;
 }
 
 
