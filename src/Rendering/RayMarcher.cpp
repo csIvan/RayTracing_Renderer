@@ -33,7 +33,6 @@ ofImage RayMarcher::render() {
 		}
 		//cout << i << "-";
 	}
-	image.save("images/RayMarch3.jpg");
 	return image;
 }
 

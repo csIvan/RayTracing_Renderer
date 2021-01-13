@@ -87,7 +87,6 @@ ofImage RayTracer::render() {
 				image.setColor(column, imageHeight - row - 1, ofColor::black);
 		}
 	}
-	image.save("images/RayTrace22.jpg");
 	return image;
 }
 

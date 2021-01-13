@@ -317,7 +317,12 @@ void ofApp::handleRayMarch() {
 }
 
 void ofApp::handleSaveImage() {
-	// TODO: Save image to specified directory
+	if (renderFinished) {
+		ofFileDialogResult result = ofSystemSaveDialog("render.jpg", "Save");
+		if (result.bSuccess) {
+			image.save(result.getPath());
+		}
+	}
 }
 
 
