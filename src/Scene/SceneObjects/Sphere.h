@@ -11,6 +11,7 @@ public:
 
 	Sphere(glm::vec3 p, float r, string name, ofColor diffuse = ofColor::lightGray);
 	Sphere() {}
+	~Sphere() {};
 
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);
 	void draw();

@@ -117,3 +117,11 @@ void RayMarcher::addObject(SceneObject &object) {
 void RayMarcher::addLight(Light &light) {
 	lights.push_back(&light);
 }
+
+void RayMarcher::remove(string name) {
+	for (int i = 0; i < objects.size(); i++) {
+		if (objects[i]->objName == name) {
+			objects.erase(std::remove(objects.begin(), objects.end(), objects[i]), objects.end());
+		}
+	}
+}

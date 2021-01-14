@@ -32,4 +32,5 @@ public:
 
 	void addObject(SceneObject &object);
 	void addLight(Light &light);
+	void remove(string name);
 };

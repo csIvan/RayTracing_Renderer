@@ -32,6 +32,7 @@ public:
 	void handleRayTrace();
 	void handleRayMarch();
 	void handleSaveImage();
+	void handleDelete();
 	void addObject(SceneObject *s);
 	void addLight(Light *light);
 	void addSphere();
@@ -76,6 +77,7 @@ public:
 	ofxGuiGroup group_create;
 	ofxGuiGroup group_objects;
 	ofxGuiGroup group_lights;
+	ofxButton button_delete;
 	ofxButton button_rayTrace;
 	ofxButton button_rayMarch;
 	ofxButton button_saveImage;

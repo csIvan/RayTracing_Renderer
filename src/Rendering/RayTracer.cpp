@@ -98,3 +98,11 @@ void RayTracer::addObject(SceneObject &object) {
 void RayTracer::addLight(Light &light) {
 	lights.push_back(&light);
 }
+
+void RayTracer::remove(string name) {
+	for (int i = 0; i < objects.size(); i++) {
+		if (objects[i]->objName == name) {
+			objects.erase(std::remove(objects.begin(), objects.end(), objects[i]), objects.end());
+		}
+	}
+}

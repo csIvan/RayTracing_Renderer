@@ -70,6 +70,7 @@ void ofApp::setup() {
 	button_rayTrace.addListener(this, &ofApp::handleRayTrace);
 	button_rayMarch.addListener(this, &ofApp::handleRayMarch);
 	button_saveImage.addListener(this, &ofApp::handleSaveImage);
+	button_delete.addListener(this, &ofApp::handleDelete);
 
 	button_sphere.addListener(this, &ofApp::addSphere);
 	button_cube.addListener(this, &ofApp::addCube);
@@ -109,7 +110,6 @@ void ofApp::setup() {
 
 	group_create.add(group_lights.setup(" Lights"));;
 	group_lights.setHeaderBackgroundColor(ofColor::black);
-	group_lights.minimize();
 	group_lights.setBorderColor(ofColor(20, 20, 20));
 	group_lights.add(button_point_light.setup(" Point Light"));
 	group_lights.add(button_spot_light.setup(" Spot Light"));
@@ -121,9 +121,11 @@ void ofApp::setup() {
 	button_saveImage.setTextColor(ofColor(255, 192, 81));
 	toggle_image.setFillColor(ofColor(108, 176, 94));
 	toggle_grid.setFillColor(ofColor(94, 132, 176));
+	button_delete.setTextColor(ofColor(255, 63, 63));
 	group_scene.add(button_saveImage.setup(" Save Image", false));
-	group_scene.add(toggle_image.setup(" Show Render", false));
 	group_scene.add(toggle_grid.setup(" Toggle Grid", true));
+	group_scene.add(toggle_image.setup(" Show Render", false));
+	group_scene.add(button_delete.setup(" Delete Selected Object"));
 
 
 	objectGUI.setup("Sphere");
@@ -141,6 +143,8 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	sceneGUI.maximize();	// Always maximixed
+
 	lightScene.setGlobalPosition(theCam->getPosition());
 	if (selected.size() > 0) {
 		updateSelected(selected[0]);
@@ -289,8 +293,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 		hideGUI = false;
 		updateGUI(selectedObj);
 	}
-	else {
-		
+	else {	
 		selected.clear();
 		objectGUI.clear();
 		hideGUI = true;
@@ -321,6 +324,18 @@ void ofApp::handleSaveImage() {
 		ofFileDialogResult result = ofSystemSaveDialog("render.jpg", "Save");
 		if (result.bSuccess) {
 			image.save(result.getPath());
+		}
+	}
+}
+
+void ofApp::handleDelete() {
+	for (int i = 0; i < scene.size(); i++) {
+		if (selected.size() > 0 && scene[i]->objName == selected[0]->objName) {
+			hideGUI = true;
+			rayTracer.remove(scene[i]->objName);
+			rayMarcher.remove(scene[i]->objName);
+			scene.erase(std::remove(scene.begin(), scene.end(), scene[i]), scene.end());
+			selected.clear();
 		}
 	}
 }

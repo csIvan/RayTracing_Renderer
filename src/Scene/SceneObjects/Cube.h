@@ -12,7 +12,8 @@ public:
 	glm::vec3 axisR = glm::vec3(1, 0, 0);
 
 	Cube(glm::vec3 p, float s, string name, ofColor diffuse = ofColor::lightGray);
-	Cube() {}
+	Cube() {};
+	~Cube() {};
 
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);
 	void draw();
