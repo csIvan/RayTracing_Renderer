@@ -57,48 +57,41 @@ void ofApp::setup() {
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image);
 
 	nearestDistance = FLT_MAX;
-	//sphere1 = Sphere(glm::vec3(1.5, -1, -1), 1, ofColor::mediumPurple);
-	////sphere1 = Sphere(glm::vec3(-.1, 1, -.28), 1.5, ofColor::mediumPurple);
-	//cube1 = Cube(glm::vec3(-1, 0, 0), 2, ofColor::seaGreen);
 	//f1 = LSystem(glm::vec3(0, -2.5, 0), 1, ofColor::seaGreen);
 	//wp1 = WaterPool(glm::vec3(1.5, -3, -1), 1, ofColor::mediumPurple);
-	//plane1 = Plane(glm::vec3(0, -3.25, 0), glm::vec3(0, 1, 0), ofColor::lightBlue);
 	//torus1 = Torus(glm::vec3(-1.3, -1.2, 0), 1, 0.5, ofColor::seaGreen);
 	//torus2 = Torus(glm::vec3(2.2, -0.4, -2), 2, 0.2, 40.0f, glm::vec3(1, -1, 0), ofColor::orangeRed);
 
-	// Button Listeners
+	// Scene Button Listeners
 	button_rayTrace.addListener(this, &ofApp::handleRayTrace);
 	button_rayMarch.addListener(this, &ofApp::handleRayMarch);
 	button_saveImage.addListener(this, &ofApp::handleSaveImage);
 	button_delete.addListener(this, &ofApp::handleDelete);
-
 	button_sphere.addListener(this, &ofApp::addSphere);
 	button_cube.addListener(this, &ofApp::addCube);
 	button_plane.addListener(this, &ofApp::addPlane);
 	button_torus.addListener(this, &ofApp::addTorus);
 	button_mesh.addListener(this, &ofApp::addMesh);
 	button_lsystem.addListener(this, &ofApp::addLSystem);
-
 	button_point_light.addListener(this, &ofApp::addPointLight);
 	
-	// Setup Scene Interface
+	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	sceneGUI.setDefaultHeight(30);
+	sceneGUI.loadFont("fonts/Verdana.ttf", 10);
 	sceneGUI.setup("Render");
 	sceneGUI.setBorderColor(ofColor::black);
-	button_sphere.loadFont("fonts/Verdana.ttf", 10);
 	group_create.setBorderColor(ofColor(25, 25, 25));
+	group_create.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	button_rayTrace.setTextColor(ofColor(0,153, 76));
 	button_rayMarch.setTextColor(ofColor(111, 169, 255));
 	sceneGUI.add(button_rayTrace.setup(" RayTrace"));
 	sceneGUI.add(button_rayMarch.setup(" RayMarch"));
-	group_create.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	sceneGUI.add(group_create.setup("Add"));
 	group_objects.setBorderColor(ofColor(25, 25, 25));
 	group_objects.setHeaderBackgroundColor(ofColor::black);
 
 	group_create.add(group_objects.setup(" Objects"));
-	button_sphere.setDefaultTextColor(ofColor(0, 239, 255));
 	group_objects.add(button_sphere.setup(" Sphere"));
 	group_objects.add(button_cube.setup(" Cube"));
 	group_objects.add(button_plane.setup(" Plane"));
@@ -127,7 +120,6 @@ void ofApp::setup() {
 	group_scene.add(toggle_image.setup(" Show Render", false));
 	group_scene.add(button_delete.setup(" Delete Selected Object"));
 
-
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
 	//objectGUI.add(gui_angle1.setup("angle", torus1.angle, -90, 90));
@@ -148,7 +140,12 @@ void ofApp::update() {
 	lightScene.setGlobalPosition(theCam->getPosition());
 	if (selected.size() > 0) {
 		updateSelected(selected[0]);
+		objectGUI.maximize();
+		mainCam.setControlArea(ofRectangle(sceneGUI.getWidth(), 0, ofGetWidth() - sceneGUI.getWidth() - objectGUI.getWidth(), ofGetHeight()));
+
 	}
+	mainCam.setControlArea(ofRectangle(sceneGUI.getWidth(), 0, ofGetWidth() - sceneGUI.getWidth(), ofGetHeight()));
+
 	cube1.angle = (int)gui_angle1;
 	cube1.axisR = (glm::vec3)slider_rotation;
 	torus2.angle = (int)gui_angle2;
@@ -226,7 +223,6 @@ void ofApp::draw() {
 	material.begin();
 	ofFill();
 	ofSetColor(ofColor::white);
-	//ofDrawAxis(3);
 	
 	for (int i = 0; i < scene.size(); i++) {
 		scene[i]->draw();
@@ -397,9 +393,6 @@ void ofApp::keyPressed(int key) {
 		break;
 	case 'b': 
 		hideGrid = !hideGrid;
-		break;
-	case 'a':
-		cout << "pos: " << objectGUI.getControlNames()[0] << endl;
 		break;
 	default:
 		break;
