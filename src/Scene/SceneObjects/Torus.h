@@ -15,6 +15,9 @@ public:
 	float imageX, imageY;
 	vector<glm::vec3> points;
 	vector<glm::vec3> normals;
+	vector<glm::vec3> Fpoints;
+	vector<glm::vec3> Fnormals;
+	bool shading = false;
 
 	int numc = 20;
 	int numt = 35;

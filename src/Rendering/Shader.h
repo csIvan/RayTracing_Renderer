@@ -3,12 +3,16 @@
 #include "ofMain.h"
 #include "../Scene/Ray.h"
 #include "../Scene/SceneObject.h"
+#include "../Scene/SceneObjects/Torus.h"
 #include "../Scene/SceneObjects/Light.h"
 
 class Shader {
 public:
 	vector<Light *> lights;
 	vector<SceneObject *> objects;
+	glm::vec3 opoint;
+	glm::vec3 onormal;
+
 	Shader(vector<Light *> lights, vector<SceneObject *> objects);
 	Shader() {};
 
