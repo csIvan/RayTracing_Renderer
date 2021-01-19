@@ -34,6 +34,12 @@ ofImage RayTracer::render() {
 						nearestDist = dist;
 						hit = true;
 						normal = glm::normalize(normal);
+						if (dynamic_cast<Torus*>(objects[index]) != nullptr) {
+							Torus *tor = (Torus*)objects[index];
+							tor->imageX = column;
+							tor->imageY = row;
+
+						}
 						// If the object is a sphere
 						if (typeid(*objects[index]) == typeid(Sphere)) {
 							Sphere *globe = (Sphere*)objects[index];

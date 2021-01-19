@@ -115,9 +115,9 @@ void ofApp::setup() {
 	toggle_image.setFillColor(ofColor(108, 176, 94));
 	toggle_grid.setFillColor(ofColor(94, 132, 176));
 	button_delete.setTextColor(ofColor(255, 63, 63));
-	group_scene.add(button_saveImage.setup(" Save Image", false));
+	group_scene.add(button_saveImage.setup(" Save Image"));
 	group_scene.add(toggle_grid.setup(" Toggle Grid", true));
-	group_scene.add(toggle_image.setup(" Show Render", false));
+	group_scene.add(toggle_image.setup(" Show Render", true));
 	group_scene.add(button_delete.setup(" Delete Selected Object"));
 
 	objectGUI.setup("Sphere");

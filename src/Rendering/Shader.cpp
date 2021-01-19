@@ -69,9 +69,9 @@ bool Shader::inShadow(const Ray &r) {
 		//	blocked = true;
 		//}
 
-		if (objects[index]->intersect(r, point, normal)) {
-			blocked = true;
-		}
+		//if (objects[index]->intersect(r, point, normal)) {
+		//	blocked = true;
+		//}
 	}
 	return blocked;
 }
