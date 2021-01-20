@@ -88,6 +88,9 @@
     <ClCompile Include="src\Rendering\Shader.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="src\Math\poly34.cpp">
+      <Filter>src\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -140,6 +143,9 @@
     </Filter>
     <Filter Include="src\Rendering">
       <UniqueIdentifier>{12a48249-ef02-4282-bb16-c4b73ff40a2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Math">
+      <UniqueIdentifier>{95e7c6b2-d585-45db-9ea7-0e5bab2c1247}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -367,6 +373,9 @@
     </ClInclude>
     <ClInclude Include="src\Rendering\Shader.h">
       <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Math\poly34.h">
+      <Filter>src\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
