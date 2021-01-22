@@ -156,11 +156,11 @@ void ofApp::update() {
 void ofApp::updateSelected(SceneObject *s) {
 	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
-		sphereSelected->radius = (float)gui_radius;
+		sphereSelected->radius = (float)gui_value1;
 	}
 	else if (dynamic_cast<Cube*>(s) != nullptr) {
 		Cube *cubeSelected = (Cube*)s;
-		cubeSelected->side = (float)gui_radius;
+		cubeSelected->side = (float)gui_value1;
 	}
 	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
@@ -168,10 +168,13 @@ void ofApp::updateSelected(SceneObject *s) {
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 		torusSelected->angle = (int)gui_angle1;
-		torusSelected->axisR = (glm::vec3) slider_rotation;
+		//torusSelected->axisR = (glm::vec3) slider_rotation;
 	}
 
 	s->position = (glm::vec3)slider_location;
+	s->rotation.x = static_cast<int>(gui_angleX);
+	s->rotation.y = static_cast<int>(gui_angleY);
+	s->rotation.z = static_cast<int>(gui_angleZ);
 	s->diffuseColor = (ofColor)color;
 }
 
@@ -180,11 +183,11 @@ void ofApp::updateGUI(SceneObject *s) {
 	objectGUI.setName("			" + s->objName);
 	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
-		objectGUI.add(gui_radius.setup("Radius", sphereSelected->radius, 0.2, 3));
+		objectGUI.add(gui_value1.setup("Radius", sphereSelected->radius, 0.2, 3));
 	}
 	else if (dynamic_cast<Cube*>(s) != nullptr) {
 		Cube *cubeSelected = (Cube*)s;
-		objectGUI.add(gui_radius.setup("Length", cubeSelected->side, 0.2, 3));
+		objectGUI.add(gui_value1.setup("Length", cubeSelected->side, 0.2, 3));
 	}
 	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
@@ -192,10 +195,17 @@ void ofApp::updateGUI(SceneObject *s) {
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 		objectGUI.add(gui_angle1.setup("Angle", torusSelected->angle, -90, 90));
-		objectGUI.add(slider_rotation.setup("Rotation", torusSelected->axisR, glm::vec3(-1, -1, -1), glm::vec3(1, 1, 1)));
 	}
 
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5)));
+	//objectGUI.add(slider_rotation.setup("Angle Rotation", s->rotation, glm::vec3(-90, -90, -90), glm::vec3(90, 90, 90)));
+	group_rotation.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.add(group_rotation.setup("Rotation"));
+	group_rotation.add(gui_angleX.setup("Angle X", s->rotation.x, -90, 90));
+	group_rotation.add(gui_angleY.setup("Angle Y", s->rotation.y, -90, 90));
+	group_rotation.add(gui_angleZ.setup("Angle Z", s->rotation.z, -90, 90));
+	slider_scale.setBorderColor(ofColor(25, 25, 25));
+	objectGUI.add(slider_scale.setup("Scale", s->scale, glm::vec3(0, 0, 0), glm::vec3(5, 5, 5)));
 	slider_location.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(color.setup("Color", s->diffuseColor, ofColor(0, 0), ofColor(255, 255)));
 	color.setBorderColor(ofColor(25, 25, 25));

@@ -65,11 +65,18 @@ public:
 	RayMarcher rayMarcher;
 
 
+	// Main GUIs
+	ofxGuiGroup objectGUI;
+	ofxGuiGroup sceneGUI;
+	bool hideGUI = true;
+	bool hideGrid = false;
+
+
 	// GUI variables
 	ofxVec3Slider slider_location;
 	ofxVec3Slider slider_rotation;
 	ofxVec3Slider slider_scale;
-	ofxFloatSlider gui_radius;
+	ofxFloatSlider gui_value1;
 	ofxIntSlider gui_angle1;
 	ofxIntSlider gui_angle2;
 	ofxColorSlider color;
@@ -77,32 +84,18 @@ public:
 	ofxGuiGroup group_create;
 	ofxGuiGroup group_objects;
 	ofxGuiGroup group_lights;
-	ofxButton button_delete;
-	ofxButton button_rayTrace;
-	ofxButton button_rayMarch;
-	ofxButton button_saveImage;
-	ofxToggle toggle_image;
-	ofxToggle toggle_grid;
+	ofxGuiGroup group_rotation;
+	ofxIntSlider gui_angleX;
+	ofxIntSlider gui_angleY;
+	ofxIntSlider gui_angleZ;
 
+	// GUI functions
+	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete;
+	ofxToggle toggle_image, toggle_grid;
 
-	ofxButton button_sphere;
-	ofxButton button_cube;
-	ofxButton button_plane;
-	ofxButton button_cylinder;
-	ofxButton button_cone;
-	ofxButton button_torus;
-	ofxButton button_mesh;
-	ofxButton button_lsystem;
-	ofxButton button_point_light;
-	ofxButton button_spot_light;
-	ofxButton button_area_light;
-
-	ofxGuiGroup objectGUI;
-	ofxGuiGroup sceneGUI;
-	ofxPanel p;
-	bool hideGUI = true;
-	bool hideGrid = false;
-
+	// SceneObject Buttons
+	ofxButton button_sphere, button_cube, button_plane, button_cylinder, button_cone, button_torus,
+		button_mesh, button_lsystem, button_point_light, button_spot_light, button_area_light;
 
 	RenderCam renderCam;
 	ofImage image;
