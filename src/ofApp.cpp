@@ -167,6 +167,8 @@ void ofApp::updateSelected(SceneObject *s) {
 	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
+		torusSelected->angle = (int)gui_angle1;
+		torusSelected->axisR = (glm::vec3) slider_rotation;
 	}
 
 	s->position = (glm::vec3)slider_location;
@@ -189,6 +191,8 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
+		objectGUI.add(gui_angle1.setup("Angle", torusSelected->angle, -90, 90));
+		objectGUI.add(slider_rotation.setup("Rotation", torusSelected->axisR, glm::vec3(-1, -1, -1), glm::vec3(1, 1, 1)));
 	}
 
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5)));

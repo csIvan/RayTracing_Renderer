@@ -23,19 +23,27 @@ Torus::Torus(glm::vec3 p, float r1, float r2, float a, glm::vec3 rot, string nam
 
 bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	glm::vec2 tor = glm::vec2(R, r);
+	//glm::mat4 Translate, Rotation;
+	//glm::vec3 rdd, roo;
+	//Ray temp = Ray(ray.p, ray.d);
 
+	//// Apply Transformation
+	//Translate = glm::translate(glm::mat4(1.0), position);
+	//Rotation = glm::rotate(Translate, glm::radians(angle), glm::vec3(axisR.x, axisR.y, axisR.z));
+	//rdd = (glm::inverse(Rotation) * glm::vec4(ray.d.x, ray.d.y, ray.d.z, 0.0));
+	//roo = (glm::inverse(Rotation) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0));
 	//float po = 1.0;
 	//float Ra2 = tor.x * tor.x;
 	//float ra2 = tor.y * tor.y;
 
-	//float m = dot(ray.p, ray.p);
-	//float n = dot(ray.p, ray.d);
+	//float m = dot(roo, roo);
+	//float n = dot(roo, rdd);
 
 	//float k = (m - ra2 - Ra2) / 2.0;
 	//float k3 = n;
-	//float k2 = n * n + Ra2 * ray.d.z * ray.d.z + k;
-	//float k1 = k * n + Ra2 * ray.p.z * ray.d.z;
-	//float k0 = k * k + Ra2 * ray.p.z * ray.p.z - Ra2 * ra2;
+	//float k2 = n * n + Ra2 * rdd.z * rdd.z + k;
+	//float k1 = k * n + Ra2 * roo.z * rdd.z;
+	//float k0 = k * k + Ra2 * roo.z * roo.z - Ra2 * ra2;
 
 	//if (abs(k3 * (k3 * k3 - k2) + k1) < 0.01) {
 	//	po = -1.0;
@@ -120,18 +128,28 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	//	if (t2 > 0.0)
 	//		result = min(result, t2);
 	//}
+	glm::mat4 Translate, Rotation, rotationM;
+	glm::vec3 rdd, roo;
+	Ray temp = Ray(ray.p, ray.d);
+
+	// Apply Transformation
+	Translate = glm::translate(glm::mat4(1.0), position);
+	Rotation = glm::rotate(Translate, glm::radians(angle), glm::vec3(axisR.x, axisR.y, axisR.z));
+	rotationM = glm::rotate(glm::radians(angle), glm::vec3(axisR.x, axisR.y, axisR.z));
+	rdd = (glm::inverse(Rotation) * glm::vec4(ray.d.x, ray.d.y, ray.d.z, 0.0));
+	roo = (glm::inverse(Rotation) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0));
 
 	//float t = result;
-	float mm = dot(ray.d, ray.d);
-	float nn = dot(ray.p, ray.d);
-	float ee = dot(ray.p, ray.p) - (R * R + r * r);
+	float mm = dot(rdd, rdd);
+	float nn = dot(roo, rdd);
+	float ee = dot(roo, roo) - (R * R + r * r);
 	float four_a_sqrd = 4.0 * R * R;
 
 	float cc4 = mm * mm;
 	float cc3 = 4.0 * mm * nn;
-	float cc2 = 2.0 * mm * ee + 4.0 * nn * nn + four_a_sqrd * ray.d.z * ray.d.z;
-	float cc1 = 4.0 * nn * ee + 2.0 * four_a_sqrd * ray.p.z * ray.d.z;
-	float cc0 = ee * ee - four_a_sqrd * (r * r - ray.p.z * ray.p.z);
+	float cc2 = 2.0 * mm * ee + 4.0 * nn * nn + four_a_sqrd * rdd.z * rdd.z;
+	float cc1 = 4.0 * nn * ee + 2.0 * four_a_sqrd * roo.z * rdd.z;
+	float cc0 = ee * ee - four_a_sqrd * (r * r - roo.z * roo.z);
 
 	// Quartic variables
 	cc4 /= cc4;
@@ -151,15 +169,14 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 		if(root > static_cast<float>(roots[i]))
 			root = static_cast<float>(roots[i]);
 	}
-	if (root < 0.0001) return false;
-
-	Ray temp = Ray(ray.p, ray.d);
-	point = temp.evalPoint(root);
+	if (root < 0.001) return false;
+	Ray ray1 = Ray(roo, rdd);
+	point = ray1.evalPoint(root);
 	//cout << "[" << imageY << ", " << imageX << "]	" << point << endl;
-	glm::vec3 pPrime = glm::vec3(point.x, point.y, 0.0);
-	float Qp = R / sqrt(point.x * point.x + point.y * point.y);
+	//glm::vec3 pPrime = glm::vec3(point.x, point.y, 0.0);
+	//float Qp = R / sqrt(point.x * point.x + point.y * point.y);
 
-	normal = glm::normalize(point * (dot(point, point) - tor.y * tor.y - tor.x * tor.x * glm::vec3(1.0, 1.0, -1.0)));
+	//point = Rotation * glm::vec4(point.x, point.y, point.z, 0.0);
 	//double an = 1.0 - (R / sqrt(point.x * point.x + point.y * point.y));
 	//normal = glm::normalize(glm::vec3(an * point.x, an * point.y, point.z));
 	//normal = glm::vec3(
@@ -167,20 +184,21 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	//	point.y * (pow(point.x, 2) + pow(point.y, 2) + pow(point.z, 2) - r * r - R * R),
 	//	point.z * (pow(point.x, 2) + pow(point.y, 2) + pow(point.z, 2) - r * r - R * R * -1)
 	//);
-
+	//normal = glm::normalize(glm::vec4(normal.x, normal.y, normal.z, 0.0) *Rotation );
 	//float paramSquared = R * R + r * r;
-	//float px = point.x;
-	//float py = point.y;
-	//float pz = point.z;
-	//float sumSquared = px * px + py * py + pz * pz;
+	//glm::vec3 pp = glm::inverse(Rotation) * glm::vec4(point.x, point.y, point.z, 1.0);
+	//float sumSquared = pp.x * pp.x + pp.y * pp.y + pp.z * pp.z;
 
 	//normal = glm::vec3(
-	//	4.0 * px * (sumSquared - paramSquared),
-	//	4.0 * py * (sumSquared - paramSquared),
-	//	4.0 * pz * (sumSquared - paramSquared + 2.0 * R * R)
+	//	4.0 * pp.x * (sumSquared - paramSquared),
+	//	4.0 * pp.y * (sumSquared - paramSquared),
+	//	4.0 * pp.z * (sumSquared - paramSquared + 2.0 * R * R)
 	//);
 
-	//normal = glm::normalize(normal);
+	normal = point * (dot(point, point) - r * r - R * R * glm::vec3(1.0, 1.0, -1.0));
+	normal = glm::normalize(rotationM * glm::vec4(normal.x, normal.y, normal.z, 1.0));
+	point = Rotation * glm::vec4(point.x, point.y, point.z, 1.0);
+	//normal = glm::vec3(0, 0, 1);
 	//if (shading) {
 		//points.push_back(point);
 		//normals.push_back((point + normal/2));
@@ -194,18 +212,18 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 void Torus::draw() {
 	ofDisableLighting();
 	ofSetColor(ofColor::red);
-	for (int i = 0; i < points.size(); i++) {
-		ofSetColor(ofColor::blue);
+	//for (int i = 0; i < points.size(); i++) {
+	//	ofSetColor(ofColor::blue);
 		//ofDrawSphere(points[i], 0.025);
-		ofSetColor(ofColor::yellow);
+	//	ofSetColor(ofColor::yellow);
 		//ofDrawLine(points[i], normals[i]);
-	}
-	for (int i = 0; i < Fpoints.size(); i++) {
-		ofSetColor(ofColor::red);
-		ofDrawSphere(Fpoints[i], 0.025);
-		ofSetColor(ofColor::yellow);
+	//}
+	//for (int i = 0; i < Fpoints.size(); i++) {
+	//	ofSetColor(ofColor::red);
+		//ofDrawSphere(Fpoints[i], 0.025);
+	//	ofSetColor(ofColor::yellow);
 		//ofDrawLine(points[i], normals[i]);
-	}
+	//}
 	ofEnableLighting();
 	if (isSelected) {
 		ofDisableLighting();
