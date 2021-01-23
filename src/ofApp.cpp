@@ -145,11 +145,6 @@ void ofApp::update() {
 
 	}
 	mainCam.setControlArea(ofRectangle(sceneGUI.getWidth(), 0, ofGetWidth() - sceneGUI.getWidth(), ofGetHeight()));
-
-	cube1.angle = (int)gui_angle1;
-	cube1.axisR = (glm::vec3)slider_rotation;
-	torus2.angle = (int)gui_angle2;
-	torus2.axisR = (glm::vec3)slider_scale;
 }
 
 // Use the interface to manipulate scene object attributes
@@ -167,7 +162,7 @@ void ofApp::updateSelected(SceneObject *s) {
 	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
-		torusSelected->angle = (int)gui_angle1;
+		torusSelected->R = (float)gui_value1;
 		//torusSelected->axisR = (glm::vec3) slider_rotation;
 	}
 
@@ -195,7 +190,7 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
-		objectGUI.add(gui_angle1.setup("Angle", torusSelected->angle, -90, 90));
+		objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
 	}
 
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5)));

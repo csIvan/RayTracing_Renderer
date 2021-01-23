@@ -69,23 +69,9 @@ bool Shader::inShadow(const Ray &r) {
 		//if (rayMarch(r, point)) {
 		//	blocked = true;
 		//}
-		if (dynamic_cast<Torus*>(objects[index]) != nullptr) {
-			Torus *tor = (Torus*)objects[index];
-			//tor->points.push_back(opoint);
-			//tor->normals.push_back((opoint + onormal / 2));
-			//cout << "[ " << point << " ]" << endl;
 
-		}
 		if (objects[index]->intersect(r, point, normal)) {
 			blocked = true;
-			if (dynamic_cast<Torus*>(objects[index]) != nullptr) {
-				Torus *tor = (Torus*)objects[index];
-				tor->shading = true;
-				tor->Fpoints.push_back(point);
-				tor->Fnormals.push_back((point + normal/2));
-				//cout << "[ " << point << " ]" << endl;
-
-			}
 		}
 	}
 	return blocked;
