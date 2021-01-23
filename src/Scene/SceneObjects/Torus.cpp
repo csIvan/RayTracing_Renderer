@@ -128,16 +128,16 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	//	if (t2 > 0.0)
 	//		result = min(result, t2);
 	//}
-	glm::mat4 Translate, Rotation, rotationM;
 	glm::vec3 rdd, roo;
 	Ray temp = Ray(ray.p, ray.d);
 
 	// Apply Transformation
-	Translate = glm::translate(glm::mat4(1.0), position);
-	Rotation = glm::rotate(Translate, glm::radians(angle), glm::vec3(axisR.x, axisR.y, axisR.z));
-	rotationM = glm::rotate(glm::radians(angle), glm::vec3(axisR.x, axisR.y, axisR.z));
-	rdd = (glm::inverse(Rotation) * glm::vec4(ray.d.x, ray.d.y, ray.d.z, 0.0));
-	roo = (glm::inverse(Rotation) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0));
+	//rdd = (glm::inverse(Transform) * glm::vec4(ray.d.x, ray.d.y, ray.d.z, 0.0));
+	//roo = (glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0));
+	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
+	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
+	roo = glm::vec4(p.x, p.y, p.z, 1.0);
+	rdd = glm::normalize(p1 - p);
 
 	//float t = result;
 	float mm = dot(rdd, rdd);
@@ -169,7 +169,7 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 		if(root > static_cast<float>(roots[i]))
 			root = static_cast<float>(roots[i]);
 	}
-	if (root < 0.001) return false;
+	if (root < 0.05) return false;
 	Ray ray1 = Ray(roo, rdd);
 	point = ray1.evalPoint(root);
 	//cout << "[" << imageY << ", " << imageX << "]	" << point << endl;
@@ -196,12 +196,12 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	//);
 
 	normal = point * (dot(point, point) - r * r - R * R * glm::vec3(1.0, 1.0, -1.0));
-	normal = glm::normalize(rotationM * glm::vec4(normal.x, normal.y, normal.z, 1.0));
-	point = Rotation * glm::vec4(point.x, point.y, point.z, 1.0);
+	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
+	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	//normal = glm::vec3(0, 0, 1);
 	//if (shading) {
-		//points.push_back(point);
-		//normals.push_back((point + normal/2));
+		points.push_back(point);
+		normals.push_back((point + normal/2));
 	//}
 	//cout << "Num: " << points.size() << " \\ " << Fpoints.size() << endl;
 	return true;
@@ -210,13 +210,14 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 
 void Torus::draw() {
+	applyMatrix();
 	ofDisableLighting();
 	ofSetColor(ofColor::red);
 	//for (int i = 0; i < points.size(); i++) {
 	//	ofSetColor(ofColor::blue);
-		//ofDrawSphere(points[i], 0.025);
+	//	ofDrawSphere(points[i], 0.025);
 	//	ofSetColor(ofColor::yellow);
-		//ofDrawLine(points[i], normals[i]);
+	//	ofDrawLine(points[i], normals[i]);
 	//}
 	//for (int i = 0; i < Fpoints.size(); i++) {
 	//	ofSetColor(ofColor::red);
@@ -230,8 +231,7 @@ void Torus::draw() {
 		ofSetColor(ofColor::yellow);
 		ofNoFill();
 		ofPushMatrix();
-			ofTranslate(position);
-			ofRotate(angle, axisR.x, axisR.y, axisR.z);
+			ofMultMatrix(Transform);
 			ofDrawAxis(R * 1.5);
 			drawTorus();
 		ofPopMatrix();
@@ -244,8 +244,7 @@ void Torus::draw() {
 	material.begin();
 	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
-		ofTranslate(position);
-		ofRotate(angle, axisR.x, axisR.y, axisR.z);
+		ofMultMatrix(Transform);
 		drawTorus();
 	ofPopMatrix();
 	material.end();

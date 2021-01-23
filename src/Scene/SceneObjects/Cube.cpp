@@ -8,15 +8,12 @@ Cube::Cube(glm::vec3 p, float s, string name, ofColor diffuse) {
 }
 
 bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
-	glm::mat4 Translate, Rotation;
 	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
 	Ray rTemp = Ray(ray.p, ray.d);
 
 	// Apply Transformation
-	Translate = glm::translate(glm::mat4(1.0), position);
-	Rotation = glm::rotate(Translate, glm::radians(angle), glm::vec3(-axisR.x, axisR.y, axisR.z));
-	rdd = (glm::inverse(Rotation) * glm::vec4(ray.d.x, ray.d.y, ray.d.z, 0.0));
-	roo = (glm::inverse(Rotation) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0));
+	rdd = (glm::inverse(Transform) * glm::vec4(ray.d.x, ray.d.y, ray.d.z, 0.0));
+	roo = (glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0));
 
 	// Calculate intersection
 	invdir = 1.0f / rdd;
@@ -45,23 +42,23 @@ bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 	// Normal
 	if (tMin.x > tMin.y && tMin.x > tMin.z)
-		normal = glm::vec3(Rotation[0].x * sign.x, Rotation[0].y*sign.x, Rotation[0].z*sign.x);
+		normal = glm::vec3(Transform[0].x * sign.x, Transform[0].y*sign.x, Transform[0].z*sign.x);
 	else if (tMin.y > tMin.z)
-		normal = glm::vec3(Rotation[1].x * sign.y, Rotation[1].y*sign.y, Rotation[1].z*sign.y);
+		normal = glm::vec3(Transform[1].x * sign.y, Transform[1].y*sign.y, Transform[1].z*sign.y);
 	else
-		normal = glm::vec3(Rotation[2].x * sign.z, Rotation[2].y*sign.z, Rotation[2].z*sign.z);
+		normal = glm::vec3(Transform[2].x * sign.z, Transform[2].y*sign.z, Transform[2].z*sign.z);
 
 	return true;
 }
 
 void Cube::draw() {
+	applyMatrix();
 	if (isSelected) {
 		ofDisableLighting();
 		ofSetColor(ofColor::yellow);
 		ofNoFill();
 		ofPushMatrix();
-			ofTranslate(position);
-			ofRotate(angle, -axisR.x, axisR.y, axisR.z);
+			ofMultMatrix(Transform);
 			ofDrawAxis(side * 1.5);
 			ofDrawBox(ofVec3f::zero(), side * 2);
 		ofPopMatrix();
@@ -73,8 +70,7 @@ void Cube::draw() {
 	material.begin();
 	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
-		ofTranslate(position);
-		ofRotate(angle, -axisR.x, axisR.y, axisR.z);
+		ofMultMatrix(Transform);
 		ofDrawBox(ofVec3f::zero(), side*2);
 	ofPopMatrix();
 	material.end();

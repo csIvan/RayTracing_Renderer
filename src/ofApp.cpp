@@ -171,10 +171,11 @@ void ofApp::updateSelected(SceneObject *s) {
 		//torusSelected->axisR = (glm::vec3) slider_rotation;
 	}
 
-	s->position = (glm::vec3)slider_location;
+	s->position = static_cast<glm::vec3>(slider_location);
 	s->rotation.x = static_cast<int>(gui_angleX);
 	s->rotation.y = static_cast<int>(gui_angleY);
 	s->rotation.z = static_cast<int>(gui_angleZ);
+	s->scale = static_cast<glm::vec3>(slider_scale);
 	s->diffuseColor = (ofColor)color;
 }
 
@@ -205,7 +206,7 @@ void ofApp::updateGUI(SceneObject *s) {
 	group_rotation.add(gui_angleY.setup("Angle Y", s->rotation.y, -90, 90));
 	group_rotation.add(gui_angleZ.setup("Angle Z", s->rotation.z, -90, 90));
 	slider_scale.setBorderColor(ofColor(25, 25, 25));
-	objectGUI.add(slider_scale.setup("Scale", s->scale, glm::vec3(0, 0, 0), glm::vec3(5, 5, 5)));
+	objectGUI.add(slider_scale.setup("Scale", s->scale, glm::vec3(1, 1, 1), glm::vec3(10, 10, 10)));
 	slider_location.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(color.setup("Color", s->diffuseColor, ofColor(0, 0), ofColor(255, 255)));
 	color.setBorderColor(ofColor(25, 25, 25));
@@ -318,6 +319,9 @@ void ofApp::mouseReleased(int x, int y, int button) {
 }
 
 void ofApp::handleRayTrace() {
+	for (int i = 0; i < scene.size(); i++) {
+		scene[i]->applyMatrix();
+	}
 	image = rayTracer.render();
 	renderFinished = true;
 	cout << "done" << endl;
