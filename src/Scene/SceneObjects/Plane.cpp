@@ -26,7 +26,7 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 	float dist;
 	bool insidePlane = false;
-	bool hit = glm::intersectRayPlane(roo, rdd, position, this->normal, dist);
+	bool hit = glm::intersectRayPlane(roo, rdd, glm::vec3(0, 0, 0), this->normal, dist);
 	if (hit) {
 		Ray r = ray;
 		point = r.evalPoint(dist);
@@ -44,7 +44,7 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 void Plane::draw() {
 	applyMatrix();
-	plane.setPosition(position);
+	plane.setPosition(glm::vec3(0, 0, 0));
 	plane.setWidth(width);
 	plane.setHeight(height);
 	plane.setResolution(4, 4);
@@ -70,8 +70,9 @@ void Plane::draw() {
 	material.end();
 }
 
-float Plane::sdf(const glm::vec3 p) {
-	return p.y - position.y;
+float Plane::sdf(const glm::vec3 p1) {
+	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
+	return p.y;
 }
 
 glm::vec3 Plane::getNormal(const glm::vec3 &p) {

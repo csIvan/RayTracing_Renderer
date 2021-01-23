@@ -47,7 +47,8 @@ void Sphere::draw() {
 	material.end();
 }
 
-float Sphere::sdf(glm::vec3 p) {
-	float distance = glm::distance(p, position) - radius;
+float Sphere::sdf(glm::vec3 p1) {
+	glm::vec3 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
+	float distance = glm::distance(p, glm::vec3(0, 0, 0)) - radius;
 	return distance;
 }
