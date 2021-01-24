@@ -91,6 +91,12 @@
     <ClCompile Include="src\Math\poly34.cpp">
       <Filter>src\Math</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Cone.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Cylinder.cpp">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -376,6 +382,12 @@
     </ClInclude>
     <ClInclude Include="src\Math\poly34.h">
       <Filter>src\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\SceneObjects\Cone.h">
+      <Filter>src\Scene\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\SceneObjects\Cylinder.h">
+      <Filter>src\Scene\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -69,7 +69,9 @@ void ofApp::setup() {
 	button_delete.addListener(this, &ofApp::handleDelete);
 	button_sphere.addListener(this, &ofApp::addSphere);
 	button_cube.addListener(this, &ofApp::addCube);
-	button_plane.addListener(this, &ofApp::addPlane);
+	button_plane.addListener(this, &ofApp::addPlane);	
+	button_cylinder.addListener(this, &ofApp::addCylinder);
+	button_cone.addListener(this, &ofApp::addCone);
 	button_torus.addListener(this, &ofApp::addTorus);
 	button_mesh.addListener(this, &ofApp::addMesh);
 	button_lsystem.addListener(this, &ofApp::addLSystem);
@@ -160,6 +162,14 @@ void ofApp::updateSelected(SceneObject *s) {
 	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
 	}
+	else if (dynamic_cast<Cylinder*>(s) != nullptr) {
+		Cylinder *cylinderSelected = (Cylinder*)s;
+		cylinderSelected->radius = (float)gui_value1;
+	}
+	else if (dynamic_cast<Cone*>(s) != nullptr) {
+		Cone *coneSelected = (Cone*)s;
+		coneSelected->radius = (float)gui_value1;
+	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 		torusSelected->R = (float)gui_value1;
@@ -187,6 +197,14 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
+	}
+	else if (dynamic_cast<Cylinder*>(s) != nullptr) {
+		Cylinder *cylinderSelected = (Cylinder*)s;
+		objectGUI.add(gui_value1.setup("Length", cylinderSelected->radius, 0.2, 3));
+	}
+	else if (dynamic_cast<Cone*>(s) != nullptr) {
+		Cone *coneSelected = (Cone*)s;
+		objectGUI.add(gui_value1.setup("Length", coneSelected->radius, 0.2, 3));
 	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
@@ -371,6 +389,12 @@ void ofApp::addCube() {
 }
 void ofApp::addPlane() {
 	addObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), "Plane_" + to_string(++planeCount), ofColor::lightGray));
+}
+void ofApp::addCylinder() {
+	addObject(new Cylinder(glm::vec3(0, 0, 0), 1, 0.25, "Cylinder_" + to_string(++cylinderCount), ofColor::seaGreen));
+}
+void ofApp::addCone() {
+	addObject(new Cone(glm::vec3(0, 0, 0), 1, 0.25, "Cone_" + to_string(++coneCount), ofColor::seaGreen));
 }
 void ofApp::addTorus() {
 	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, "Torus_" + to_string(++torusCount), ofColor::seaGreen));

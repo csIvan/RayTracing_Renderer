@@ -9,12 +9,14 @@
 #include "Scene/ViewPlane.h"
 #include "Scene/RenderCam.h"
 #include "Scene/SceneObjects/Sphere.h"
-#include "Scene/SceneObjects/LSystem.h"
 #include "Scene/SceneObjects/Cube.h"
-#include "Scene/SceneObjects/WaterPool.h"
-#include "Scene/SceneObjects/Torus.h"
-#include "Scene/SceneObjects/Mesh.h"
 #include "Scene/SceneObjects/Plane.h"
+#include "Scene/SceneObjects/Cylinder.h"
+#include "Scene/SceneObjects/Cone.h"
+#include "Scene/SceneObjects/Torus.h"
+#include "Scene/SceneObjects/WaterPool.h"
+#include "Scene/SceneObjects/Mesh.h"
+#include "Scene/SceneObjects/LSystem.h"
 #include "Scene/SceneObjects/Light.h"
 #include "Scene/SceneObjects/Lights/SpotLight.h"
 #include <typeinfo>
@@ -148,6 +150,7 @@ public:
 	int count;
 	int indexHit;
 	int mouseX, mouseY;
-	int sphereCount, cubeCount, planeCount, torusCount, meshCount, lsystemCount, waterpoolCount;
+	int sphereCount, cubeCount, planeCount, cylinderCount, coneCount, torusCount, 
+		meshCount, lsystemCount, waterpoolCount;
 	bool renderFinished;
 };

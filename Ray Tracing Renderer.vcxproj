@@ -201,7 +201,9 @@
     <ClCompile Include="src\Rendering\RayTracer.cpp" />
     <ClCompile Include="src\Rendering\Shader.cpp" />
     <ClCompile Include="src\Scene\RenderCam.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\Cone.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cube.cpp" />
+    <ClCompile Include="src\Scene\SceneObjects\Cylinder.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Lights\SpotLight.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\LSystem.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Mesh.cpp" />
@@ -278,7 +280,9 @@
     <ClInclude Include="src\Scene\Ray.h" />
     <ClInclude Include="src\Scene\RenderCam.h" />
     <ClInclude Include="src\Scene\SceneObject.h" />
+    <ClInclude Include="src\Scene\SceneObjects\Cone.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cube.h" />
+    <ClInclude Include="src\Scene\SceneObjects\Cylinder.h" />
     <ClInclude Include="src\Scene\SceneObjects\Light.h" />
     <ClInclude Include="src\Scene\SceneObjects\Lights\SpotLight.h" />
     <ClInclude Include="src\Scene\SceneObjects\LSystem.h" />
