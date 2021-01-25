@@ -69,9 +69,19 @@ bool Shader::inShadow(const Ray &r) {
 		//if (rayMarch(r, point)) {
 		//	blocked = true;
 		//}
+		//if (dynamic_cast<Cylinder*>(objects[index]) != nullptr) {
+		//	Cylinder *sphereSelected = (Cylinder*)objects[index];
+		//	sphereSelected->points.push_back(opoint);
+		//	sphereSelected->normals.push_back((opoint + onormal / 2));
+		//}
 
 		if (objects[index]->intersect(r, point, normal)) {
-			blocked = true;
+			blocked = true; 
+			//if (dynamic_cast<Cylinder*>(objects[index]) != nullptr) {
+			//	Cylinder *sphereSelected = (Cylinder*)objects[index];
+			//	sphereSelected->points.push_back(point);
+			//	sphereSelected->normals.push_back((point + normal / 2));
+			//}
 		}
 	}
 	return blocked;

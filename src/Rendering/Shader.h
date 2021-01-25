@@ -4,6 +4,8 @@
 #include "../Scene/Ray.h"
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Torus.h"
+#include "../Scene/SceneObjects/Cone.h"
+#include "../Scene/SceneObjects/Cylinder.h"
 #include "../Scene/SceneObjects/Light.h"
 
 class Shader {

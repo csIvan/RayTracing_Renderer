@@ -164,11 +164,13 @@ void ofApp::updateSelected(SceneObject *s) {
 	}
 	else if (dynamic_cast<Cylinder*>(s) != nullptr) {
 		Cylinder *cylinderSelected = (Cylinder*)s;
-		cylinderSelected->radius = (float)gui_value1;
+		cylinderSelected->height = (float)gui_value1;
+		cylinderSelected->radius = (float)gui_value2;
 	}
 	else if (dynamic_cast<Cone*>(s) != nullptr) {
 		Cone *coneSelected = (Cone*)s;
-		coneSelected->radius = (float)gui_value1;
+		coneSelected->height = (float)gui_value1;
+		coneSelected->radius = (float)gui_value2;
 	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
@@ -200,11 +202,13 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<Cylinder*>(s) != nullptr) {
 		Cylinder *cylinderSelected = (Cylinder*)s;
-		objectGUI.add(gui_value1.setup("Length", cylinderSelected->radius, 0.2, 3));
+		objectGUI.add(gui_value1.setup("Height", cylinderSelected->height, 1, 5));
+		objectGUI.add(gui_value2.setup("Radius", cylinderSelected->radius, 0.2, 3));
 	}
 	else if (dynamic_cast<Cone*>(s) != nullptr) {
 		Cone *coneSelected = (Cone*)s;
-		objectGUI.add(gui_value1.setup("Length", coneSelected->radius, 0.2, 3));
+		objectGUI.add(gui_value1.setup("Height", coneSelected->height, 1, 5));
+		objectGUI.add(gui_value2.setup("Radius", coneSelected->radius, 0.2, 3));
 	}
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;

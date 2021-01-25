@@ -79,6 +79,7 @@ public:
 	ofxVec3Slider slider_rotation;
 	ofxVec3Slider slider_scale;
 	ofxFloatSlider gui_value1;
+	ofxFloatSlider gui_value2;
 	ofxIntSlider gui_angle1;
 	ofxIntSlider gui_angle2;
 	ofxColorSlider color;

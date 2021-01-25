@@ -28,6 +28,12 @@ ofImage RayTracer::render() {
 
 			for (int index = 0; index < objects.size(); index++) {
 				glm::vec3 point, normal;
+				
+				if (dynamic_cast<Cylinder*>(objects[index]) != nullptr) {
+					Cylinder *sphereSelected = (Cylinder*)objects[index];
+					sphereSelected->imageX = column;
+					sphereSelected->imageY = row;
+				}
 
 				if (objects[index]->intersect(ray, point, normal)) {
 					dist = glm::distance(renderCam.position, point);

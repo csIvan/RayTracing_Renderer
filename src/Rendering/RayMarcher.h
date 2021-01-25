@@ -7,6 +7,7 @@
 #include "../Scene/RenderCam.h"
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Light.h"
+#include "../Scene/SceneObjects/Cone.h"
 
 class RayMarcher {
 public:

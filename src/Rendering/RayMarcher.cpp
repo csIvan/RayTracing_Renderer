@@ -20,7 +20,11 @@ ofImage RayMarcher::render() {
 			glm::vec3 p;
 			bool hit = rayMarch(ray, p);
 			glm::vec3 normal = getNormalRM(p);
-
+			if (hit && dynamic_cast<Cone*>(objects[indexHit]) != nullptr) {
+				Cone *sphereSelected = (Cone*)objects[indexHit];
+				sphereSelected->points.push_back(p);
+				sphereSelected->normals.push_back((p + normal/2));
+			}
 			//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
 			color = shader.lambert(p, normal, objects[indexHit]->diffuseColor);
 
