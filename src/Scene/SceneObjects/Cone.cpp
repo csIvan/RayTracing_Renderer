@@ -98,6 +98,7 @@ void Cone::draw() {
 		ofPushMatrix();
 			ofMultMatrix(Transform);
 			ofDrawAxis(height * 1.5);
+			ofRotateZ(180);
 			ofDrawCone(radius, height);
 		ofPopMatrix();
 		ofFill();
@@ -109,27 +110,38 @@ void Cone::draw() {
 	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
+		ofRotateZ(180);
 		ofDrawCone(radius, height);
 	ofPopMatrix();
 	material.end();
 }
 
 float Cone::sdf(const glm::vec3 p1) {
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
-	float ang = atan(radius / height);
-	glm::vec2 c = glm::vec2(sin(ang), cos(ang));
+	glm::vec4 pp = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
+	glm::vec3 p = glm::vec3(pp.x, pp.y, pp.z);
 
-	glm::vec2 q = height * glm::vec2(c.x / c.y, -1.0f);
-	glm::vec2 w = glm::vec2(length(glm::vec2(p.x, p.z)), p.y);
+	glm::vec3 capB = glm::vec3(0, -height / 2.0f, 0);
+	glm::vec3 capA = glm::vec3(0, height / 2.0f, 0);
 
-	glm::vec2 a, b;
+	float ra = 0.0;
+	float rb = radius;
+	float rba = rb - ra;
 
-	a = w - q * glm::clamp(glm::dot(w, q) / glm::dot(q, q), 0.0f, 1.0f);
-	b = w - q * glm::vec2(glm::clamp(w.x / q.x, 0.0f, 1.0f), 1.0f);
+	float m0 = glm::dot(capB - capA, capB - capA);
+	float m1 = glm::dot(p - capA, p - capA);
+	float m2 = glm::dot(p - capA, capB - capA) / m0;
 
-	float k = glm::sign(q.y);
-	float d = min(glm::dot(a, a), glm::dot(b, b));
-	float s = max(k * (w.x * q.y - w.y * q.x), k * (w.y - q.y));
+	float x = sqrt(m1 - m2 * m2 * m0);
+	float k = rba * rba + m0;
+	float f = glm::clamp((rba * (x - ra) + m2 * m0) / k, 0.0f, 1.0f);
 
-	return (sqrt(d) * glm::sign(s));
+	float cax = max(0.0f, x - ((m1 < 0.5) ? ra : rb));
+	float cay = abs(m2 - 0.5) - 0.5;
+
+	float cbx = x - ra - f * rba;
+	float cby = m2 - f;
+
+	float s = (cbx < 0.0 && cay < 0.0) ? -1.0 : 1.0;
+
+	return (s * sqrt(min(cax * cax + cay * cay * m0, cbx * cbx + cby * cby * m0)));
 }

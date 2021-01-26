@@ -395,10 +395,10 @@ void ofApp::addPlane() {
 	addObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), "Plane_" + to_string(++planeCount), ofColor::lightGray));
 }
 void ofApp::addCylinder() {
-	addObject(new Cylinder(glm::vec3(0, 0, 0), 1, 0.25, "Cylinder_" + to_string(++cylinderCount), ofColor::seaGreen));
+	addObject(new Cylinder(glm::vec3(0, 0, 0), 2, 0.5, "Cylinder_" + to_string(++cylinderCount), ofColor::seaGreen));
 }
 void ofApp::addCone() {
-	addObject(new Cone(glm::vec3(0, 0, 0), 1, 0.25, "Cone_" + to_string(++coneCount), ofColor::seaGreen));
+	addObject(new Cone(glm::vec3(0, 0, 0), 2, 0.5, "Cone_" + to_string(++coneCount), ofColor::seaGreen));
 }
 void ofApp::addTorus() {
 	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, "Torus_" + to_string(++torusCount), ofColor::seaGreen));
