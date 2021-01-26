@@ -113,7 +113,26 @@ void Cylinder::draw() {
 }
 
 float Cylinder::sdf(const glm::vec3 p1) {
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
-	glm::vec2 d = abs(glm::vec2(length(glm::vec2(p.x, p.z)), p.y)) - glm::vec2(radius, height/2);
-	return glm::min(glm::max(d.x, d.y), 0.0f) + length(glm::max(d, 0.0f));
+	glm::vec4 pp = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
+	glm::vec3 p = glm::vec3(pp.x, pp.y, pp.z);
+
+	glm::vec3 capB = glm::vec3(0, -height / 2.0f, 0);
+	glm::vec3 capA = glm::vec3(0, height / 2.0f, 0);
+
+	float m0 = glm::dot(capB - capA, capB - capA);
+	float m1 = glm::dot(p - capA, p - capA);
+	float m2 = glm::dot(p - capA, capB - capA) / m0;
+
+	float x = sqrt(m1 - m2 * m2 * m0);
+	float f = glm::clamp(m2, 0.0f, 1.0f);
+
+	float cax = max(0.0f, x - radius);
+	float cay = abs(m2 - 0.5) - 0.5;
+
+	float cbx = x - radius;
+	float cby = m2 - f;
+
+	float s = (cbx < 0.0 && cay < 0.0) ? -1.0 : 1.0;
+
+	return (s * sqrt(min(cax * cax + cay * cay * m0, cbx * cbx + cby * cby * m0)));
 }
