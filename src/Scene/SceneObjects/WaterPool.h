@@ -6,7 +6,12 @@
 //************************************ WaterPool Class *********************************
 class WaterPool : public SceneObject {
 public:
+	ofPlanePrimitive plane;
+	ofMaterial material;
+	glm::vec3 normal;
 	float radius = 1.0;
+	float width = 20;
+	float height = 20;
 
 	WaterPool(glm::vec3 p, float r, string name, ofColor diffuse = ofColor::lightGray);
 	WaterPool() {}
