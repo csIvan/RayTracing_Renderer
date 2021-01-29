@@ -176,6 +176,9 @@ void ofApp::updateSelected(SceneObject *s) {
 		Torus *torusSelected = (Torus*)s;
 		torusSelected->R = (float)gui_value1;
 		//torusSelected->axisR = (glm::vec3) slider_rotation;
+	}	
+	else if (dynamic_cast<Mesh*>(s) != nullptr) {
+		Mesh *meshSelected = (Mesh*)s;
 	}
 
 	s->position = static_cast<glm::vec3>(slider_location);
@@ -213,6 +216,10 @@ void ofApp::updateGUI(SceneObject *s) {
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 		objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
+	}
+	else if (dynamic_cast<Mesh*>(s) != nullptr) {
+		Mesh *meshSelected = (Mesh*)s;
+		//objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
 	}
 
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5)));
@@ -487,20 +494,24 @@ bool ofApp::FileLoader(char * path) {
 		}
 	}
 
+	vector<glm::vec3> meshVertices;
+	vector<glm::vec3> meshVerticesNormals;
+	vector<Triangle> meshTris;
+
 	for (unsigned int i = 0; i < tempIndices.size(); i++) {
 		unsigned int vertexIndex = tempIndices[i];
 		glm::vec3 vertex = tempVertices[vertexIndex - 1];
-		mesh.vertices.push_back(vertex);
+		meshVertices.push_back(vertex);
 	}
 	for (unsigned int i = 0; i < tempVertNormIndices.size(); i++) {
 		unsigned int vertNormIndex = tempVertNormIndices[i];
 		glm::vec3 vn = tempVertNormals[vertNormIndex - 1];
-		mesh.vertNormals.push_back(vn);
+		meshVerticesNormals.push_back(vn);
 	}
 
 	int count = 0;
 	vector<int> temp;
-	for (unsigned int i = 0; i < mesh.vertices.size(); i++) {
+	for (unsigned int i = 0; i < meshVertices.size(); i++) {
 		temp.push_back(i);
 		count++;
 		if (count == 3) {
@@ -511,17 +522,21 @@ bool ofApp::FileLoader(char * path) {
 			triangle.jn = temp[1];
 			triangle.k = temp[2];
 			triangle.kn = temp[2];
-			mesh.tris.push_back(triangle);
+			meshTris.push_back(triangle);
 			temp.clear();
 			count = 0;
 		}
 	}
-	scene.push_back(&mesh);
+	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), meshTris, meshVertices, meshVerticesNormals, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
+
+	scene.push_back(meshObj);
+	rayTracer.addObject(*meshObj);
+	rayMarcher.addObject(*meshObj);
 
 	// Display diagnostic information
-	cout << "Number of Vertices: " << mesh.vertices.size() << endl;
-	cout << "Number of Faces: " << mesh.tris.size() << endl;
-	cout << "Number of Vertex Normals: " << mesh.vertNormals.size() << endl;
+	cout << "Number of Vertices: " << meshVertices.size() << endl;
+	cout << "Number of Faces: " << meshTris.size() << endl;
+	cout << "Number of Vertex Normals: " << meshVerticesNormals.size() << endl;
 }
 
 // Allows the user to drag in a .obj file into the scene

@@ -12,13 +12,19 @@ public:
 class Mesh : public SceneObject {
 public:
 	ofMaterial material;
-	vector<glm::vec3> vertices;
+	ofMesh mesh;
 	vector<Triangle> tris;
+	vector<glm::vec3> vertices;
 	vector<glm::vec3> vertNormals;
+	vector<glm::vec3> points;
+	vector<glm::vec3> normals;
 
+	Mesh(glm::vec3 p, vector<Triangle> t, vector<glm::vec3> v, vector<glm::vec3> vn, string name, ofColor diffuse = ofColor::lightGray);
+	Mesh() {};
+	~Mesh() {};
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);
-	//return glm::intersectRayTriangle(ray.p, ray.d, vertices[triangle.i], vertices[triangle.j], vertices[triangle.k], bary);
 
 	void draw();
+	float sdf(const glm::vec3 p);
 
 };

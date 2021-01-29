@@ -12,14 +12,18 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
 */
 ofImage RayMarcher::render() {
 	shader = Shader(lights, objects);
-	for (float row = 0; row < imageHeight; row++) {
-		for (float column = 0; column < imageWidth; column++) {
+	float row, column;
+	for (row = 0; row < imageHeight; row++) {
+		for (column = 0; column < imageWidth; column++) {
 			Ray ray = renderCam.getRay(column / imageWidth, row / imageHeight);
 
 			ofColor color;
 			glm::vec3 p;
 			bool hit = rayMarch(ray, p);
-			glm::vec3 normal = getNormalRM(p);
+
+			glm::vec3 normal;
+			normal = getNormalRM(p);
+
 			if (hit && dynamic_cast<Cone*>(objects[indexHit]) != nullptr) {
 				Cone *sphereSelected = (Cone*)objects[indexHit];
 				sphereSelected->points.push_back(p);
@@ -35,7 +39,7 @@ ofImage RayMarcher::render() {
 			else
 				image.setColor(column, imageHeight - row - 1, ofColor::black);
 		}
-		//cout << i << "-";
+		std::cout << row << "-";
 	}
 	return image;
 }
@@ -90,11 +94,19 @@ glm::vec3 RayMarcher::getNormal(const glm::vec3 &p, int i) {
 
 // Ray Marching getNormal Function
 glm::vec3 RayMarcher::getNormalRM(const glm::vec3 &p) {
-	float eps = 0.001;
+	float eps = 0.000008;
+	glm::vec2 k = glm::vec2(1, -1);
+
 	float dp = sceneSDF(p);
-	glm::vec3 n(dp - sceneSDF(glm::vec3(p.x - eps, p.y, p.z)),
-		dp - sceneSDF(glm::vec3(p.x, p.y - eps, p.z)),
-		dp - sceneSDF(glm::vec3(p.x, p.y, p.z - eps)));
+	//glm::vec3 n(dp - sceneSDF(glm::vec3(p.x - eps, p.y, p.z)),
+	//	dp - sceneSDF(glm::vec3(p.x, p.y - eps, p.z)),
+	//	dp - sceneSDF(glm::vec3(p.x, p.y, p.z - eps)));
+
+	glm::vec3 n(glm::vec3(k.x, k.y, k.y) * sceneSDF(p + glm::vec3(k.x, k.y, k.y) * eps) +
+		glm::vec3(k.y, k.y, k.x) * sceneSDF(p + glm::vec3(k.y, k.y, k.x) * eps) +
+		glm::vec3(k.y, k.x, k.y) * sceneSDF(p + glm::vec3(k.y, k.x, k.y) * eps) +
+		glm::vec3(k.x, k.x, k.x) * sceneSDF(p + glm::vec3(k.x, k.x, k.x) * eps));
+
 	return glm::normalize(n);
 }
 

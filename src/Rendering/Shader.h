@@ -6,6 +6,7 @@
 #include "../Scene/SceneObjects/Torus.h"
 #include "../Scene/SceneObjects/Cone.h"
 #include "../Scene/SceneObjects/Cylinder.h"
+#include "../Scene/SceneObjects/Mesh.h"
 #include "../Scene/SceneObjects/Light.h"
 
 class Shader {
