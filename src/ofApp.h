@@ -53,7 +53,7 @@ public:
 	void mouseReleased(int x, int y, int button);
 	void keyPressed(int key);
 	void dragEvent(ofDragInfo dragInfo);
-	bool FileLoader(char * path);
+	bool FileLoader(const char * path);
 
 	bool bHide = true;
 	bool bShowImage = false;
@@ -110,8 +110,8 @@ public:
 	vector<Light *> lights;
 	float Power = 10;
 
-	int imageWidth = 900;
-	int imageHeight = 600;
+	int imageWidth = 1200;
+	int imageHeight = 800;
 	//int imageWidth = 90;
 	//int imageHeight = 60;
 

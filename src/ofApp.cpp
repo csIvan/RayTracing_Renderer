@@ -100,7 +100,7 @@ void ofApp::setup() {
 	group_objects.add(button_cylinder.setup(" Cylinder"));
 	group_objects.add(button_cone.setup(" Cone"));
 	group_objects.add(button_torus.setup(" Torus"));
-	group_objects.add(button_mesh.setup(" Mesh"));
+	group_objects.add(button_mesh.setup(" Mesh (.obj)"));
 	group_objects.add(button_lsystem.setup(" LSystem"));
 
 	group_create.add(group_lights.setup(" Lights"));;
@@ -411,7 +411,13 @@ void ofApp::addTorus() {
 	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, "Torus_" + to_string(++torusCount), ofColor::seaGreen));
 }
 void ofApp::addMesh() {
-	addObject(new Mesh());
+	ofFileDialogResult result = ofSystemLoadDialog();
+	if (result.bSuccess && result.fileName.substr(result.fileName.find_last_of(".") + 1) == "obj") {
+		FileLoader(result.filePath.c_str());
+	}
+	else {
+		cout << "Incorrect file type. Please enter only .obj files\n" << endl;
+	}
 }
 void ofApp::addLSystem() {
 	addObject(new LSystem(glm::vec3(0, 0, 0), 1, "LSystem_" + to_string(++lsystemCount)));
@@ -451,7 +457,7 @@ void ofApp::keyPressed(int key) {
 * File loader class from the first project. It reads a .obj file
 * and stores the information regarding the vertices, vertex normals, and faces.
 */
-bool ofApp::FileLoader(char * path) {
+bool ofApp::FileLoader(const char * path) {
 	vector<int> tempIndices;
 	vector<int> tempVertNormIndices;
 	vector<glm::vec3> tempVertices;
