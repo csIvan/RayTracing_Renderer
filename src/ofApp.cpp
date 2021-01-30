@@ -175,10 +175,14 @@ void ofApp::updateSelected(SceneObject *s) {
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 		torusSelected->R = (float)gui_value1;
-		//torusSelected->axisR = (glm::vec3) slider_rotation;
 	}	
-	else if (dynamic_cast<Mesh*>(s) != nullptr) {
-		Mesh *meshSelected = (Mesh*)s;
+	else if (dynamic_cast<LSystem*>(s) != nullptr) {
+		LSystem *lsystemSelected = (LSystem*)s;
+		lsystemSelected->n = (int)gui_ivalue1;
+		lsystemSelected->axiom = (string)gui_axiom;
+		lsystemSelected->rule1.b = (string)gui_rule1;
+		lsystemSelected->rule2.b = (string)gui_rule2;
+		lsystemSelected->rule3.b = (string)gui_rule3;
 	}
 
 	s->position = static_cast<glm::vec3>(slider_location);
@@ -217,8 +221,13 @@ void ofApp::updateGUI(SceneObject *s) {
 		Torus *torusSelected = (Torus*)s;
 		objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
 	}
-	else if (dynamic_cast<Mesh*>(s) != nullptr) {
-		Mesh *meshSelected = (Mesh*)s;
+	else if (dynamic_cast<LSystem*>(s) != nullptr) {
+		LSystem *lsystemSelected = (LSystem*)s;
+		objectGUI.add(gui_ivalue1.setup("Iterations", lsystemSelected->n, 1, 5));
+		objectGUI.add(gui_axiom.setup("Axiom", lsystemSelected->axiom));
+		objectGUI.add(gui_rule1.setup("A", lsystemSelected->rule1.b));
+		objectGUI.add(gui_rule2.setup("B", lsystemSelected->rule2.b));
+		objectGUI.add(gui_rule3.setup("C", lsystemSelected->rule3.b));
 		//objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
 	}
 
@@ -344,7 +353,10 @@ void ofApp::mouseReleased(int x, int y, int button) {
 
 void ofApp::handleRayTrace() {
 	for (int i = 0; i < scene.size(); i++) {
-		scene[i]->applyMatrix();
+		if (dynamic_cast<LSystem*>(scene[i]) != nullptr) {
+			LSystem *lsys = (LSystem*)scene[i];
+			lsys->generate(lsys->n);
+		}
 	}
 	image = rayTracer.render();
 	renderFinished = true;
@@ -352,6 +364,12 @@ void ofApp::handleRayTrace() {
 }
 
 void ofApp::handleRayMarch() {
+	for (int i = 0; i < scene.size(); i++) {
+		if (dynamic_cast<LSystem*>(scene[i]) != nullptr) {
+			LSystem *lsys = (LSystem*)scene[i];
+			lsys->generate(lsys->n);
+		}
+	}
 	image = rayMarcher.render();
 	renderFinished = true;
 	cout << "done" << endl;

@@ -16,10 +16,7 @@ LSystem::LSystem(glm::vec3 p, float t, string name, ofColor diffuse) {
 	rule2.b = "FF+[+F-F-F]-[-F+F+F]";
 	//rule3.a = 'Z';
 	//rule3.b = "[+F-X-F][++ZX]";
-	rules.push_back(rule1);
-	rules.push_back(rule2);
 	generate(n);
-	cout << "L-System: " << sentence << endl;
 }
 
 bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
@@ -31,6 +28,10 @@ void LSystem::draw() {
 }
 
 void LSystem::generate(int n) {
+	rules.push_back(rule1);
+	rules.push_back(rule2);
+	rules.push_back(rule3);
+
 	while (n > 0) {
 		string nextSentence = "";
 		for (int i = 0; i < sentence.length(); i++) {
@@ -51,6 +52,8 @@ void LSystem::generate(int n) {
 		sentence = nextSentence;
 		n--;
 	}
+	rules.clear();
+	cout << "L-System: " << sentence << endl;
 }
 
 //L-System sdf
