@@ -1,10 +1,12 @@
 #include "LSystem.h"
 
-LSystem::LSystem(glm::vec3 p, float t, string name, ofColor diffuse) {
+LSystem::LSystem(glm::vec3 p, int n, string ax, string name, ofColor diffuse) {
 	position = p;
-	temp = t;
+	iterations = n;
+	axiom = ax;
 	objName = name;
 	diffuseColor = diffuse;
+
 	//rule1.a = 'X';
 	rule1.a = 'A';
 	rule1.b = "F-[[A]+A]+F[+FA][-A]";
@@ -16,23 +18,45 @@ LSystem::LSystem(glm::vec3 p, float t, string name, ofColor diffuse) {
 	rule2.b = "FF+[+F-F-F]-[-F+F+F]";
 	//rule3.a = 'Z';
 	//rule3.b = "[+F-X-F][++ZX]";
-	generate(n);
 }
 
 bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
-	return (glm::intersectRaySphere(ray.p, ray.d, position, temp, point, normal));
+	return (glm::intersectRaySphere(ray.p, ray.d, position, iterations, point, normal));
 }
 
 void LSystem::draw() {
-	ofDrawSphere(position, temp);
+	applyMatrix();
+	if (isSelected) {
+		ofDisableLighting();
+		ofSetColor(ofColor::yellow);
+		ofNoFill();
+		ofPushMatrix();
+			ofMultMatrix(Transform);
+			ofDrawAxis(iterations * 1.5);
+			ofDrawSphere(position, iterations);
+		ofPopMatrix();
+		ofFill();
+		ofEnableLighting();
+	}
+
+	ofSetColor(ofColor::white);
+	material.begin();
+	material.setDiffuseColor(diffuseColor);
+	ofPushMatrix();
+		ofMultMatrix(Transform);
+		ofDrawSphere(position, iterations);
+	ofPopMatrix();
+	material.end();
+
 }
 
-void LSystem::generate(int n) {
+void LSystem::generate() {
 	rules.push_back(rule1);
 	rules.push_back(rule2);
 	rules.push_back(rule3);
+	sentence = axiom;
 
-	while (n > 0) {
+	while (iterations > 0) {
 		string nextSentence = "";
 		for (int i = 0; i < sentence.length(); i++) {
 
@@ -50,14 +74,15 @@ void LSystem::generate(int n) {
 			}
 		}
 		sentence = nextSentence;
-		n--;
+		iterations--;
 	}
 	rules.clear();
 	cout << "L-System: " << sentence << endl;
 }
 
-//L-System sdf
 float LSystem::sdf(glm::vec3 p) {
+	// Change to if dist = dist > objDist ? objDist
+	// and if dist < 0.001 (threshold) return true to skip unnecessary calculations
 	vector<float> dists;
 	//Initial Angles
 	float xangle = 0.0f;	//yaw xz
@@ -69,9 +94,9 @@ float LSystem::sdf(glm::vec3 p) {
 	float pAngle = 28.0f;
 	float rAngle = 28.0f;
 
-	x = position.x;
-	y = position.y;
-	z = position.z;
+	float x = position.x;
+	float y = position.y;
+	float z = position.z;
 	float thickness = .02f;
 	float height = 0.05f;
 	float thickness2 = .05f;

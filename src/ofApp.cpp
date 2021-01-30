@@ -178,7 +178,7 @@ void ofApp::updateSelected(SceneObject *s) {
 	}	
 	else if (dynamic_cast<LSystem*>(s) != nullptr) {
 		LSystem *lsystemSelected = (LSystem*)s;
-		lsystemSelected->n = (int)gui_ivalue1;
+		lsystemSelected->iterations = (int)gui_ivalue1;
 		lsystemSelected->axiom = (string)gui_axiom;
 		lsystemSelected->rule1.b = (string)gui_rule1;
 		lsystemSelected->rule2.b = (string)gui_rule2;
@@ -223,11 +223,11 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<LSystem*>(s) != nullptr) {
 		LSystem *lsystemSelected = (LSystem*)s;
-		objectGUI.add(gui_ivalue1.setup("Iterations", lsystemSelected->n, 1, 5));
+		objectGUI.add(gui_ivalue1.setup("Iterations", lsystemSelected->iterations, 1, 5));
 		objectGUI.add(gui_axiom.setup("Axiom", lsystemSelected->axiom));
-		objectGUI.add(gui_rule1.setup("A", lsystemSelected->rule1.b));
-		objectGUI.add(gui_rule2.setup("B", lsystemSelected->rule2.b));
-		objectGUI.add(gui_rule3.setup("C", lsystemSelected->rule3.b));
+		objectGUI.add(gui_rule1.setup("F", lsystemSelected->rule1.b));
+		objectGUI.add(gui_rule2.setup("A", lsystemSelected->rule2.b));
+		objectGUI.add(gui_rule3.setup("B", lsystemSelected->rule3.b));
 		//objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
 	}
 
@@ -352,27 +352,37 @@ void ofApp::mouseReleased(int x, int y, int button) {
 }
 
 void ofApp::handleRayTrace() {
+	time_t start, end;
 	for (int i = 0; i < scene.size(); i++) {
 		if (dynamic_cast<LSystem*>(scene[i]) != nullptr) {
 			LSystem *lsys = (LSystem*)scene[i];
-			lsys->generate(lsys->n);
+			lsys->generate();
 		}
 	}
+
+	time(&start);
 	image = rayTracer.render();
+	time(&end);
+
 	renderFinished = true;
-	cout << "done" << endl;
+	cout << "\nFinished Ray Tracing : "  << double(end - start) << " sec\n" << endl;
 }
 
 void ofApp::handleRayMarch() {
+	time_t start, end;
 	for (int i = 0; i < scene.size(); i++) {
 		if (dynamic_cast<LSystem*>(scene[i]) != nullptr) {
 			LSystem *lsys = (LSystem*)scene[i];
-			lsys->generate(lsys->n);
+			lsys->generate();
 		}
 	}
+
+	time(&start);
 	image = rayMarcher.render();
+	time(&end);
+
 	renderFinished = true;
-	cout << "done" << endl;
+	cout << "\nFinished Ray Marching : " << double(end - start) << " sec\n" << endl;
 }
 
 void ofApp::handleSaveImage() {
@@ -438,7 +448,7 @@ void ofApp::addMesh() {
 	}
 }
 void ofApp::addLSystem() {
-	addObject(new LSystem(glm::vec3(0, 0, 0), 1, "LSystem_" + to_string(++lsystemCount)));
+	addObject(new LSystem(glm::vec3(0, 0, 0), 1, "F", "LSystem_" + to_string(++lsystemCount)));
 }
 void ofApp::addWaterPool() {
 	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, "WaterPool_" + to_string(++waterpoolCount), ofColor::seaGreen));

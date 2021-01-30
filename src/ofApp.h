@@ -20,6 +20,7 @@
 #include "Scene/SceneObjects/Light.h"
 #include "Scene/SceneObjects/Lights/SpotLight.h"
 #include <typeinfo>
+#include <chrono>
 
 class ofApp : public ofBaseApp {
 

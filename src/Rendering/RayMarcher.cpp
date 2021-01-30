@@ -39,7 +39,9 @@ ofImage RayMarcher::render() {
 			else
 				image.setColor(column, imageHeight - row - 1, ofColor::black);
 		}
-		std::cout << row << "-";
+
+		int percent = (int)(row / imageHeight * 100) + 1;
+		printf("\rRendering... %d%%", percent);
 	}
 	return image;
 }

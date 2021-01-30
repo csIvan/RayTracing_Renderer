@@ -93,6 +93,8 @@ ofImage RayTracer::render() {
 			else
 				image.setColor(column, imageHeight - row - 1, ofColor::black);
 		}
+		int percent = (int)(row / imageHeight * 100) + 1;
+		printf("\rRendering... %d%%", percent);
 	}
 	return image;
 }
