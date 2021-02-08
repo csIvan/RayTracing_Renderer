@@ -1,16 +1,16 @@
 #include "SpotLight.h"
 
-SpotLight::SpotLight(glm::vec3 d, float angle, float foAngle) {
+SpotLight::SpotLight(glm::vec3 p, glm::vec3 d, float angle, float foAngle, string name) {
+	position = p;
 	direction = d;
 	lightAngle = glm::radians(angle);
 	falloffAngle = glm::radians(foAngle);
+	objName = name;
 }
 
-
-SpotLight::SpotLight() {
-	direction = glm::vec3(0, -1, 0);
-	lightAngle = glm::radians(10.0f);
-	falloffAngle = lightAngle - 0.1;
+void SpotLight::draw() {
+	ofSetColor(ofColor::cyan);
+	ofDrawSphere(position, radius);
 }
 
 // Calculate the light depending on the constraint angle and falloff angle

@@ -17,7 +17,7 @@
 #include "Scene/SceneObjects/WaterPool.h"
 #include "Scene/SceneObjects/Mesh.h"
 #include "Scene/SceneObjects/LSystem.h"
-#include "Scene/SceneObjects/Light.h"
+#include "Scene/SceneObjects/Lights/Light.h"
 #include "Scene/SceneObjects/Lights/SpotLight.h"
 #include <typeinfo>
 #include <chrono>
@@ -154,6 +154,6 @@ public:
 	int indexHit;
 	int mouseX, mouseY;
 	int sphereCount, cubeCount, planeCount, cylinderCount, coneCount, torusCount, 
-		meshCount, lsystemCount, waterpoolCount;
+		meshCount, lsystemCount, waterpoolCount, pointlightCount, spotlightCount;
 	bool renderFinished;
 };

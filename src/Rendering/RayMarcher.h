@@ -6,7 +6,7 @@
 #include "../Scene/Ray.h"
 #include "../Scene/RenderCam.h"
 #include "../Scene/SceneObject.h"
-#include "../Scene/SceneObjects/Light.h"
+#include "../Scene/SceneObjects/Lights/Light.h"
 #include "../Scene/SceneObjects/Cone.h"
 
 class RayMarcher {
@@ -33,5 +33,6 @@ public:
 
 	void addObject(SceneObject &object);
 	void addLight(Light &light);
-	void remove(string name);
+	void removeObject(string name);
+	void removeLight(string name);
 };

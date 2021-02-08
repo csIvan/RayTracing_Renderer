@@ -5,7 +5,7 @@
 #include "../Scene/Ray.h"
 #include "../Scene/RenderCam.h"
 #include "../Scene/SceneObject.h"
-#include "../Scene/SceneObjects/Light.h"
+#include "../Scene/SceneObjects/Lights/Light.h"
 #include "../Scene/SceneObjects/Sphere.h"
 #include "../Scene/SceneObjects/Cube.h"
 #include "../Scene/SceneObjects/Torus.h"
@@ -28,6 +28,7 @@ public:
 
 	void addObject(SceneObject &object);
 	void addLight(Light &light);
-	void remove(string name);
+	void removeObject(string name);
+	void removeLight(string name);
 
 };

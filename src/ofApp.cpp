@@ -35,16 +35,16 @@ void ofApp::setup() {
 
 
 	//spotlight
-	sp1 = SpotLight(glm::vec3(.5, -1, -.55), .1, 4);
-	sp1.position = glm::vec3(-3, 4, 1);
+	//sp1 = SpotLight(glm::vec3(-3, 4, 1), glm::vec3(.5, -1, -.55), .1, 4);
+
 	//sp1 = Spotlight(glm::vec3(.5, -1, -.55), .3, 3);
 	//sp1.position = glm::vec3(-3, 4, 1);
 
 	//point light 
-	light1 = Light(glm::vec3(-4, 3, 5), 50);
-	light2 = Light(glm::vec3(0, 5, -25), 50);
-	light3 = Light(glm::vec3(0, 5, -50), 50);
-	light4 = Light(glm::vec3(0, 5, -75), 50);
+	//light1 = Light(glm::vec3(-4, 3, 5), 50);
+	//light2 = Light(glm::vec3(0, 5, -25), 50);
+	//light3 = Light(glm::vec3(0, 5, -50), 50);
+	//light4 = Light(glm::vec3(0, 5, -75), 50);
 
 	lightScene.enable();
 	lightScene.setDiffuseColor(ofColor(255.f, 255.f, 255.f));
@@ -76,6 +76,7 @@ void ofApp::setup() {
 	button_mesh.addListener(this, &ofApp::addMesh);
 	button_lsystem.addListener(this, &ofApp::addLSystem);
 	button_point_light.addListener(this, &ofApp::addPointLight);
+	button_spot_light.addListener(this, &ofApp::addSpotLight);
 	
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
@@ -323,6 +324,13 @@ void ofApp::mousePressed(int x, int y, int button) {
 		}
 	}
 
+	for (int i = 0; i < lights.size(); i++) {
+		glm::vec3 point, normal;
+		if (lights[i]->intersect(Ray(p, dn), point, normal)) {
+			hits.push_back(lights[i]);
+		}
+	}
+
 	SceneObject *selectedObj = NULL;
 	if (hits.size() > 0) {
 		selectedObj = hits[0];
@@ -338,6 +346,10 @@ void ofApp::mousePressed(int x, int y, int button) {
 	for (int i = 0; i < scene.size(); i++) {
 		scene[i]->isSelected = false;
 	}
+	for (int i = 0; i < lights.size(); i++) {
+		lights[i]->isSelected = false;
+	}
+
 	if (selectedObj) {
 		selectedObj->isSelected = true;
 		selected.push_back(selectedObj);
@@ -405,9 +417,18 @@ void ofApp::handleDelete() {
 	for (int i = 0; i < scene.size(); i++) {
 		if (selected.size() > 0 && scene[i]->objName == selected[0]->objName) {
 			hideGUI = true;
-			rayTracer.remove(scene[i]->objName);
-			rayMarcher.remove(scene[i]->objName);
+			rayTracer.removeObject(scene[i]->objName);
+			rayMarcher.removeObject(scene[i]->objName);
 			scene.erase(std::remove(scene.begin(), scene.end(), scene[i]), scene.end());
+			selected.clear();
+		}
+	}
+	for (int i = 0; i < lights.size(); i++) {
+		if (selected.size() > 0 && lights[i]->objName == selected[0]->objName) {
+			hideGUI = true;
+			rayTracer.removeLight(lights[i]->objName);
+			rayMarcher.removeLight(lights[i]->objName);
+			lights.erase(std::remove(lights.begin(), lights.end(), lights[i]), lights.end());
 			selected.clear();
 		}
 	}
@@ -463,7 +484,11 @@ void ofApp::addWaterPool() {
 	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, "WaterPool_" + to_string(++waterpoolCount), ofColor::seaGreen));
 }
 void ofApp::addPointLight() {
-	addLight(new Light(glm::vec3(-4, 3, 5), 50));
+	addLight(new Light(glm::vec3(-4, 3, 5), 50, "Point_Light_" + to_string(++pointlightCount)));
+}
+
+void ofApp::addSpotLight() {
+	addLight(new SpotLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 10.0f, (10.0 - 0.1), "Spot_Light_" + to_string(++spotlightCount)));
 }
 
 

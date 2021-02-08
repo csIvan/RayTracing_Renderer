@@ -136,10 +136,18 @@ void RayMarcher::addLight(Light &light) {
 	lights.push_back(&light);
 }
 
-void RayMarcher::remove(string name) {
+void RayMarcher::removeObject(string name) {
 	for (int i = 0; i < objects.size(); i++) {
 		if (objects[i]->objName == name) {
 			objects.erase(std::remove(objects.begin(), objects.end(), objects[i]), objects.end());
+		}
+	}
+}
+
+void RayMarcher::removeLight(string name) {
+	for (int i = 0; i < lights.size(); i++) {
+		if (lights[i]->objName == name) {
+			lights.erase(std::remove(lights.begin(), lights.end(), lights[i]), lights.end());
 		}
 	}
 }

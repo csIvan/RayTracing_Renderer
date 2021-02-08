@@ -365,9 +365,6 @@
     <ClInclude Include="src\Scene\ViewPlane.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\SceneObjects\Light.h">
-      <Filter>src\Scene\SceneObjects</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\SceneObjects\Lights\SpotLight.h">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClInclude>
@@ -388,6 +385,9 @@
     </ClInclude>
     <ClInclude Include="src\Scene\SceneObjects\Cylinder.h">
       <Filter>src\Scene\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\SceneObjects\Lights\Light.h">
+      <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

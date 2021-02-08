@@ -9,7 +9,7 @@
 #include "../Scene/SceneObjects/Cylinder.h"
 #include "../Scene/SceneObjects/LSystem.h"
 #include "../Scene/SceneObjects/Mesh.h"
-#include "../Scene/SceneObjects/Light.h"
+#include "../Scene/SceneObjects/Lights/Light.h"
 
 class Shader {
 public:

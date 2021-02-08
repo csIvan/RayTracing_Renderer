@@ -283,7 +283,7 @@
     <ClInclude Include="src\Scene\SceneObjects\Cone.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cube.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cylinder.h" />
-    <ClInclude Include="src\Scene\SceneObjects\Light.h" />
+    <ClInclude Include="src\Scene\SceneObjects\Lights\Light.h" />
     <ClInclude Include="src\Scene\SceneObjects\Lights\SpotLight.h" />
     <ClInclude Include="src\Scene\SceneObjects\LSystem.h" />
     <ClInclude Include="src\Scene\SceneObjects\Mesh.h" />
