@@ -75,7 +75,7 @@ float RayMarcher::sceneSDF(glm::vec3 p) {
 		//d = wp1->sdf(p, 1, 8);
 		//d = opRep(p, glm::vec3(20.0f, 20.0f, 20.0f), *objects[i]);
 		d = objects[i]->sdf(p);
-		if (d < nearestDist) {
+		if (d <= nearestDist) {
 			nearestDist = d;
 			indexHit = i;
 		}

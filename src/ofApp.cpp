@@ -179,10 +179,14 @@ void ofApp::updateSelected(SceneObject *s) {
 	else if (dynamic_cast<LSystem*>(s) != nullptr) {
 		LSystem *lsystemSelected = (LSystem*)s;
 		lsystemSelected->iterations = (int)gui_ivalue1;
+		lsystemSelected->angle = (float)gui_value1;
+		lsystemSelected->tubeRadius = (float)gui_value2;
+		lsystemSelected->tubeHeight = (float)gui_value3;
 		lsystemSelected->axiom = (string)gui_axiom;
 		lsystemSelected->rule1.b = (string)gui_rule1;
 		lsystemSelected->rule2.b = (string)gui_rule2;
 		lsystemSelected->rule3.b = (string)gui_rule3;
+		lsystemSelected->generate();
 	}
 
 	s->position = static_cast<glm::vec3>(slider_location);
@@ -223,7 +227,10 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<LSystem*>(s) != nullptr) {
 		LSystem *lsystemSelected = (LSystem*)s;
-		objectGUI.add(gui_ivalue1.setup("Iterations", lsystemSelected->iterations, 1, 5));
+		objectGUI.add(gui_ivalue1.setup("Iterations", lsystemSelected->iterations, 1, 10));
+		objectGUI.add(gui_value1.setup("Angle", lsystemSelected->angle, -90, 90));
+		objectGUI.add(gui_value2.setup("Tube Radius", lsystemSelected->tubeRadius, 0.02, 2));
+		objectGUI.add(gui_value3.setup("Tube Height", lsystemSelected->tubeHeight, 0.1, 2));
 		objectGUI.add(gui_axiom.setup("Axiom", lsystemSelected->axiom));
 		objectGUI.add(gui_rule1.setup("F", lsystemSelected->rule1.b));
 		objectGUI.add(gui_rule2.setup("A", lsystemSelected->rule2.b));
@@ -356,7 +363,7 @@ void ofApp::handleRayTrace() {
 	for (int i = 0; i < scene.size(); i++) {
 		if (dynamic_cast<LSystem*>(scene[i]) != nullptr) {
 			LSystem *lsys = (LSystem*)scene[i];
-			lsys->generate();
+			cout << "LSystem: " << lsys->sentence << endl;
 		}
 	}
 
@@ -373,7 +380,7 @@ void ofApp::handleRayMarch() {
 	for (int i = 0; i < scene.size(); i++) {
 		if (dynamic_cast<LSystem*>(scene[i]) != nullptr) {
 			LSystem *lsys = (LSystem*)scene[i];
-			lsys->generate();
+			cout << "LSystem: " << lsys->sentence << endl;
 		}
 	}
 
@@ -448,7 +455,9 @@ void ofApp::addMesh() {
 	}
 }
 void ofApp::addLSystem() {
-	addObject(new LSystem(glm::vec3(0, 0, 0), 1, "F", "LSystem_" + to_string(++lsystemCount)));
+	LSystem *ls = new LSystem(glm::vec3(0,0,0), 1, "F", "LSystem_" + to_string(++lsystemCount));
+	ls->generate();
+	addObject(ls);
 }
 void ofApp::addWaterPool() {
 	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, "WaterPool_" + to_string(++waterpoolCount), ofColor::seaGreen));

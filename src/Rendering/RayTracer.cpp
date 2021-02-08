@@ -37,7 +37,7 @@ ofImage RayTracer::render() {
 
 				if (objects[index]->intersect(ray, point, normal)) {
 					dist = glm::distance(renderCam.position, point);
-					if (dist < nearestDist) {
+					if (dist <= nearestDist) {
 						nearestDist = dist;
 						hit = true;
 						normal = glm::normalize(normal);
