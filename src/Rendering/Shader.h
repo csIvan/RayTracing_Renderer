@@ -5,11 +5,13 @@
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Torus.h"
 #include "../Scene/SceneObjects/Sphere.h"
+#include "../Scene/SceneObjects/Plane.h"
 #include "../Scene/SceneObjects/Cone.h"
 #include "../Scene/SceneObjects/Cylinder.h"
 #include "../Scene/SceneObjects/LSystem.h"
 #include "../Scene/SceneObjects/Mesh.h"
 #include "../Scene/SceneObjects/Lights/Light.h"
+#include "../Scene/SceneObjects/Lights/SpotLight.h"
 
 class Shader {
 public:

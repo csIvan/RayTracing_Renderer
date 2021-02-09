@@ -189,6 +189,13 @@ void ofApp::updateSelected(SceneObject *s) {
 		lsystemSelected->rule3.b = (string)gui_rule3;
 		lsystemSelected->generate();
 	}
+	else if (dynamic_cast<SpotLight*>(s) != nullptr) {
+		SpotLight *spotLightSelected = (SpotLight*)s;
+		spotLightSelected->intensity = (int)gui_ivalue1;
+		spotLightSelected->heightRef = (float)gui_value1;
+		spotLightSelected->totalWidth = (float)gui_value2;
+		spotLightSelected->falloffStart = (float)gui_value3;
+	}
 
 	s->position = static_cast<glm::vec3>(slider_location);
 	s->rotation.x = static_cast<int>(gui_angleX);
@@ -237,6 +244,13 @@ void ofApp::updateGUI(SceneObject *s) {
 		objectGUI.add(gui_rule2.setup("A", lsystemSelected->rule2.b));
 		objectGUI.add(gui_rule3.setup("B", lsystemSelected->rule3.b));
 		//objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
+	}
+	else if (dynamic_cast<SpotLight*>(s) != nullptr) {
+		SpotLight *spotLightSelected = (SpotLight*)s;
+		objectGUI.add(gui_ivalue1.setup("Intensity", spotLightSelected->intensity, 0, 100));
+		objectGUI.add(gui_value1.setup("Height Reference", spotLightSelected->heightRef, 0.5, 30));
+		objectGUI.add(gui_value2.setup("Total Width", spotLightSelected->totalWidth, 0.5, 75));
+		objectGUI.add(gui_value3.setup("Falloff Start", spotLightSelected->falloffStart, 0.5, 75));
 	}
 
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5)));
@@ -488,7 +502,7 @@ void ofApp::addPointLight() {
 }
 
 void ofApp::addSpotLight() {
-	addLight(new SpotLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 10.0f, (10.0 - 0.1), "Spot_Light_" + to_string(++spotlightCount)));
+	addLight(new SpotLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 10.0f, 10.0f, "Spot_Light_" + to_string(++spotlightCount)));
 }
 
 

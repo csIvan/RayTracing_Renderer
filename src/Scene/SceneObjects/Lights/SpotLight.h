@@ -8,8 +8,9 @@
 class SpotLight : public Light {
 public:
 	glm::vec3 direction;
-	float lightAngle;
-	float falloffAngle;
+	float totalWidth;
+	float falloffStart;
+	float heightRef = 6.0f;
 
 	SpotLight(glm::vec3 p, glm::vec3 d, float angle, float foAngle, string name);
 	SpotLight() {};

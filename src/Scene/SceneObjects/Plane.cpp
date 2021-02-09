@@ -28,7 +28,7 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	bool insidePlane = false;
 	bool hit = glm::intersectRayPlane(roo, rdd, glm::vec3(0, 0, 0), this->normal, dist);
 	if (hit) {
-		Ray r = ray;
+		Ray r = Ray(roo, rdd);
 		point = r.evalPoint(dist);
 		normal = this->normal;
 		point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
