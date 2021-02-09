@@ -20,7 +20,9 @@ ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const o
 		if (!inShadow(shadRay)) {
 			if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
 				SpotLight *spotLight = (SpotLight*)lights[i];
-				float SpotFactor = glm::dot(lightToPixel, spotLight->direction);
+				glm::vec3 dir = spotLight->direction;
+				glm::vec4 rdd = spotLight->getRotateMatrix() * glm::vec4(dir.x, dir.y, dir.z, 1.0f);
+				float SpotFactor = glm::dot(lightToPixel, glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
 
 				//call to calculate the falloff factor for the spotlight
 				float falloff = spotLight->falloff(SpotFactor);		

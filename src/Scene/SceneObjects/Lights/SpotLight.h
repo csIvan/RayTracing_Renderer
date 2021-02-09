@@ -3,8 +3,10 @@
 #include "ofMain.h"
 #include "Light.h"
 
-// Spotlight class. Inherits from Light and has variables for angles that constraint
-// the light into a cone with some falloff light to provide smoother edges.
+/** 
+ * Spotlight class. Inherits from Light and has variables for angles that constraint
+ * the light into a cone with some falloff light to provide smoother edges.
+ **/
 class SpotLight : public Light {
 public:
 	glm::vec3 direction;

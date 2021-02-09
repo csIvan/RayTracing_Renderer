@@ -23,6 +23,7 @@ void SpotLight::draw() {
 		ofPopMatrix();
 		ofFill();
 	}
+
 	ofSetColor(ofColor::cyan);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
