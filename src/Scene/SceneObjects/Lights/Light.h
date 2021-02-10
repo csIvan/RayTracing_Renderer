@@ -7,7 +7,7 @@
 class Light : public SceneObject {
 public:
 	ofMaterial material;
-	float intensity = 100;
+	float intensity = 50;
 	float radius = 0.1;
 
 	Light(glm::vec3 p, float i, string name) {
@@ -24,17 +24,21 @@ public:
 	}
 
 	void draw() {
+		applyMatrix();
 		if (isSelected) {
 			ofSetColor(ofColor::yellow);
 			ofNoFill();
 			ofPushMatrix();
 				ofMultMatrix(Transform);
 				ofDrawAxis(radius * 1.5);;
-				ofDrawSphere(position, radius);
+				ofDrawSphere(ofVec3f::zero(), radius);
 			ofPopMatrix();
 			ofFill();
 		}
 		ofSetColor(ofColor::cyan);
-		ofDrawSphere(position, radius);
+		ofPushMatrix();
+			ofMultMatrix(Transform);
+			ofDrawSphere(ofVec3f::zero(), radius);
+		ofPopMatrix();
 	};
 };

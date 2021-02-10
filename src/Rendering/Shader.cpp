@@ -9,27 +9,51 @@ ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const o
 	float ambientCo = 0.08;
 	ofColor lambertColor = diffuse * ambientCo;
 	for (int i = 0; i < lights.size(); i++) {
-		glm::vec3 l = glm::normalize(lights[i]->position - point);
-		glm::vec3 lightToPixel = glm::normalize(point - lights[i]->position);
-		float distance = glm::distance(lights[i]->position, point);
-		Ray shadRay = Ray(glm::vec3(point.x, point.y, point.z + .001f), l);
+		glm::vec3 L, lightToPixel;
 
-		ofColor lambertCalculation = diffuse * (lights[i]->intensity / glm::pow(distance, 2)) * glm::max(0.0f, glm::dot(normal, l));
-		opoint = point;
-		onormal = normal;
-		if (!inShadow(shadRay)) {
-			if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
-				SpotLight *spotLight = (SpotLight*)lights[i];
-				glm::vec3 dir = spotLight->direction;
-				glm::vec4 rdd = spotLight->getRotateMatrix() * glm::vec4(dir.x, dir.y, dir.z, 1.0f);
-				float SpotFactor = glm::dot(lightToPixel, glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
+		if (dynamic_cast<AreaLight*>(lights[i]) != nullptr) {
+			AreaLight *areaLight = (AreaLight*)lights[i];
+			//std::cout << "Hey" << endl;
+			int total = 0;
+			for (int u = 0; u < areaLight->usteps; u++) {
+				for (int v = 0; v < areaLight->vsteps; v++) {
+					glm::vec3 sample = areaLight->pointOnLight(u, v);
+					L = glm::normalize(sample - point);
+					lightToPixel = glm::normalize(point - sample);
+					float distance = glm::distance(sample, point);
+					Ray shadRay = Ray(glm::vec3(point.x, point.y + 0.0001f, point.z + .001f), L);
 
-				//call to calculate the falloff factor for the spotlight
-				float falloff = spotLight->falloff(SpotFactor);		
-				lambertColor += lambertCalculation * falloff;
+					ofColor lambertCalculation = diffuse * ((lights[i]->intensity/ areaLight->samples)/ glm::pow(distance, 1.5) ) * glm::max(0.0f, glm::dot(normal, L));
+					if (!inShadow(shadRay)) {
+						lambertColor += lambertCalculation;
+					}
+				}
 			}
-			else
-				lambertColor += lambertCalculation;
+
+		}
+		else {
+			L = glm::normalize(lights[i]->position - point);
+			lightToPixel = glm::normalize(point - lights[i]->position);
+			float distance = glm::distance(lights[i]->position, point);
+			Ray shadRay = Ray(glm::vec3(point.x, point.y + 0.0001f, point.z + .001f), L);
+
+			ofColor lambertCalculation = diffuse * (lights[i]->intensity / glm::pow(distance, 2)) * glm::max(0.0f, glm::dot(normal, L));
+			opoint = point;
+			onormal = normal;
+			if (!inShadow(shadRay)) {
+				if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
+					SpotLight *spotLight = (SpotLight*)lights[i];
+					glm::vec3 dir = spotLight->direction;
+					glm::vec4 rdd = spotLight->getRotateMatrix() * glm::vec4(dir.x, dir.y, dir.z, 1.0f);
+					float SpotFactor = glm::dot(lightToPixel, glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
+
+					//call to calculate the falloff factor for the spotlight
+					float falloff = spotLight->falloff(SpotFactor);
+					lambertColor += lambertCalculation * falloff;
+				}
+				else
+					lambertColor += lambertCalculation;
+			}
 		}
 
 	}

@@ -77,6 +77,7 @@ void ofApp::setup() {
 	button_lsystem.addListener(this, &ofApp::addLSystem);
 	button_point_light.addListener(this, &ofApp::addPointLight);
 	button_spot_light.addListener(this, &ofApp::addSpotLight);
+	button_area_light.addListener(this, &ofApp::addAreaLight);
 	
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
@@ -189,25 +190,34 @@ void ofApp::updateSelected(SceneObject *s) {
 		lsystemSelected->rule3.b = (string)gui_rule3;
 		lsystemSelected->generate();
 	}
-	else if (dynamic_cast<SpotLight*>(s) != nullptr) {
-		SpotLight *spotLightSelected = (SpotLight*)s;
-		spotLightSelected->intensity = (int)gui_ivalue1;
-		spotLightSelected->heightRef = (float)gui_value1;
-		spotLightSelected->totalWidth = (float)gui_value2;
-		spotLightSelected->falloffStart = (float)gui_value3;
+	else if (dynamic_cast<Light*>(s) != nullptr) {
+		Light *lightSelected = (Light*)s;
+		lightSelected->intensity = (int)gui_ivalue1;
+		if (dynamic_cast<SpotLight*>(s) != nullptr) {
+			SpotLight *spotLightSelected = (SpotLight*)s;
+			spotLightSelected->heightRef = (float)gui_value1;
+			spotLightSelected->totalWidth = (float)gui_value2;
+			spotLightSelected->falloffStart = (float)gui_value3;
+		}
+		else if (dynamic_cast<AreaLight*>(s) != nullptr) {
+			AreaLight *areaLightSelected = (AreaLight*)s;
+			areaLightSelected->height = (float)gui_value1;
+			areaLightSelected->width = (float)gui_value2;
+		}
 	}
+	
 
 	s->position = static_cast<glm::vec3>(slider_location);
 	s->rotation.x = static_cast<int>(gui_angleX);
 	s->rotation.y = static_cast<int>(gui_angleY);
 	s->rotation.z = static_cast<int>(gui_angleZ);
+	s->diffuseColor = (ofColor)color;
 
 	// Don't need scale for lights
 	if (dynamic_cast<Light*>(s) == nullptr) {
 		s->scale = static_cast<glm::vec3>(slider_scale);
 	}
 
-	s->diffuseColor = (ofColor)color;
 }
 
 // Load scene object attributes to interface
@@ -250,15 +260,24 @@ void ofApp::updateGUI(SceneObject *s) {
 		objectGUI.add(gui_rule3.setup("B", lsystemSelected->rule3.b));
 		//objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
 	}
-	else if (dynamic_cast<SpotLight*>(s) != nullptr) {
-		SpotLight *spotLightSelected = (SpotLight*)s;
-		objectGUI.add(gui_ivalue1.setup("Intensity", spotLightSelected->intensity, 0, 100));
-		objectGUI.add(gui_value1.setup("Height Reference", spotLightSelected->heightRef, 0.5, 30));
-		objectGUI.add(gui_value2.setup("Total Width", spotLightSelected->totalWidth, 0.5, 75));
-		objectGUI.add(gui_value3.setup("Falloff Start", spotLightSelected->falloffStart, 0.5, 75));
+	else if (dynamic_cast<Light*>(s) != nullptr) {
+		Light *lightSelected = (Light*)s;
+		objectGUI.add(gui_ivalue1.setup("Intensity", lightSelected->intensity, 0, 100));
+		if (dynamic_cast<SpotLight*>(s) != nullptr) {
+			SpotLight *spotLightSelected = (SpotLight*)s;
+			objectGUI.add(gui_value1.setup("Height Reference", spotLightSelected->heightRef, 0.5, 30));
+			objectGUI.add(gui_value2.setup("Total Width", spotLightSelected->totalWidth, 0.5, 75));
+			objectGUI.add(gui_value3.setup("Falloff Start", spotLightSelected->falloffStart, 0.5, 75));
+		}
+		else if (dynamic_cast<AreaLight*>(s) != nullptr) {
+			AreaLight *areaLightSelected = (AreaLight*)s;
+			objectGUI.add(gui_value1.setup("Height", areaLightSelected->height, 0.5, 10));
+			objectGUI.add(gui_value2.setup("Width", areaLightSelected->width, 0.5, 10));
+		}
 	}
+	
 
-	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 5, 5)));
+	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 10, 5)));
 	//objectGUI.add(slider_rotation.setup("Angle Rotation", s->rotation, glm::vec3(-90, -90, -90), glm::vec3(90, 90, 90)));
 	group_rotation.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(group_rotation.setup("Rotation"));
@@ -513,6 +532,10 @@ void ofApp::addPointLight() {
 
 void ofApp::addSpotLight() {
 	addLight(new SpotLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 10.0f, 10.0f, "Spot_Light_" + to_string(++spotlightCount)));
+}
+
+void ofApp::addAreaLight() {
+	addLight(new AreaLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 1.0f, 1.0f, "Area_Light_" + to_string(++arealightCount)));
 }
 
 

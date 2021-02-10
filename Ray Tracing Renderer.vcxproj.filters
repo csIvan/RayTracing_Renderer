@@ -97,6 +97,9 @@
     <ClCompile Include="src\Scene\SceneObjects\Cylinder.cpp">
       <Filter>src\Scene\SceneObjects</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\SceneObjects\Lights\AreaLight.cpp">
+      <Filter>src\Scene\SceneObjects\Lights</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -387,6 +390,9 @@
       <Filter>src\Scene\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\SceneObjects\Lights\Light.h">
+      <Filter>src\Scene\SceneObjects\Lights</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\SceneObjects\Lights\AreaLight.h">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,6 +12,7 @@
 #include "../Scene/SceneObjects/Mesh.h"
 #include "../Scene/SceneObjects/Lights/Light.h"
 #include "../Scene/SceneObjects/Lights/SpotLight.h"
+#include "../Scene/SceneObjects/Lights/AreaLight.h"
 
 class Shader {
 public:

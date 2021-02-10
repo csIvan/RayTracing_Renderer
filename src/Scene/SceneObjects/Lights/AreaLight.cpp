@@ -1,23 +1,23 @@
-#include "Plane.h"
+#include "AreaLight.h"
 
-Plane::Plane() {
-	normal = glm::vec3(0, 1, 0);
-	plane.rotateDeg(90, 1, 0, 0);
-}
-
-Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, float h) {
+AreaLight::AreaLight(glm::vec3 p, glm::vec3 d, float h, float w, string name) {
 	position = p;
-	normal = n;
-	width = w;
+	direction = d;
 	height = h;
+	width = w;
 	objName = name;
-	diffuseColor = diffuse;
-	if (normal == glm::vec3(0, 1, 0)) {
-		plane.rotateDeg(90, 1, 0, 0);
-	}
+	corner = glm::vec3(-width/2, 0, height/2);
+	uv = glm::vec3(width, 0, 0);
+	vv = glm::vec3(0, 0, -height);	
+	uvec = glm::vec3(width/2, 0, 0);
+	vvec = glm::vec3(0, 0, -height/2);
+	usteps = 2;
+	vsteps = 2;
+	samples = 4;
 }
 
-bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+
+bool AreaLight::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	glm::vec3 rdd, roo;
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
 	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
@@ -28,11 +28,11 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	float dist1, dist2;
 	bool insidePlane = false;
 	bool hit = false;
-	float d = glm::dot(rdd, this->normal);
+	float d = glm::dot(rdd, direction);
 	if (glm::abs(d) > -0.001f) {
-		float t = glm::dot(-roo, this->normal) / d;
+		float t = glm::dot(-roo, direction) / d;
 		point = r.evalPoint(t);
-		normal = this->normal;
+		normal = direction;
 		if(t >= 0)
 			hit = true;
 	}
@@ -47,7 +47,7 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 	return insidePlane;
 }
 
-void Plane::draw() {
+void AreaLight::draw() {
 	applyMatrix();
 	plane.setPosition(glm::vec3(0, 0, 0));
 	plane.setWidth(width);
@@ -56,30 +56,24 @@ void Plane::draw() {
 	plane.setOrientation(glm::vec3(270, 0, 0));
 
 	if (isSelected) {
-		ofDisableLighting();
 		ofSetColor(ofColor::yellow);
 		ofPushMatrix();
 			ofMultMatrix(Transform);
-			ofDrawAxis(width * 1.5);
+			ofDrawAxis(1);
 			plane.drawWireframe();
 		ofPopMatrix();
-		ofEnableLighting();
 	}
-	ofSetColor(ofColor::white);
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
+		ofSetColor(ofColor(255, 179, 0));
+		ofDrawArrow(glm::vec3(0, 0, 0), direction, 0.05);
+		ofSetColor(ofColor::cyan);
 		plane.drawFaces();
 	ofPopMatrix();
-	material.end();
 }
 
-float Plane::sdf(const glm::vec3 p1) {
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
-	return p.y;
-}
-
-glm::vec3 Plane::getNormal(const glm::vec3 &p) {
-	return this->normal;
+glm::vec3 AreaLight::pointOnLight(int u, int v) {
+	glm::vec3 pos = (corner + uvec * (u + 0.5) + vvec * (v - 0.5));
+	glm::vec4 newPos = Transform * glm::vec4(pos.x, pos.y, pos.z, 1.0f);
+	return glm::vec3(newPos.x, newPos.y, newPos.z);
 }
