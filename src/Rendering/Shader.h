@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "Renderer.h"
 #include "../Scene/Ray.h"
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Torus.h"
@@ -16,15 +17,17 @@
 
 class Shader {
 public:
+	Renderer *renderer;
 	vector<Light *> lights;
 	vector<SceneObject *> objects;
 	glm::vec3 opoint;
 	glm::vec3 onormal;
 
-	Shader(vector<Light *> lights, vector<SceneObject *> objects);
+	Shader(Renderer *renderer, vector<Light *> lights, vector<SceneObject *> objects);
 	Shader() {};
+	~Shader() {};
 
-	ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse);
+	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse, float reflect, int depth);
 	ofColor phong(const glm::vec3 &p, const glm::vec3 &norm, const glm::vec3 camPos, const ofColor diffuse, const ofColor specular, float power);
 	bool inShadow(const Ray &r);
 };

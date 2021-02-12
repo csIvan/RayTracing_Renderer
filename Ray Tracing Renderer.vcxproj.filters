@@ -395,6 +395,9 @@
     <ClInclude Include="src\Scene\SceneObjects\Lights\AreaLight.h">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClInclude>
+    <ClInclude Include="src\Rendering\Renderer.h">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="icon.rc" />

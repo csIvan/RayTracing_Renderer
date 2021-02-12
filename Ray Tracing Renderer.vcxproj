@@ -277,6 +277,7 @@
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxToggle.h" />
     <ClInclude Include="src\Rendering\RayMarcher.h" />
     <ClInclude Include="src\Rendering\RayTracer.h" />
+    <ClInclude Include="src\Rendering\Renderer.h" />
     <ClInclude Include="src\Rendering\Shader.h" />
     <ClInclude Include="src\Scene\Ray.h" />
     <ClInclude Include="src\Scene\RenderCam.h" />

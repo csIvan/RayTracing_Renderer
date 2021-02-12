@@ -11,6 +11,7 @@ public:
 	float width = 1;
 	glm::vec3 corner, uv, vv, uvec, vvec;
 	int usteps, vsteps, samples;
+	vector<glm::vec3> lightPositions;
 
 	AreaLight(glm::vec3 p, glm::vec3 d, float h, float w, string name);
 	AreaLight() {};

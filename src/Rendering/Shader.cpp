@@ -1,11 +1,14 @@
 #include "Shader.h"
+#include "RayTracer.h"
+#include "RayMarcher.h"
 
-Shader::Shader(vector<Light *> lights, vector<SceneObject *> objects) {
+Shader::Shader(Renderer *renderer, vector<Light *> lights, vector<SceneObject *> objects) {
 	this->lights = lights;
 	this->objects = objects;
+	this->renderer = renderer;
 }
 
-ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const ofColor diffuse) {
+ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const ofColor diffuse, float reflect, int depth) {
 	float ambientCo = 0.08;
 	ofColor lambertColor = diffuse * ambientCo;
 	for (int i = 0; i < lights.size(); i++) {
@@ -13,31 +16,40 @@ ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const o
 
 		if (dynamic_cast<AreaLight*>(lights[i]) != nullptr) {
 			AreaLight *areaLight = (AreaLight*)lights[i];
-			//std::cout << "Hey" << endl;
-			int total = 0;
+			//TODO: Refactor this into its own function in AreaLight class returning ofColor
 			for (int u = 0; u < areaLight->usteps; u++) {
 				for (int v = 0; v < areaLight->vsteps; v++) {
 					glm::vec3 sample = areaLight->pointOnLight(u, v);
 					L = glm::normalize(sample - point);
-					lightToPixel = glm::normalize(point - sample);
-					float distance = glm::distance(sample, point);
-					Ray shadRay = Ray(glm::vec3(point.x, point.y + 0.0001f, point.z + .001f), L);
+					float dist = glm::distance(sample, point);
+					Ray shadRay = Ray(point + normal * 0.0001f, L);
 
-					ofColor lambertCalculation = diffuse * ((lights[i]->intensity/ areaLight->samples)/ glm::pow(distance, 1.5) ) * glm::max(0.0f, glm::dot(normal, L));
+					ofColor lambertCalculation = diffuse * ((lights[i]->intensity/ areaLight->samples)/ (4 * PI * dist)) * glm::max(0.0f, glm::dot(normal, L));
 					if (!inShadow(shadRay)) {
 						lambertColor += lambertCalculation;
 					}
 				}
 			}
-
 		}
 		else {
 			L = glm::normalize(lights[i]->position - point);
 			lightToPixel = glm::normalize(point - lights[i]->position);
-			float distance = glm::distance(lights[i]->position, point);
-			Ray shadRay = Ray(glm::vec3(point.x, point.y + 0.0001f, point.z + .001f), L);
+			float dist = glm::distance(lights[i]->position, point);
+			Ray shadRay = Ray(point + normal * 0.0001f, L);
+			float I = (lights[i]->intensity / (4 * PI * dist));
+			glm::vec3 viewRay = -ray.d;
+			glm::vec3 reflectDir = 2 * glm::dot(normal, viewRay) * normal - viewRay;
 
-			ofColor lambertCalculation = diffuse * (lights[i]->intensity / glm::pow(distance, 2)) * glm::max(0.0f, glm::dot(normal, L));
+			Ray ReflectRay = Ray(point + normal * 0.0001f, reflectDir);
+			ofColor reflectColor, cTemp;
+			//if (rayT->castRay(ReflectRay, cTemp, depth + 1)) {
+				reflectColor = cTemp;
+			//}
+			//else {
+				reflectColor = 0;
+			//}
+
+			ofColor lambertCalculation = diffuse * I * glm::max(0.0f, glm::dot(normal, L)) + reflect * reflectColor;
 			opoint = point;
 			onormal = normal;
 			if (!inShadow(shadRay)) {
@@ -105,11 +117,6 @@ bool Shader::inShadow(const Ray &r) {
 		//	//sphereSelected->points.push_back(opoint);
 		//	//sphereSelected->normals.push_back((opoint + onormal / 2));
 		//}
-		if (dynamic_cast<Plane*>(objects[index]) != nullptr) {
-			Plane *sphereSelected = (Plane*)objects[index];
-			//sphereSelected->points.push_back(opoint);
-			//sphereSelected->normals.push_back((opoint + onormal / 2));
-		}
 		if (objects[index]->intersect(r, point, normal)) {
 			blocked = true; 
 			

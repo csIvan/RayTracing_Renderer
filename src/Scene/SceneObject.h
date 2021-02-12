@@ -17,6 +17,7 @@ public:
 	ofColor specularColor = ofColor::lightGray;
 	string objName = "SceneObject_";
 	bool isSelected = false;
+	float reflectCoeff = 0.0f;
 
 	virtual ~SceneObject() {};
 	virtual void draw() = 0;    // pure virtual funcs - must be overloaded

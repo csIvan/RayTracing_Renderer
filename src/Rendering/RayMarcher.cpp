@@ -11,7 +11,7 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
 * Also uses the normalRM so that phong shading can be applied to the scene
 */
 ofImage RayMarcher::render() {
-	shader = Shader(lights, objects);
+	//shader = Shader(this, lights, objects);
 	float row, column;
 	for (row = 0; row < imageHeight; row++) {
 		for (column = 0; column < imageWidth; column++) {
@@ -30,7 +30,7 @@ ofImage RayMarcher::render() {
 				sphereSelected->normals.push_back((p + normal/2));
 			}
 			//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
-			color = shader.lambert(p, normal, objects[indexHit]->diffuseColor);
+			//color = shader.lambert(ray, p, normal, objects[indexHit]->diffuseColor, 0, 0);
 
 			if (hit) {
 				//cout << "*** Hit ****************************************** " << p << endl << endl;

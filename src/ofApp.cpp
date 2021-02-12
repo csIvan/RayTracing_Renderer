@@ -262,7 +262,7 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<Light*>(s) != nullptr) {
 		Light *lightSelected = (Light*)s;
-		objectGUI.add(gui_ivalue1.setup("Intensity", lightSelected->intensity, 0, 100));
+		objectGUI.add(gui_ivalue1.setup("Intensity", lightSelected->intensity, 0, 150));
 		if (dynamic_cast<SpotLight*>(s) != nullptr) {
 			SpotLight *spotLightSelected = (SpotLight*)s;
 			objectGUI.add(gui_value1.setup("Height Reference", spotLightSelected->heightRef, 0.5, 30));

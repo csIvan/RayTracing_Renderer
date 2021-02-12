@@ -49,6 +49,12 @@ bool AreaLight::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 void AreaLight::draw() {
 	applyMatrix();
+	//for (int i = 0; i < lightPositions.size(); i++) {
+	//	ofSetColor(ofColor::red);
+	//	ofDrawSphere(lightPositions[i], 0.025);
+	//	ofSetColor(ofColor::yellow);
+	//	//ofDrawLine(points[i], normals[i]);
+	//}
 	plane.setPosition(glm::vec3(0, 0, 0));
 	plane.setWidth(width);
 	plane.setHeight(height);
@@ -73,7 +79,8 @@ void AreaLight::draw() {
 }
 
 glm::vec3 AreaLight::pointOnLight(int u, int v) {
-	glm::vec3 pos = (corner + uvec * (u + 0.5) + vvec * (v - 0.5));
+	glm::vec3 pos = (corner + uvec * (u + 0.5) + vvec * (v + 0.5));
 	glm::vec4 newPos = Transform * glm::vec4(pos.x, pos.y, pos.z, 1.0f);
+	//lightPositions.push_back(newPos);
 	return glm::vec3(newPos.x, newPos.y, newPos.z);
 }
