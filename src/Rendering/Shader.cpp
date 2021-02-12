@@ -8,7 +8,7 @@ Shader::Shader(Renderer *renderer, vector<Light *> lights, vector<SceneObject *>
 	this->renderer = renderer;
 }
 
-ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const ofColor diffuse, float reflect, int depth) {
+ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const ofColor diffuse, float reflectV, int depth) {
 	float ambientCo = 0.08;
 	ofColor lambertColor = diffuse * ambientCo;
 	for (int i = 0; i < lights.size(); i++) {
@@ -35,21 +35,27 @@ ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &norma
 			L = glm::normalize(lights[i]->position - point);
 			lightToPixel = glm::normalize(point - lights[i]->position);
 			float dist = glm::distance(lights[i]->position, point);
-			Ray shadRay = Ray(point + normal * 0.0001f, L);
 			float I = (lights[i]->intensity / (4 * PI * dist));
-			glm::vec3 viewRay = -ray.d;
-			glm::vec3 reflectDir = 2 * glm::dot(normal, viewRay) * normal - viewRay;
+			Ray shadRay = Ray(point + normal * 0.001f, L);
+			Ray ReflectRay = reflect(point, -ray.d, normal);
 
-			Ray ReflectRay = Ray(point + normal * 0.0001f, reflectDir);
 			ofColor reflectColor, cTemp;
-			//if (rayT->castRay(ReflectRay, cTemp, depth + 1)) {
-				reflectColor = cTemp;
+			//renderer->castRay(ReflectRay, reflectColor, depth + 1);
+			//if (dynamic_cast<RayTracer*>(renderer) != nullptr) {
+			//	RayTracer *rayT = (RayTracer*)renderer;
+				if (renderer->castRay(ReflectRay, cTemp, depth + 1)) {
+					reflectColor = cTemp;
+				}
+				else {
+					reflectColor = 0;
+				}
 			//}
-			//else {
-				reflectColor = 0;
+			//else if (dynamic_cast<RayMarcher*>(renderer) != nullptr) {
+			//	RayMarcher *rayM = (RayMarcher*)renderer;
+
 			//}
 
-			ofColor lambertCalculation = diffuse * I * glm::max(0.0f, glm::dot(normal, L)) + reflect * reflectColor;
+			ofColor lambertCalculation = diffuse * I * glm::max(0.0f, glm::dot(normal, L)) + reflectV * reflectColor;
 			opoint = point;
 			onormal = normal;
 			if (!inShadow(shadRay)) {
@@ -129,4 +135,10 @@ bool Shader::inShadow(const Ray &r) {
 	
 	}
 	return blocked;
+}
+
+
+Ray Shader::reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal) {
+	glm::vec3 reflectDir = 2 * glm::dot(normal, viewRay) * normal - viewRay;
+	return Ray(point + normal * 0.0001f, reflectDir);
 }

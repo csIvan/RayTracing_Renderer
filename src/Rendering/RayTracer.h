@@ -5,8 +5,6 @@
 #include "Shader.h"
 #include "../Scene/Ray.h"
 #include "../Scene/RenderCam.h"
-#include "../Scene/SceneObject.h"
-#include "../Scene/SceneObjects/Lights/Light.h"
 #include "../Scene/SceneObjects/Sphere.h"
 #include "../Scene/SceneObjects/Cube.h"
 #include "../Scene/SceneObjects/Torus.h"
@@ -22,6 +20,8 @@ public:
 
 	RayTracer(int imageWidth, int imageHeight, ofImage &image);
 	RayTracer() {};
+ 	~RayTracer() {};
+
 	ofImage render();
 	bool castRay(Ray &ray, ofColor &color, int depth = 0);
 

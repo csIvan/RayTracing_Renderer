@@ -11,29 +11,14 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
 * Also uses the normalRM so that phong shading can be applied to the scene
 */
 ofImage RayMarcher::render() {
-	//shader = Shader(this, lights, objects);
+	shader = Shader(this, lights, objects);
 	float row, column;
 	for (row = 0; row < imageHeight; row++) {
 		for (column = 0; column < imageWidth; column++) {
 			Ray ray = renderCam.getRay(column / imageWidth, row / imageHeight);
-
 			ofColor color;
-			glm::vec3 p;
-			bool hit = rayMarch(ray, p);
 
-			glm::vec3 normal;
-			normal = getNormalRM(p);
-
-			if (hit && dynamic_cast<Cone*>(objects[indexHit]) != nullptr) {
-				Cone *sphereSelected = (Cone*)objects[indexHit];
-				sphereSelected->points.push_back(p);
-				sphereSelected->normals.push_back((p + normal/2));
-			}
-			//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
-			//color = shader.lambert(ray, p, normal, objects[indexHit]->diffuseColor, 0, 0);
-
-			if (hit) {
-				//cout << "*** Hit ****************************************** " << p << endl << endl;
+			if (castRay(ray, color)) {
 				image.setColor(column, imageHeight - row - 1, color);
 			}
 			else
@@ -46,14 +31,27 @@ ofImage RayMarcher::render() {
 	return image;
 }
 
+bool RayMarcher::castRay(Ray &r, ofColor &color, int depth) {
+
+	if (depth > 1)
+		return false;
+
+	glm::vec3 p;
+	bool hit = rayMarch(r, p);
+
+	glm::vec3 normal = getNormalRM(p);
+	//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
+	color = shader.lambert(r, p, normal, objects[indexHit]->diffuseColor, 0.5, depth);
+
+	return hit;
+}
+
 bool RayMarcher::rayMarch(Ray r, glm::vec3 &p) {
-	bool hit = false;
 	p = r.p;
 	for (int i = 0; i < MAX_RAY_STEPS; i++) {
 		float dist = sceneSDF(p);
 		if (dist < DIST_THRESHOLD) {
-			hit = true;
-			break;
+			return true;
 		}
 		else if (dist > MAX_THRESHOLD) {
 			break;
@@ -62,13 +60,14 @@ bool RayMarcher::rayMarch(Ray r, glm::vec3 &p) {
 			p = p + r.d * dist;
 		}
 	}
-	return hit;
+	
+	return false;
 }
 
 //SceneSDF. Checks every primitive's sdf and determines the closest one to the point
 //also marks the index of the object hit
 float RayMarcher::sceneSDF(glm::vec3 p) {
-	nearestDist = FLT_MAX;
+	float nearestDist = FLT_MAX;
 	float d = 0.0;
 	for (int i = 0; i < objects.size(); i++) {
 		//WaterPool *wp1 = (WaterPool*)objects[i];
@@ -125,29 +124,4 @@ float RayMarcher::opRep(const glm::vec3 p, const glm::vec3 c, SceneObject &s) {
 float RayMarcher::opRound(const glm::vec3 p, SceneObject &s, float rad) {
 	//return 2.0f;
 	return s.sdf(p) - rad;
-}
-
-
-void RayMarcher::addObject(SceneObject &object) {
-	objects.push_back(&object);
-}
-
-void RayMarcher::addLight(Light &light) {
-	lights.push_back(&light);
-}
-
-void RayMarcher::removeObject(string name) {
-	for (int i = 0; i < objects.size(); i++) {
-		if (objects[i]->objName == name) {
-			objects.erase(std::remove(objects.begin(), objects.end(), objects[i]), objects.end());
-		}
-	}
-}
-
-void RayMarcher::removeLight(string name) {
-	for (int i = 0; i < lights.size(); i++) {
-		if (lights[i]->objName == name) {
-			lights.erase(std::remove(lights.begin(), lights.end(), lights[i]), lights.end());
-		}
-	}
 }

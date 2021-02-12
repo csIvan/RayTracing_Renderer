@@ -41,7 +41,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, int depth) {
 	float dist;
 	float nearestDist = FLT_MAX;
 
-	if (depth > objects.size())
+	if (depth > 1)
 		return false;
 
 	for (int index = 0; index < objects.size(); index++) {
@@ -54,47 +54,47 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, int depth) {
 				hit = true;
 				normal = glm::normalize(normal);
 				// If the object is a sphere
-				if (typeid(*objects[index]) == typeid(Sphere)) {
-					Sphere *globe = (Sphere*)objects[index];
+				//if (typeid(*objects[index]) == typeid(Sphere)) {
+				//	Sphere *globe = (Sphere*)objects[index];
 
-					glm::vec3 n = glm::normalize(point - globe->position);
-					float u = atan2(n.x, n.z) / (2 * PI) + 0.5;
-					float v = n.y * 0.5 + 0.5;
+				//	glm::vec3 n = glm::normalize(point - globe->position);
+				//	float u = atan2(n.x, n.z) / (2 * PI) + 0.5;
+				//	float v = n.y * 0.5 + 0.5;
 
 
-					float uLookUp = u * sphereTexture.getWidth() - .5;
-					float pixelj = fmod(uLookUp, sphereTexture.getWidth());
-					float vLookUp = v * sphereTexture.getHeight() - .5;
-					float pixeli = fmod(vLookUp, sphereTexture.getHeight());
+				//	float uLookUp = u * sphereTexture.getWidth() - .5;
+				//	float pixelj = fmod(uLookUp, sphereTexture.getWidth());
+				//	float vLookUp = v * sphereTexture.getHeight() - .5;
+				//	float pixeli = fmod(vLookUp, sphereTexture.getHeight());
 
-					ofColor globeColor = sphereTexture.getColor(pixelj, sphereTexture.getHeight() - pixeli - 1);
-					color = shader.lambert(ray, point, normal, globeColor, 0, depth);
-				}
-				else if (typeid(*objects[index]) == typeid(Plane)) {
-					// 10x10 tiles
-					int uvTileFactor = 10;
+				//	ofColor globeColor = sphereTexture.getColor(pixelj, sphereTexture.getHeight() - pixeli - 1);
+				//	color = shader.lambert(ray, point, normal, globeColor, 0, depth);
+				//}
+				//else if (typeid(*objects[index]) == typeid(Plane)) {
+				//	// 10x10 tiles
+				//	int uvTileFactor = 10;
 
-					Plane *p1 = (Plane*)objects[index];
+				//	Plane *p1 = (Plane*)objects[index];
 
-					float u = (p1->width + point.x) / (p1->width / uvTileFactor);
-					float v = (p1->height + point.z) / (p1->height / uvTileFactor);
+				//	float u = (p1->width + point.x) / (p1->width / uvTileFactor);
+				//	float v = (p1->height + point.z) / (p1->height / uvTileFactor);
 
-					// Find the color at the point of u and v
-					float uLookUp = u * texture.getWidth() - .5;
-					float pixelj = fmod(uLookUp, texture.getWidth());
-					float vLookUp = v * texture.getHeight() - .5;
-					float pixeli = fmod(vLookUp, texture.getHeight());
+				//	// Find the color at the point of u and v
+				//	float uLookUp = u * texture.getWidth() - .5;
+				//	float pixelj = fmod(uLookUp, texture.getWidth());
+				//	float vLookUp = v * texture.getHeight() - .5;
+				//	float pixeli = fmod(vLookUp, texture.getHeight());
 
-					// Apply the color of the texture using the shading algorithm
-					ofColor planeColor = texture.getColor(pixelj, texture.getHeight() - pixeli - 1);
+				//	// Apply the color of the texture using the shading algorithm
+				//	ofColor planeColor = texture.getColor(pixelj, texture.getHeight() - pixeli - 1);
 
-					//color = phong(point, normal, renderCam.position, planeColor, objects[index]->specularColor, Power);
-					color = shader.lambert(ray, point, normal, planeColor, 0, depth);
-				}
-				else {
+				//	//color = phong(point, normal, renderCam.position, planeColor, objects[index]->specularColor, Power);
+				//	color = shader.lambert(ray, point, normal, planeColor, 0, depth);
+				//}
+				//else {
 					//color = shader.phong(point, normal, renderCam.position, objects[index]->diffuseColor, objects[index]->specularColor, Power);
 					color = shader.lambert(ray, point, normal, objects[index]->diffuseColor, 0.5, depth);
-				}
+				//}
 			}
 		}
 	}

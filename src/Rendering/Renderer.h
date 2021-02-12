@@ -11,6 +11,9 @@ public:
 	ofImage image;
 
 	virtual ofImage render() = 0;
+	virtual bool castRay(Ray &r, ofColor &color, int depth = 0) {
+		return false;
+	}
 	virtual ~Renderer() {};
 
 
