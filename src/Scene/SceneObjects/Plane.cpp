@@ -49,6 +49,16 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 void Plane::draw() {
 	applyMatrix();
+	ofDisableLighting();
+	for (int i = 0; i < points.size(); i++) {
+		ofSetColor(ofColor::red);
+		//ofDrawSphere(points[i], 0.025);
+		ofSetColor(ofColor::yellow);
+		//ofDrawLine(points[i], normals[i]);
+	}
+
+
+	ofEnableLighting();
 	plane.setPosition(glm::vec3(0, 0, 0));
 	plane.setWidth(width);
 	plane.setHeight(height);

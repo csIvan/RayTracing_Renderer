@@ -93,7 +93,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, int depth) {
 				//}
 				//else {
 					//color = shader.phong(point, normal, renderCam.position, objects[index]->diffuseColor, objects[index]->specularColor, Power);
-					color = shader.lambert(ray, point, normal, objects[index]->diffuseColor, 0.5, depth);
+					color = shader.lambert(ray, point, normal, objects[index]->diffuseColor, objects[index]->reflectCoeff, depth);
 				//}
 			}
 		}

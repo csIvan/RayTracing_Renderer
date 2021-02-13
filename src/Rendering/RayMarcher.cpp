@@ -41,17 +41,20 @@ bool RayMarcher::castRay(Ray &r, ofColor &color, int depth) {
 
 	glm::vec3 normal = getNormalRM(p);
 	//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
-	color = shader.lambert(r, p, normal, objects[indexHit]->diffuseColor, 0.5, depth);
+	if(hit)
+		color = shader.lambert(r, p, normal, objects[indexHit]->diffuseColor, objects[indexHit]->reflectCoeff, depth);
 
 	return hit;
 }
 
 bool RayMarcher::rayMarch(Ray r, glm::vec3 &p) {
+	bool hit = false;
 	p = r.p;
 	for (int i = 0; i < MAX_RAY_STEPS; i++) {
 		float dist = sceneSDF(p);
 		if (dist < DIST_THRESHOLD) {
-			return true;
+			hit = true;
+			break;
 		}
 		else if (dist > MAX_THRESHOLD) {
 			break;
@@ -61,7 +64,7 @@ bool RayMarcher::rayMarch(Ray r, glm::vec3 &p) {
 		}
 	}
 	
-	return false;
+	return hit;
 }
 
 //SceneSDF. Checks every primitive's sdf and determines the closest one to the point

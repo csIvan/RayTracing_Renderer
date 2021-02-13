@@ -8,6 +8,8 @@ class Sphere : public SceneObject {
 public:
 	ofMaterial material;
 	float radius = 1.0;
+	vector<glm::vec3> points;
+	vector<glm::vec3> normals;
 
 	Sphere(glm::vec3 p, float r, string name, ofColor diffuse = ofColor::lightGray);
 	Sphere() {}

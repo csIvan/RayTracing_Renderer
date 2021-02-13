@@ -39,26 +39,21 @@ ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &norma
 			Ray shadRay = Ray(point + normal * 0.001f, L);
 			Ray ReflectRay = reflect(point, -ray.d, normal);
 
-			ofColor reflectColor, cTemp;
-			//renderer->castRay(ReflectRay, reflectColor, depth + 1);
-			//if (dynamic_cast<RayTracer*>(renderer) != nullptr) {
-			//	RayTracer *rayT = (RayTracer*)renderer;
+			ofColor reflectColor = 0;
+			ofColor cTemp;
+			bool reflected = false;
+
+			if (reflectV > 0.0) {
 				if (renderer->castRay(ReflectRay, cTemp, depth + 1)) {
 					reflectColor = cTemp;
+					reflected = true;
 				}
-				else {
-					reflectColor = 0;
-				}
-			//}
-			//else if (dynamic_cast<RayMarcher*>(renderer) != nullptr) {
-			//	RayMarcher *rayM = (RayMarcher*)renderer;
-
-			//}
+			}
 
 			ofColor lambertCalculation = diffuse * I * glm::max(0.0f, glm::dot(normal, L)) + reflectV * reflectColor;
 			opoint = point;
 			onormal = normal;
-			if (!inShadow(shadRay)) {
+			if (!inShadow(shadRay) || reflected) {
 				if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
 					SpotLight *spotLight = (SpotLight*)lights[i];
 					glm::vec3 dir = spotLight->direction;
@@ -119,13 +114,17 @@ bool Shader::inShadow(const Ray &r) {
 		//}
 		//if (dynamic_cast<Plane*>(objects[index]) != nullptr) {
 		//	Plane *sphereSelected = (Plane*)objects[index];
-		//	sphereSelected->rays.push_back(r.d);
-		//	//sphereSelected->points.push_back(opoint);
-		//	//sphereSelected->normals.push_back((opoint + onormal / 2));
+		//	//sphereSelected->rays.push_back(r.d);
+		//	sphereSelected->points.push_back(opoint);
+		//	sphereSelected->normals.push_back((opoint + onormal / 2));
 		//}
 		if (objects[index]->intersect(r, point, normal)) {
 			blocked = true; 
-			
+			//if (dynamic_cast<Sphere*>(objects[index]) != nullptr) {
+			//Sphere *sphereSelected = (Sphere*)objects[index];
+			//sphereSelected->points.push_back(opoint);
+			//sphereSelected->normals.push_back((opoint + onormal / 2));
+			//}
 			//if (dynamic_cast<Cylinder*>(objects[index]) != nullptr) {
 			//	Cylinder *sphereSelected = (Cylinder*)objects[index];
 			//	sphereSelected->points.push_back(point);
@@ -140,5 +139,5 @@ bool Shader::inShadow(const Ray &r) {
 
 Ray Shader::reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal) {
 	glm::vec3 reflectDir = 2 * glm::dot(normal, viewRay) * normal - viewRay;
-	return Ray(point + normal * 0.0001f, reflectDir);
+	return Ray(point + normal * 0.001f, reflectDir);
 }

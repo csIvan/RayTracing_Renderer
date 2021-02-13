@@ -206,7 +206,7 @@ void ofApp::updateSelected(SceneObject *s) {
 		}
 	}
 	
-
+	s->reflectCoeff = (float)gui_reflect;
 	s->position = static_cast<glm::vec3>(slider_location);
 	s->rotation.x = static_cast<int>(gui_angleX);
 	s->rotation.y = static_cast<int>(gui_angleY);
@@ -276,7 +276,7 @@ void ofApp::updateGUI(SceneObject *s) {
 		}
 	}
 	
-
+	objectGUI.add(gui_reflect.setup("Reflection", s->reflectCoeff, 0.0, 1.0));
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 10, 5)));
 	//objectGUI.add(slider_rotation.setup("Angle Rotation", s->rotation, glm::vec3(-90, -90, -90), glm::vec3(90, 90, 90)));
 	group_rotation.setBorderColor(ofColor(25, 25, 25));
