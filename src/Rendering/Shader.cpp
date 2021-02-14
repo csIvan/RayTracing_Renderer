@@ -118,6 +118,11 @@ bool Shader::inShadow(const Ray &r) {
 		//	sphereSelected->points.push_back(opoint);
 		//	sphereSelected->normals.push_back((opoint + onormal / 2));
 		//}
+		if (dynamic_cast<Sphere*>(objects[index]) != nullptr) {
+			Sphere *sphereSelected = (Sphere*)objects[index];
+			//sphereSelected->points.push_back(opoint);
+			//sphereSelected->normals.push_back((opoint + onormal / 2));
+		}
 		if (objects[index]->intersect(r, point, normal)) {
 			blocked = true; 
 			//if (dynamic_cast<Sphere*>(objects[index]) != nullptr) {

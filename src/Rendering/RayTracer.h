@@ -22,7 +22,7 @@ public:
 	RayTracer() {};
  	~RayTracer() {};
 
-	ofImage render();
+	ofImage render(int samples);
 	bool castRay(Ray &ray, ofColor &color, int depth = 0);
 
 };

@@ -10,7 +10,7 @@ public:
 	vector<Light*> lights;
 	ofImage image;
 
-	virtual ofImage render() = 0;
+	virtual ofImage render(int samples) = 0;
 	virtual bool castRay(Ray &r, ofColor &color, int depth = 0) {
 		return false;
 	}

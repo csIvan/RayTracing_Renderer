@@ -28,7 +28,7 @@ void Sphere::draw() {
 	ofDisableLighting();
 	for (int i = 0; i < points.size(); i++) {
 		ofSetColor(ofColor::red);
-		//ofDrawSphere(points[i], 0.025);
+		ofDrawSphere(points[i], 0.025);
 		ofSetColor(ofColor::yellow);
 		//ofDrawLine(points[i], normals[i]);
 	}

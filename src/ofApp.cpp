@@ -91,6 +91,7 @@ void ofApp::setup() {
 	button_rayMarch.setTextColor(ofColor(111, 169, 255));
 	sceneGUI.add(button_rayTrace.setup(" RayTrace"));
 	sceneGUI.add(button_rayMarch.setup(" RayMarch"));
+	sceneGUI.add(gui_samples.setup("Samples", samples, 1, 64));
 	sceneGUI.add(group_create.setup("Add"));
 	group_objects.setBorderColor(ofColor(25, 25, 25));
 	group_objects.setHeaderBackgroundColor(ofColor::black);
@@ -140,6 +141,20 @@ void ofApp::setup() {
 //--------------------------------------------------------------
 void ofApp::update() {
 	sceneGUI.maximize();	// Always maximixed
+
+	if ((int)gui_samples < 3)
+		gui_samples = 1;
+	else if ((int)gui_samples >= 3 && (int)gui_samples < 10)
+		gui_samples = 4;	
+	else if ((int)gui_samples >= 10 && (int)gui_samples < 25)
+		gui_samples = 16;
+	else if ((int)gui_samples >= 25 && (int)gui_samples < 50)
+		gui_samples = 36;
+	else 
+		gui_samples = 64;
+
+
+	samples = (int)gui_samples;
 
 	lightScene.setGlobalPosition(theCam->getPosition());
 	if (selected.size() > 0) {
@@ -333,7 +348,6 @@ void ofApp::draw() {
 		lights[i]->draw();
 	}
 	renderCam.draw();
-	renderCam.drawFrustum();
 	theCam->end();
 	ofDisableDepthTest();
 
@@ -423,7 +437,7 @@ void ofApp::handleRayTrace() {
 	}
 
 	time(&start);
-	image = rayTracer.render();
+	image = rayTracer.render(samples);
 	time(&end);
 
 	renderFinished = true;
@@ -440,7 +454,7 @@ void ofApp::handleRayMarch() {
 	}
 
 	time(&start);
-	image = rayMarcher.render();
+	image = rayMarcher.render(samples);
 	time(&end);
 
 	renderFinished = true;
@@ -547,12 +561,6 @@ void ofApp::keyPressed(int key) {
 	case OF_KEY_F2: theCam = &sideCam;
 		break;
 	case OF_KEY_F3: theCam = &previewCam;
-		break;
-	case 'r': rayTracer.render();
-		cout << "done" << endl;
-		break;
-	case 'm': rayMarcher.render();
-		cout << "done" << endl;
 		break;
 	case 'b': 
 		hideGrid = !hideGrid;

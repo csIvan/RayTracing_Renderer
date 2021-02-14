@@ -18,7 +18,7 @@ public:
 	RayMarcher() {};
 	~RayMarcher() {};
 
-	ofImage render();
+	ofImage render(int samples);
 	bool castRay(Ray &r, ofColor &color, int depth = 0);
 
 	bool rayMarch(Ray r, glm::vec3 &p);

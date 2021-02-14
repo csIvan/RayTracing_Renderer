@@ -10,19 +10,25 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
 * RayMarching function. Calls rayMarch instead of the object's ray intersect function.
 * Also uses the normalRM so that phong shading can be applied to the scene
 */
-ofImage RayMarcher::render() {
+ofImage RayMarcher::render(int samples) {
 	shader = Shader(this, lights, objects);
-	float row, column;
-	for (row = 0; row < imageHeight; row++) {
-		for (column = 0; column < imageWidth; column++) {
-			Ray ray = renderCam.getRay(column / imageWidth, row / imageHeight);
-			ofColor color;
+	for (float row = 0; row < imageHeight; row++) {
+		for (float column = 0; column < imageWidth; column++) {
+			glm::vec3 total = glm::vec3(0.0f, 0.0f, 0.0f);
+			for (int i = 0; i < sqrt(samples); i++) {
+				for (int j = 0; j < sqrt(samples); j++) {
+					Ray ray = renderCam.getRay((column + (j + 0.5) / sqrt(samples)) / imageWidth,
+						(row + (i + 0.5) / sqrt(samples)) / imageHeight);
+					ofColor color;
 
-			if (castRay(ray, color)) {
-				image.setColor(column, imageHeight - row - 1, color);
+					if (castRay(ray, color))
+						total += glm::vec3(color.r, color.g, color.b);
+					else
+						total += glm::vec3(ofColor::black.r, ofColor::black.g, ofColor::black.b);
+				}
 			}
-			else
-				image.setColor(column, imageHeight - row - 1, ofColor::black);
+			ofColor totalLast = ofColor(total.x / samples, total.y / samples, total.z / samples);
+			image.setColor(column, imageHeight - row - 1, totalLast);	
 		}
 
 		int percent = (int)(row / imageHeight * 100) + 1;

@@ -85,6 +85,7 @@ public:
 	ofxTextField gui_axiom, gui_rule1, gui_rule2, gui_rule3, gui_rule4;
 	ofxIntSlider gui_angle1;
 	ofxIntSlider gui_angle2;
+	ofxIntSlider gui_samples;
 	ofxColorSlider color;
 	ofxGuiGroup group_scene;
 	ofxGuiGroup group_create;
@@ -117,6 +118,10 @@ public:
 	int imageHeight = 800;
 	//int imageWidth = 90;
 	//int imageHeight = 60;
+	//int imageWidth = 12;
+	//int imageHeight = 8;
+
+	int samples = 4;
 
 	//scene objects and lights
 	Sphere sphere1;
