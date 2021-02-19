@@ -20,11 +20,15 @@ ofImage RayTracer::render(int samples) {
 	shader = Shader(this, lights, objects);
 	for (float row = 0; row < imageHeight; row++) {
 		for (float column = 0; column < imageWidth; column++) {
+
 			glm::vec3 total = glm::vec3(0.0f, 0.0f, 0.0f);
+
 			for (int i = 0; i < sqrt(samples); i++) {
 				for (int j = 0; j < sqrt(samples); j++) {
-					Ray ray = renderCam.getRay((column + (j + 0.5) / sqrt(samples)) / imageWidth,
-						(row + (i + 0.5) / sqrt(samples)) / imageHeight);
+					float jitter = (sqrt(samples) == 1) ? 0.5 : ((float)rand() / (RAND_MAX));
+
+					Ray ray = renderCam.getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
+						(row + (i + jitter) / sqrt(samples)) / imageHeight);
 					ofColor color;
 
 					if (castRay(ray, color))
@@ -33,8 +37,8 @@ ofImage RayTracer::render(int samples) {
 						total += glm::vec3(ofColor::black.r, ofColor::black.g, ofColor::black.b);
 				}
 			}
-			ofColor totalLast = ofColor(total.x/samples, total.y/samples, total.z/samples);
-			image.setColor(column, imageHeight - row - 1, totalLast);
+			total /= samples;
+			image.setColor(column, imageHeight - row - 1, ofColor(total.x, total.y, total.z));
 		}
 
 		int percent = (int)(row / imageHeight * 100) + 1;

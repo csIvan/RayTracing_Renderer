@@ -29,7 +29,7 @@ public:
 
 	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const ofColor diffuse, float reflect, int depth);
 	ofColor phong(const glm::vec3 &p, const glm::vec3 &norm, const glm::vec3 camPos, const ofColor diffuse, const ofColor specular, float power);
-	bool inShadow(const Ray &r);
+	bool inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance);
 
 	Ray reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal);
 };

@@ -86,6 +86,7 @@ public:
 	ofxIntSlider gui_angle1;
 	ofxIntSlider gui_angle2;
 	ofxIntSlider gui_samples;
+	ofxIntSlider gui_area_samples;
 	ofxColorSlider color;
 	ofxGuiGroup group_scene;
 	ofxGuiGroup group_create;
@@ -118,10 +119,10 @@ public:
 	int imageHeight = 800;
 	//int imageWidth = 90;
 	//int imageHeight = 60;
-	//int imageWidth = 12;
-	//int imageHeight = 8;
+	//int imageWidth = 150;
+	//int imageHeight = 100;
 
-	int samples = 4;
+	int samples = 1;
 
 	//scene objects and lights
 	Sphere sphere1;
