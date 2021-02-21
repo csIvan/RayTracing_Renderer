@@ -5,17 +5,19 @@ ViewPlane::ViewPlane(glm::vec2 p0, glm::vec2 p1) {
 	max = p1;
 }
 
-ViewPlane::ViewPlane() {			// create reasonable defaults (6x4 aspect)
-	min = glm::vec2(-3, -2);
-	max = glm::vec2(3, 2);
-	position = glm::vec3(0, 0, 5);
-	normal = glm::vec3(0, 0, 1);    // viewplane currently limited to Z axis orientation
-
+ViewPlane::ViewPlane() {			// create reasonable defaults (3x2 aspect)
+	min = glm::vec2(-1.5, -1);
+	max = glm::vec2(1.5, 1);
+	position = glm::vec3(0, 0, -3.5);
 }
 
 void ViewPlane::draw() {
+	applyMatrix();
 	ofNoFill();
-	ofDrawRectangle(glm::vec3(min.x, min.y, position.z), width(), height());
+	ofPushMatrix();
+		ofMultMatrix(Transform);
+		ofDrawRectangle(glm::vec3(min.x, min.y, 0.0f), width(), height());
+	ofPopMatrix();
 	ofFill();
 }
 

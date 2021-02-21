@@ -1,9 +1,10 @@
 #include "RayTracer.h"
 
-RayTracer::RayTracer(int imageWidth, int imageHeight, ofImage &image) {
+RayTracer::RayTracer(int imageWidth, int imageHeight, ofImage &image, RenderCam &cam) {
 	this->imageWidth = imageWidth;
 	this->imageHeight = imageHeight;
 	this->image = image;
+	renderCam = &cam;
 
 	texture.load("images/texture2.jpg");
 	sphereTexture.load("images/WorldMap.jpg");
@@ -27,7 +28,7 @@ ofImage RayTracer::render(int samples) {
 				for (int j = 0; j < sqrt(samples); j++) {
 					float jitter = (sqrt(samples) == 1) ? 0.5 : ((float)rand() / (RAND_MAX));
 
-					Ray ray = renderCam.getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
+					Ray ray = renderCam->getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
 						(row + (i + jitter) / sqrt(samples)) / imageHeight);
 					ofColor color;
 
@@ -60,7 +61,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, int depth) {
 		glm::vec3 point, normal;
 
 		if (objects[index]->intersect(ray, point, normal)) {
-			dist = glm::distance(renderCam.position, point);
+			dist = glm::distance(renderCam->position, point);
 			if (dist <= nearestDist) {
 				nearestDist = dist;
 				hit = true;

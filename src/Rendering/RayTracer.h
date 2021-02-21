@@ -12,13 +12,13 @@
 
 class RayTracer : public Renderer {
 public:
-	RenderCam renderCam;
+	RenderCam *renderCam;
 	ofImage texture, sphereTexture;
 	Shader shader;
 	int imageWidth, imageHeight;
 	float Power;
 
-	RayTracer(int imageWidth, int imageHeight, ofImage &image);
+	RayTracer(int imageWidth, int imageHeight, ofImage &image, RenderCam &cam);
 	RayTracer() {};
  	~RayTracer() {};
 

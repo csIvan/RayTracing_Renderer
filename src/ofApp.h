@@ -99,7 +99,7 @@ public:
 
 	// GUI functions
 	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete;
-	ofxToggle toggle_image, toggle_grid;
+	ofxToggle toggle_image, toggle_grid, toggle_render_cam;
 
 	// SceneObject Buttons
 	ofxButton button_sphere, button_cube, button_plane, button_cylinder, button_cone, button_torus,

@@ -28,11 +28,9 @@ void ofApp::setup() {
 	sideCam.setPosition(glm::vec3(5, 0, 0));
 	sideCam.lookAt(glm::vec3(0, 0, 0));
 	sideCam.setNearClip(.1);
-	previewCam.setPosition(glm::vec3(0, 0, 10));
-	previewCam.lookAt(glm::vec3(0, 0, -1));
 	previewCam.setNearClip(.1);
 	ofSetSmoothLighting(true);
-
+	renderCam.objName = "Render_Cam";
 
 	//spotlight
 	//sp1 = SpotLight(glm::vec3(-3, 4, 1), glm::vec3(.5, -1, -.55), .1, 4);
@@ -53,7 +51,7 @@ void ofApp::setup() {
 
 	image.allocate(imageWidth, imageHeight, ofImageType::OF_IMAGE_COLOR);
 
-	rayTracer = RayTracer(imageWidth, imageHeight, image);
+	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image);
 
 	nearestDistance = FLT_MAX;
@@ -119,9 +117,11 @@ void ofApp::setup() {
 	button_saveImage.setTextColor(ofColor(255, 192, 81));
 	toggle_image.setFillColor(ofColor(108, 176, 94));
 	toggle_grid.setFillColor(ofColor(94, 132, 176));
+	toggle_render_cam.setFillColor(ofColor(123, 60, 230));
 	button_delete.setTextColor(ofColor(255, 63, 63));
 	group_scene.add(button_saveImage.setup(" Save Image"));
 	group_scene.add(toggle_grid.setup(" Toggle Grid", true));
+	group_scene.add(toggle_render_cam.setup(" Toggle Render Cam", false));
 	group_scene.add(toggle_image.setup(" Show Render", true));
 	group_scene.add(button_delete.setup(" Delete Selected Object"));
 
@@ -140,6 +140,8 @@ void ofApp::setup() {
 
 //--------------------------------------------------------------
 void ofApp::update() {
+	previewCam.setPosition(renderCam.position);
+	previewCam.setOrientation(renderCam.getRotateMatrix());
 	sceneGUI.maximize();	// Always maximixed
 
 	if ((int)gui_samples < 3)
@@ -290,6 +292,7 @@ void ofApp::updateGUI(SceneObject *s) {
 			objectGUI.add(gui_value2.setup("Width", areaLightSelected->width, 0.5, 10));
 		}
 	}
+
 	
 	objectGUI.add(gui_reflect.setup("Reflection", s->reflectCoeff, 0.0, 1.0));
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 10, 5)));
@@ -315,9 +318,15 @@ void ofApp::updateGUI(SceneObject *s) {
 //--------------------------------------------------------------
 void ofApp::draw() {
 	ofEnableDepthTest();
+
+	theCam = ((bool)toggle_render_cam) ? &previewCam : &mainCam;
 	theCam->begin();
+
 	if ((bool)toggle_image && renderFinished) {
-		image.draw(glm::vec3(-3, -2, 5), 6, 4);
+		ofPushMatrix();
+			ofMultMatrix(renderCam.Transform);
+			image.draw(glm::vec3(renderCam.view.bottomLeft()), renderCam.view.width(), renderCam.view.height());
+		ofPopMatrix();
 	}
 	// Draw Grid
 	if ((bool)toggle_grid) {
@@ -344,6 +353,8 @@ void ofApp::draw() {
 
 	material.end();
 	ofDisableLighting();
+
+
 	for (int i = 0; i < lights.size(); i++) {
 		lights[i]->draw();
 	}
@@ -388,6 +399,11 @@ void ofApp::mousePressed(int x, int y, int button) {
 		}
 	}
 
+	glm::vec3 tempPoint, tempNormal;
+	if (renderCam.intersect(Ray(p, dn), tempPoint, tempNormal)) {
+		hits.push_back(&renderCam);
+	}
+
 	SceneObject *selectedObj = NULL;
 	if (hits.size() > 0) {
 		selectedObj = hits[0];
@@ -406,6 +422,8 @@ void ofApp::mousePressed(int x, int y, int button) {
 	for (int i = 0; i < lights.size(); i++) {
 		lights[i]->isSelected = false;
 	}
+
+	renderCam.isSelected = false;
 
 	if (selectedObj) {
 		selectedObj->isSelected = true;

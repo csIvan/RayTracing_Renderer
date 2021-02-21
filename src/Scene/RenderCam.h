@@ -4,14 +4,18 @@
 #include "SceneObject.h"
 #include "ViewPlane.h"
 
-// render camera  - currently must be z axis aligned (we will improve this in project 4)
+// render camera 
 class RenderCam : public SceneObject {
 public:
-	glm::vec3 aim;
 	ViewPlane view;          // The camera viewplane, this is the view that we will render
+	float side = 0.25f;
 
 	RenderCam();
-	Ray getRay(float u, float v);
+	~RenderCam() {};
+
+	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);
 	void draw();
 	void drawFrustum(); 
+
+	Ray getRay(float u, float v);
 };
