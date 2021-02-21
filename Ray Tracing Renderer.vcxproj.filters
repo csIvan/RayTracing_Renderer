@@ -100,6 +100,9 @@
     <ClCompile Include="src\Scene\SceneObjects\Lights\AreaLight.cpp">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\Material.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -396,6 +399,9 @@
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\Renderer.h">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Material.h">
       <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
