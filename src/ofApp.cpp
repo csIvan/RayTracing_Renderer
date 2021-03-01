@@ -76,6 +76,10 @@ void ofApp::setup() {
 	button_point_light.addListener(this, &ofApp::addPointLight);
 	button_spot_light.addListener(this, &ofApp::addSpotLight);
 	button_area_light.addListener(this, &ofApp::addAreaLight);
+	toggle_matte.addListener(this, &ofApp::setMatte);
+	toggle_mirror.addListener(this, &ofApp::setMirror);
+	toggle_glass.addListener(this, &ofApp::setGlass);
+	toggle_metal.addListener(this, &ofApp::setMetal);
 	
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
@@ -160,6 +164,7 @@ void ofApp::update() {
 
 	lightScene.setGlobalPosition(theCam->getPosition());
 	if (selected.size() > 0) {
+		label_material = ofToString(selectedMaterial);
 		updateSelected(selected[0]);
 		objectGUI.maximize();
 		mainCam.setControlArea(ofRectangle(sceneGUI.getWidth(), 0, ofGetWidth() - sceneGUI.getWidth() - objectGUI.getWidth(), ofGetHeight()));
@@ -224,6 +229,7 @@ void ofApp::updateSelected(SceneObject *s) {
 	}
 	
 	s->objMaterial.reflectCoeff = (float)gui_reflect;
+	s->objMaterial.setString(selectedMaterial);
 	s->position = static_cast<glm::vec3>(slider_location);
 	s->rotation.x = static_cast<int>(gui_angleX);
 	s->rotation.y = static_cast<int>(gui_angleY);
@@ -239,6 +245,7 @@ void ofApp::updateSelected(SceneObject *s) {
 
 // Load scene object attributes to interface
 void ofApp::updateGUI(SceneObject *s) {
+	objectGUI.setDefaultHeight(24);
 	objectGUI.setName("			" + s->objName);
 	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
@@ -294,7 +301,6 @@ void ofApp::updateGUI(SceneObject *s) {
 	}
 
 	
-	objectGUI.add(gui_reflect.setup("Reflection", s->objMaterial.reflectCoeff, 0.0, 1.0));
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 10, 5)));
 	//objectGUI.add(slider_rotation.setup("Angle Rotation", s->rotation, glm::vec3(-90, -90, -90), glm::vec3(90, 90, 90)));
 	group_rotation.setBorderColor(ofColor(25, 25, 25));
@@ -303,16 +309,55 @@ void ofApp::updateGUI(SceneObject *s) {
 	group_rotation.add(gui_angleY.setup("Angle Y", s->rotation.y, -90, 90));
 	group_rotation.add(gui_angleZ.setup("Angle Z", s->rotation.z, -90, 90));
 	slider_scale.setBorderColor(ofColor(25, 25, 25));
+	slider_location.setBorderColor(ofColor(25, 25, 25));
+	
 
-	// Don't need scale for lights
+	// Don't need scale or materials for lights
 	if (dynamic_cast<Light*>(s) == nullptr) {
 		objectGUI.add(slider_scale.setup("Scale", s->scale, glm::vec3(1, 1, 1), glm::vec3(10, 10, 10)));
+
+		group_material.setBorderColor(ofColor(25, 25, 25));
+		toggle_matte.setFillColor(ofColor(45, 138, 86));
+		toggle_mirror.setFillColor(ofColor(45, 138, 86));
+		toggle_glass.setFillColor(ofColor(45, 138, 86));
+		toggle_metal.setFillColor(ofColor(45, 138, 86));
+		objectGUI.add(group_material.setup("Material"));
+		group_material.add(label_material.setup("Current Material ", selectedMaterial));
+		updateMaterial();
+		group_material.add(gui_reflect.setup("Reflection", s->objMaterial.reflectCoeff, 0.0, 1.0));
 	}
 
-	slider_location.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(color.setup("Color", s->objMaterial.diffuseColor, ofColor(0, 0), ofColor(255, 255)));
 	color.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.getGroup("Color").maximize();
+
+}
+
+void ofApp::updateMaterial() {
+	if (selectedMaterial == "Matte") {
+		group_material.add(toggle_matte.setup(" Matte", true));
+		group_material.add(toggle_mirror.setup(" Mirror", false));
+		group_material.add(toggle_glass.setup(" Glass", false));
+		group_material.add(toggle_metal.setup(" Metal", false));
+	}
+	else if (selectedMaterial == "Mirror") {
+		group_material.add(toggle_matte.setup(" Matte", false));
+		group_material.add(toggle_mirror.setup(" Mirror", true));
+		group_material.add(toggle_glass.setup(" Glass", false));
+		group_material.add(toggle_metal.setup(" Metal", false));
+	}
+	else if (selectedMaterial == "Glass") {
+		group_material.add(toggle_matte.setup(" Matte", false));
+		group_material.add(toggle_mirror.setup(" Mirror", false));
+		group_material.add(toggle_glass.setup(" Glass", true));
+		group_material.add(toggle_metal.setup(" Metal", false));
+	}
+	else if (selectedMaterial == "Metal") {
+		group_material.add(toggle_matte.setup(" Matte", false));
+		group_material.add(toggle_mirror.setup(" Mirror", false));
+		group_material.add(toggle_glass.setup(" Glass", false));
+		group_material.add(toggle_metal.setup(" Metal", true));
+	}
 }
 
 //--------------------------------------------------------------
@@ -427,6 +472,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 	if (selectedObj) {
 		selectedObj->isSelected = true;
+		selectedMaterial = selectedObj->objMaterial.toString();
 		selected.push_back(selectedObj);
 		hideGUI = false;
 		updateGUI(selectedObj);
@@ -570,6 +616,50 @@ void ofApp::addAreaLight() {
 	addLight(new AreaLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 1.0f, 1.0f, "Area_Light_" + to_string(++arealightCount)));
 }
 
+void ofApp::setMatte(bool & value) {
+	if (value) {
+		selectedMaterial = "Matte";
+		toggle_mirror = false;
+		toggle_glass = false;
+		toggle_metal = false;
+	}
+	else if (!value && selectedMaterial == "Matte") {
+		toggle_matte = true;
+	}
+}
+void ofApp::setMirror(bool & value) {
+	if (value) {
+		selectedMaterial = "Mirror";
+		toggle_matte = false;
+		toggle_glass = false;
+		toggle_metal = false;
+	}
+	else if (!value && selectedMaterial == "Mirror") {
+		toggle_mirror = true;
+	}
+}
+void ofApp::setGlass(bool & value) {
+	if (value) {
+		selectedMaterial = "Glass";
+		toggle_matte = false;
+		toggle_mirror = false;
+		toggle_metal = false;
+	}
+	else if (!value && selectedMaterial == "Glass") {
+		toggle_glass = true;
+	}
+}
+void ofApp::setMetal(bool & value) {
+	if (value) {
+		selectedMaterial = "Metal";
+		toggle_matte = false;
+		toggle_glass = false;
+		toggle_mirror = false;
+	}
+	else if (!value && selectedMaterial == "Metal") {
+		toggle_metal = true;
+	}
+}
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key) {

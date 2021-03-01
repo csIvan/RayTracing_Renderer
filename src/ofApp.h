@@ -32,6 +32,7 @@ public:
 
 	void updateSelected(SceneObject *s);
 	void updateGUI(SceneObject *s);
+	void updateMaterial();
 
 	void handleRayTrace();
 	void handleRayMarch();
@@ -51,6 +52,10 @@ public:
 	void addPointLight();
 	void addSpotLight();
 	void addAreaLight();
+	void setMatte(bool & value);
+	void setMirror(bool & value);
+	void setGlass(bool & value);
+	void setMetal(bool & value);
 	void mousePressed(int x, int y, int button);
 	void mouseReleased(int x, int y, int button);
 	void keyPressed(int key);
@@ -93,13 +98,17 @@ public:
 	ofxGuiGroup group_objects;
 	ofxGuiGroup group_lights;
 	ofxGuiGroup group_rotation;
+	ofxGuiGroup group_material;
 	ofxIntSlider gui_angleX;
 	ofxIntSlider gui_angleY;
 	ofxIntSlider gui_angleZ;
 
 	// GUI functions
 	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete;
-	ofxToggle toggle_image, toggle_grid, toggle_render_cam;
+	ofxToggle toggle_image, toggle_grid, toggle_render_cam, toggle_matte, toggle_mirror,
+		toggle_glass, toggle_metal;;
+
+	ofxLabel label_material;
 
 	// SceneObject Buttons
 	ofxButton button_sphere, button_cube, button_plane, button_cylinder, button_cone, button_torus,
@@ -109,6 +118,7 @@ public:
 	ofImage image;
 	ofImage texture;
 	ofImage sphereTexture;
+	string selectedMaterial = "Matte";
 
 	vector<SceneObject *> selected;
 	vector<SceneObject *> scene;
