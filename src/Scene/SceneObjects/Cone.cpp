@@ -6,7 +6,7 @@ Cone::Cone(glm::vec3 p, float h, float r, string name, ofColor diffuse) {
 	height = h;
 	radius = r;
 	objName = name;;
-	diffuseColor = diffuse;
+	objMaterial.diffuseColor = diffuse;
 }
 
 bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
@@ -106,14 +106,14 @@ void Cone::draw() {
 	}
 
 	ofSetColor(ofColor::white);
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
+	sceneMaterial.begin();
+	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
 		ofRotateZ(180);
 		ofDrawCone(radius, height);
 	ofPopMatrix();
-	material.end();
+	sceneMaterial.end();
 }
 
 float Cone::sdf(const glm::vec3 p1) {

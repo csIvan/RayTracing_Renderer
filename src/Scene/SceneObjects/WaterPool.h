@@ -7,7 +7,6 @@
 class WaterPool : public SceneObject {
 public:
 	ofPlanePrimitive plane;
-	ofMaterial material;
 	glm::vec3 normal;
 	float radius = 1.0;
 	float width = 20;

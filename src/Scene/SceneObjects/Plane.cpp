@@ -11,7 +11,7 @@ Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, fl
 	width = w;
 	height = h;
 	objName = name;
-	diffuseColor = diffuse;
+	objMaterial.diffuseColor = diffuse;
 	if (normal == glm::vec3(0, 1, 0)) {
 		plane.rotateDeg(90, 1, 0, 0);
 	}
@@ -76,13 +76,13 @@ void Plane::draw() {
 		ofEnableLighting();
 	}
 	ofSetColor(ofColor::white);
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
+	sceneMaterial.begin();
+	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
 		plane.drawFaces();
 	ofPopMatrix();
-	material.end();
+	sceneMaterial.end();
 }
 
 float Plane::sdf(const glm::vec3 p1) {

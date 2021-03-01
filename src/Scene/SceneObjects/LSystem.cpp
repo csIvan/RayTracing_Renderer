@@ -7,7 +7,7 @@ LSystem::LSystem(glm::vec3 p, int n, string ax, string name, ofColor diffuse) {
 	iterations = n;
 	axiom = ax;
 	objName = name;
-	diffuseColor = diffuse;
+	objMaterial.diffuseColor = diffuse;
 
 	rule1.a = 'F';
 	rule2.a = 'A';
@@ -250,13 +250,13 @@ void LSystem::draw() {
 	}
 
 	ofSetColor(ofColor::white);
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
+	sceneMaterial.begin();
+	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
 		drawLSystem();
 	ofPopMatrix();
-	material.end();
+	sceneMaterial.end();
 
 }
 

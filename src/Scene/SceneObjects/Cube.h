@@ -6,7 +6,6 @@
 //************************************ Cube Class ***************************************
 class Cube : public SceneObject {
 public:
-	ofMaterial material;
 	float side = 1.0f;
 
 	Cube(glm::vec3 p, float s, string name, ofColor diffuse = ofColor::lightGray);

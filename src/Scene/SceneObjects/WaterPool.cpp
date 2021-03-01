@@ -4,7 +4,7 @@ WaterPool::WaterPool(glm::vec3 p, float r, string name, ofColor diffuse) {
 	position = p;
 	radius = r;
 	objName = name;
-	diffuseColor = diffuse;
+	objMaterial.diffuseColor = diffuse;
 }
 
 bool WaterPool::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
@@ -53,13 +53,13 @@ void WaterPool::draw() {
 		ofEnableLighting();
 	}
 	ofSetColor(ofColor::white);
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
-	ofPushMatrix();
-	ofMultMatrix(Transform);
-	plane.drawFaces();
+	sceneMaterial.begin();
+	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
+		ofPushMatrix();
+		ofMultMatrix(Transform);
+		plane.drawFaces();
 	ofPopMatrix();
-	material.end();
+	sceneMaterial.end();
 }
 
 float WaterPool::sdf(glm::vec3 p, int amp, int octaves) {

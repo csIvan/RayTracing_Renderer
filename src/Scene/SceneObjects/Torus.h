@@ -7,7 +7,6 @@
 //************************************** Torus Class *********************************
 class Torus : public SceneObject {
 public:
-	ofMaterial material;
 	float R;	// Larger radius; from center of torus to center of tube
 	float r;	// Smaller radius; radius of tube
 

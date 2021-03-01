@@ -6,7 +6,6 @@
 //Point Light class with an intensity variable
 class Light : public SceneObject {
 public:
-	ofMaterial material;
 	float intensity = 50;
 	float radius = 0.1;
 

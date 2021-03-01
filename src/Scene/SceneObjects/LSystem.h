@@ -15,7 +15,6 @@ public:
 //************************************ LSystem Class **************************************
 class LSystem : public SceneObject {
 public:
-	ofMaterial material;	//TODO: change later for sceneObject.h to have this variable
 	Cylinder tube;
 	Sphere joint;
 	string axiom, sentence;

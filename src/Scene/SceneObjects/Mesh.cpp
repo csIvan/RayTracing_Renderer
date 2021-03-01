@@ -6,7 +6,7 @@ Mesh::Mesh(glm::vec3 p, vector<Triangle> t, vector<glm::vec3> v, vector<glm::vec
 	vertices = v;
 	vertNormals = vn;
 	objName = name;
-	diffuseColor = diffuse;
+	objMaterial.diffuseColor = diffuse;
 
 	// Create scene mesh
 	for (int i = 0; i < tris.size(); i++) {
@@ -94,13 +94,13 @@ void Mesh::draw() {
 	}
 
 	ofSetColor(ofColor::white);
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
+	sceneMaterial.begin();
+	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
 		mesh.drawFaces();
 	ofPopMatrix();
-	material.end();
+	sceneMaterial.end();
 }
 
 float Mesh::sdf(const glm::vec3 p1) {

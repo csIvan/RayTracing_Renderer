@@ -4,7 +4,7 @@ Cube::Cube(glm::vec3 p, float s, string name, ofColor diffuse) {
 	position = p;
 	side = s / 2;
 	objName = name;
-	diffuseColor = diffuse;
+	objMaterial.diffuseColor = diffuse;
 }
 
 bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
@@ -67,13 +67,13 @@ void Cube::draw() {
 	}
 
 	ofSetColor(ofColor::white);
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
+	sceneMaterial.begin();
+	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
 		ofDrawBox(ofVec3f::zero(), side*2);
 	ofPopMatrix();
-	material.end();
+	sceneMaterial.end();
 }
 
 float Cube::sdf(const glm::vec3 p1) {

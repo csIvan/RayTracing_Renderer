@@ -6,7 +6,6 @@
 //************************************ Cylinder Class ***************************************
 class Cylinder : public SceneObject {
 public:
-	ofMaterial material;
 	float height = 2.0f;
 	float radius = 0.25f;	
 	vector<glm::vec3> points;

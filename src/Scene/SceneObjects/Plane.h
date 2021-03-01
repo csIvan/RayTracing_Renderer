@@ -7,7 +7,6 @@
 class Plane : public SceneObject {
 public:
 	ofPlanePrimitive plane;
-	ofMaterial material;
 	glm::vec3 normal;
 	float width = 20;
 	float height = 20;

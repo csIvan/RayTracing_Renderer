@@ -6,7 +6,7 @@ Torus::Torus(glm::vec3 p, float r1, float r2, string name, ofColor diffuse) {
 	R = r1;
 	r = r2;
 	objName = name;
-	diffuseColor = diffuse;
+	objMaterial.diffuseColor = diffuse;
 }
 
 bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
@@ -100,13 +100,13 @@ void Torus::draw() {
 
 	ofSetColor(ofColor::white);
 
-	material.begin();
-	material.setDiffuseColor(diffuseColor);
+	sceneMaterial.begin();
+	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
 		drawTorus();
 	ofPopMatrix();
-	material.end();
+	sceneMaterial.end();
 }
 
 void Torus::drawTorus() {
