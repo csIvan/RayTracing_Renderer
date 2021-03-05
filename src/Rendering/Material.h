@@ -9,9 +9,10 @@ public:
 	Mat mat;
 	ofColor diffuseColor = ofColor::grey;   
 	ofColor specularColor = ofColor::lightGray;
+	float reflection = 0.0f;
+	float refraction = 0.0f;
+	float roughness = 0.0f;
 	string materialString = "Matte";
-	float reflectCoeff = 0.0f;
-
 	
 	Material();
 	ofColor Matte();

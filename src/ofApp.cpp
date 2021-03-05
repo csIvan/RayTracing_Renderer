@@ -228,7 +228,7 @@ void ofApp::updateSelected(SceneObject *s) {
 		}
 	}
 	
-	s->objMaterial.reflectCoeff = (float)gui_reflect;
+	s->objMaterial.reflection = (float)gui_reflect;
 	s->objMaterial.setString(selectedMaterial);
 	s->position = static_cast<glm::vec3>(slider_location);
 	s->rotation.x = static_cast<int>(gui_angleX);
@@ -324,7 +324,7 @@ void ofApp::updateGUI(SceneObject *s) {
 		objectGUI.add(group_material.setup("Material"));
 		group_material.add(label_material.setup("Current Material ", selectedMaterial));
 		updateMaterial();
-		group_material.add(gui_reflect.setup("Reflection", s->objMaterial.reflectCoeff, 0.0, 1.0));
+		group_material.add(gui_reflect.setup("Reflection", s->objMaterial.reflection, 0.0, 1.0));
 	}
 
 	objectGUI.add(color.setup("Color", s->objMaterial.diffuseColor, ofColor(0, 0), ofColor(255, 255)));
