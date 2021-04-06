@@ -8,6 +8,7 @@ Shader::Shader(Renderer *renderer, vector<Light *> lights, vector<SceneObject *>
 	this->renderer = renderer;
 }
 
+
 ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const ofColor diffuse, float reflectV, int depth) {
 	float ambientCo = 0.08;
 	ofColor lambertColor = diffuse * ambientCo;
