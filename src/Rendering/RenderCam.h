@@ -1,8 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
-#include "SceneObject.h"
 #include "ViewPlane.h"
+#include "../Scene/SceneObject.h"
 
 // render camera 
 class RenderCam : public SceneObject {

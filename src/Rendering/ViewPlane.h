@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
-#include "SceneObject.h"
+#include "../Scene/SceneObject.h"
 
 // view plane for render camera
 class  ViewPlane : public SceneObject {

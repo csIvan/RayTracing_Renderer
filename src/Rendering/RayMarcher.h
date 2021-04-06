@@ -1,11 +1,12 @@
 #pragma once
 
+#include "../Application/Definitions.h"
+
 #include "ofMain.h"
 #include "Shader.h"
 #include "Renderer.h"
-#include "../Definitions.h"
-#include "../Scene/Ray.h"
-#include "../Scene/RenderCam.h"
+#include "Ray.h"
+#include "RenderCam.h"
 
 class RayMarcher : public Renderer{
 public:

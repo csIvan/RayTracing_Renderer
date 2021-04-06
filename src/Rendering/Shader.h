@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "Renderer.h"
-#include "../Scene/Ray.h"
+#include "Ray.h"
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Torus.h"
 #include "../Scene/SceneObjects/Sphere.h"

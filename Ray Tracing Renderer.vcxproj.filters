@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="src\ofApp.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\main.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.cpp">
       <Filter>addons\ofxAssimpModelLoader\src</Filter>
     </ClCompile>
@@ -70,12 +64,6 @@
     <ClCompile Include="src\Scene\SceneObjects\Plane.cpp">
       <Filter>src\Scene\SceneObjects</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\RenderCam.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\ViewPlane.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\Scene\SceneObjects\Lights\SpotLight.cpp">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClCompile>
@@ -101,6 +89,18 @@
       <Filter>src\Scene\SceneObjects\Lights</Filter>
     </ClCompile>
     <ClCompile Include="src\Rendering\Material.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\main.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Application\ofApp.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\ViewPlane.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Rendering\RenderCam.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
   </ItemGroup>
@@ -159,11 +159,11 @@
     <Filter Include="src\Math">
       <UniqueIdentifier>{95e7c6b2-d585-45db-9ea7-0e5bab2c1247}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Application">
+      <UniqueIdentifier>{4674df44-6871-4382-ab36-33d09f454e60}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ofApp.h">
-      <Filter>src</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.h">
       <Filter>addons\ofxAssimpModelLoader\src</Filter>
     </ClInclude>
@@ -335,12 +335,6 @@
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxToggle.h">
       <Filter>addons\ofxGui\src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Definitions.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\Ray.h">
-      <Filter>src\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\SceneObject.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
@@ -364,12 +358,6 @@
     </ClInclude>
     <ClInclude Include="src\Scene\SceneObjects\Plane.h">
       <Filter>src\Scene\SceneObjects</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\RenderCam.h">
-      <Filter>src\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\ViewPlane.h">
-      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\SceneObjects\Lights\SpotLight.h">
       <Filter>src\Scene\SceneObjects\Lights</Filter>
@@ -402,6 +390,21 @@
       <Filter>src\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Rendering\Material.h">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\ofApp.h">
+      <Filter>src\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Application\Definitions.h">
+      <Filter>src\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\RenderCam.h">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\ViewPlane.h">
+      <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\Ray.h">
       <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>

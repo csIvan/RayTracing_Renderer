@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "../Rendering/Material.h"
-#include "Ray.h"
+#include "../Rendering/Ray.h"
 
 // Base class for any renderable object in the scene
 class SceneObject {

@@ -180,9 +180,9 @@
     <PostBuildEvent />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Application\main.cpp" />
+    <ClCompile Include="src\Application\ofApp.cpp" />
     <ClCompile Include="src\Math\poly34.cpp" />
-    <ClCompile Include="src\ofApp.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpModelLoader.cpp" />
@@ -200,8 +200,9 @@
     <ClCompile Include="src\Rendering\Material.cpp" />
     <ClCompile Include="src\Rendering\RayMarcher.cpp" />
     <ClCompile Include="src\Rendering\RayTracer.cpp" />
+    <ClCompile Include="src\Rendering\RenderCam.cpp" />
     <ClCompile Include="src\Rendering\Shader.cpp" />
-    <ClCompile Include="src\Scene\RenderCam.cpp" />
+    <ClCompile Include="src\Rendering\ViewPlane.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cone.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cube.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cylinder.cpp" />
@@ -213,12 +214,11 @@
     <ClCompile Include="src\Scene\SceneObjects\Sphere.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Torus.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\WaterPool.cpp" />
-    <ClCompile Include="src\Scene\ViewPlane.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Definitions.h" />
+    <ClInclude Include="src\Application\Definitions.h" />
+    <ClInclude Include="src\Application\ofApp.h" />
     <ClInclude Include="src\Math\poly34.h" />
-    <ClInclude Include="src\ofApp.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpModelLoader.h" />
@@ -277,12 +277,13 @@
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxSliderGroup.h" />
     <ClInclude Include="..\..\..\addons\ofxGui\src\ofxToggle.h" />
     <ClInclude Include="src\Rendering\Material.h" />
+    <ClInclude Include="src\Rendering\Ray.h" />
     <ClInclude Include="src\Rendering\RayMarcher.h" />
     <ClInclude Include="src\Rendering\RayTracer.h" />
+    <ClInclude Include="src\Rendering\RenderCam.h" />
     <ClInclude Include="src\Rendering\Renderer.h" />
     <ClInclude Include="src\Rendering\Shader.h" />
-    <ClInclude Include="src\Scene\Ray.h" />
-    <ClInclude Include="src\Scene\RenderCam.h" />
+    <ClInclude Include="src\Rendering\ViewPlane.h" />
     <ClInclude Include="src\Scene\SceneObject.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cone.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cube.h" />
@@ -296,7 +297,6 @@
     <ClInclude Include="src\Scene\SceneObjects\Sphere.h" />
     <ClInclude Include="src\Scene\SceneObjects\Torus.h" />
     <ClInclude Include="src\Scene\SceneObjects\WaterPool.h" />
-    <ClInclude Include="src\Scene\ViewPlane.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
