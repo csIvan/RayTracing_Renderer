@@ -103,6 +103,9 @@
     <ClCompile Include="src\Rendering\RenderCam.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="src\Application\UIManager.cpp">
+      <Filter>src\Application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -406,6 +409,10 @@
     </ClInclude>
     <ClInclude Include="src\Rendering\Ray.h">
       <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h" />
+    <ClInclude Include="src\Application\UIManager.h">
+      <Filter>src\Application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -182,6 +182,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application\main.cpp" />
     <ClCompile Include="src\Application\ofApp.cpp" />
+    <ClCompile Include="src\Application\UIManager.cpp" />
     <ClCompile Include="src\Math\poly34.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.cpp" />
@@ -218,6 +219,7 @@
   <ItemGroup>
     <ClInclude Include="src\Application\Definitions.h" />
     <ClInclude Include="src\Application\ofApp.h" />
+    <ClInclude Include="src\Application\UIManager.h" />
     <ClInclude Include="src\Math\poly34.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.h" />
@@ -297,6 +299,7 @@
     <ClInclude Include="src\Scene\SceneObjects\Sphere.h" />
     <ClInclude Include="src\Scene\SceneObjects\Torus.h" />
     <ClInclude Include="src\Scene\SceneObjects\WaterPool.h" />
+    <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">
