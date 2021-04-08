@@ -182,7 +182,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application\main.cpp" />
     <ClCompile Include="src\Application\ofApp.cpp" />
-    <ClCompile Include="src\Application\UIManager.cpp" />
+    <ClCompile Include="src\Application\UI.cpp" />
     <ClCompile Include="src\Math\poly34.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.cpp" />
     <ClCompile Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.cpp" />
@@ -204,6 +204,7 @@
     <ClCompile Include="src\Rendering\RenderCam.cpp" />
     <ClCompile Include="src\Rendering\Shader.cpp" />
     <ClCompile Include="src\Rendering\ViewPlane.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cone.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cube.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cylinder.cpp" />
@@ -219,7 +220,7 @@
   <ItemGroup>
     <ClInclude Include="src\Application\Definitions.h" />
     <ClInclude Include="src\Application\ofApp.h" />
-    <ClInclude Include="src\Application\UIManager.h" />
+    <ClInclude Include="src\Application\UI.h" />
     <ClInclude Include="src\Math\poly34.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpAnimation.h" />
     <ClInclude Include="..\..\..\addons\ofxAssimpModelLoader\src\ofxAssimpMeshHelper.h" />
@@ -286,6 +287,7 @@
     <ClInclude Include="src\Rendering\Renderer.h" />
     <ClInclude Include="src\Rendering\Shader.h" />
     <ClInclude Include="src\Rendering\ViewPlane.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneObject.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cone.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cube.h" />

@@ -1,34 +1,17 @@
 #pragma once
 
 #include "ofxGui.h"
-#include "Definitions.h"
-#include "../Rendering/RayTracer.h"
-#include "../Rendering/RayMarcher.h"
-#include "../Rendering/ViewPlane.h"
-#include "../Rendering/RenderCam.h"
-#include "../Scene/SceneObject.h"
-#include "../Scene/SceneObjects/Sphere.h"
-#include "../Scene/SceneObjects/Cube.h"
-#include "../Scene/SceneObjects/Plane.h"
-#include "../Scene/SceneObjects/Cylinder.h"
-#include "../Scene/SceneObjects/Cone.h"
-#include "../Scene/SceneObjects/Torus.h"
-#include "../Scene/SceneObjects/WaterPool.h"
-#include "../Scene/SceneObjects/Mesh.h"
-#include "../Scene/SceneObjects/LSystem.h"
-#include "../Scene/SceneObjects/Lights/Light.h"
-#include "../Scene/SceneObjects/Lights/SpotLight.h"
-#include "../Scene/SceneObjects/Lights/AreaLight.h"
+#include "../Scene/Scene.h"
 
-
-class UIManager {
+class UI {
 
 public:
 
-	UIManager() {};
-	void setup();
+	UI() {};
+	void setup(Scene *s);
 	void update();
 	void draw();
+	void drawGrid();
 
 	void updateSelected(SceneObject *s);
 	void updateGUI(SceneObject *s);
@@ -45,6 +28,7 @@ public:
 	bool hideGUI = true;
 	bool hideGrid = false;
 
+	Scene *scene;
 
 	// GUI variables
 	ofxVec3Slider slider_location;

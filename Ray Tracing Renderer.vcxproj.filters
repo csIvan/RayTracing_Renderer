@@ -103,8 +103,11 @@
     <ClCompile Include="src\Rendering\RenderCam.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
-    <ClCompile Include="src\Application\UIManager.cpp">
+    <ClCompile Include="src\Application\UI.cpp">
       <Filter>src\Application</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Scene.cpp">
+      <Filter>src\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -411,8 +414,11 @@
       <Filter>src\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="UI.h" />
-    <ClInclude Include="src\Application\UIManager.h">
+    <ClInclude Include="src\Application\UI.h">
       <Filter>src\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Scene.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

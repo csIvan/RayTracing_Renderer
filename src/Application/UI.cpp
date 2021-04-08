@@ -1,13 +1,29 @@
-#include "UIManager.h"
+#include "UI.h"
 
 
-void UIManager::setup() {
+void UI::setup(Scene *s) {
+	scene = s;
+
 	// Scene Button Listeners
-
-	toggle_matte.addListener(this, &UIManager::setMatte);
-	toggle_mirror.addListener(this, &UIManager::setMirror);
-	toggle_glass.addListener(this, &UIManager::setGlass);
-	toggle_metal.addListener(this, &UIManager::setMetal);
+	button_rayTrace.addListener(scene, &Scene::handleRayTrace);
+	button_rayMarch.addListener(scene, &Scene::handleRayMarch);
+	button_saveImage.addListener(scene, &Scene::handleSaveImage);
+	button_delete.addListener(scene, &Scene::handleDelete);
+	button_sphere.addListener(scene, &Scene::addSphere);
+	button_cube.addListener(scene, &Scene::addCube);
+	button_plane.addListener(scene, &Scene::addPlane);
+	button_cylinder.addListener(scene, &Scene::addCylinder);
+	button_cone.addListener(scene, &Scene::addCone);
+	button_torus.addListener(scene, &Scene::addTorus);
+	button_mesh.addListener(scene, &Scene::addMesh);
+	button_lsystem.addListener(scene, &Scene::addLSystem);
+	button_point_light.addListener(scene, &Scene::addPointLight);
+	button_spot_light.addListener(scene, &Scene::addSpotLight);
+	button_area_light.addListener(scene, &Scene::addAreaLight);
+	toggle_matte.addListener(this, &UI::setMatte);
+	toggle_mirror.addListener(this, &UI::setMirror);
+	toggle_glass.addListener(this, &UI::setGlass);
+	toggle_metal.addListener(this, &UI::setMetal);
 
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
@@ -21,7 +37,7 @@ void UIManager::setup() {
 	button_rayMarch.setTextColor(ofColor(111, 169, 255));
 	sceneGUI.add(button_rayTrace.setup(" RayTrace"));
 	sceneGUI.add(button_rayMarch.setup(" RayMarch"));
-	sceneGUI.add(gui_samples.setup("Samples", samples, 1, 64));
+	sceneGUI.add(gui_samples.setup("Samples", scene->samples, 1, 64));
 	sceneGUI.add(group_create.setup("Add"));
 	group_objects.setBorderColor(ofColor(25, 25, 25));
 	group_objects.setHeaderBackgroundColor(ofColor::black);
@@ -59,18 +75,9 @@ void UIManager::setup() {
 
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
-	//objectGUI.add(gui_angle1.setup("angle", torus1.angle, -90, 90));
-	//objectGUI.add(slider_rotation.setup("Rotation", torus1.axisR, glm::vec3(-1, -1, -1),
-	//	glm::vec3(1, 1, 1)));
-	//slider_rotation.setBorderColor(ofColor(25, 25, 25));
-	//objectGUI.add(gui_angle2.setup("angle", torus2.angle, -90, 90));
-	//objectGUI.add(slider_scale.setup("Scale", torus2.axisR, glm::vec3(-1, -1, -1),
-	//	glm::vec3(1, 1, 1)));
-	//slider_scale.setBorderColor(ofColor(25, 25, 25));
-	//objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
 }
 
-void UIManager::update() {
+void UI::update() {
 	sceneGUI.maximize();	// Always maximixed
 
 	if ((int)gui_samples < 3)
@@ -84,11 +91,19 @@ void UIManager::update() {
 	else
 		gui_samples = 64;
 
+	scene->samples = (int)gui_samples;
 
-	samples = (int)gui_samples;
+	if (scene->selected.size() > 0) {
+		label_material = ofToString(selectedMaterial);
+		updateSelected(scene->selected[0]);
+		objectGUI.maximize();
+	}
+	else {
+		hideGUI = true;
+	}
 }
 
-void UIManager::draw() {
+void UI::draw() {
 	sceneGUI.draw();
 	if (!hideGUI) {
 		objectGUI.setPosition(ofGetWidth() - sceneGUI.getWidth() - 10, 10);
@@ -100,7 +115,21 @@ void UIManager::draw() {
 	}
 }
 
-void UIManager::updateMaterial() {
+void UI::drawGrid() {
+	if ((bool)toggle_grid) {
+		ofSetColor(ofColor(111, 169, 255));
+		ofDrawLine(glm::vec3(0, 0, GRID_LINES), glm::vec3(0, 0, -GRID_LINES));
+		ofSetColor(ofColor(255, 81, 81));
+		ofDrawLine(glm::vec3(GRID_LINES, 0, 0), glm::vec3(-GRID_LINES, 0, 0));
+		ofSetColor(ofColor(178, 178, 178, 50));
+		for (int i = -GRID_LINES; i < GRID_LINES; i++) {
+			ofDrawLine(glm::vec3(GRID_LINES, 0, i), glm::vec3(-GRID_LINES, 0, i));
+			ofDrawLine(glm::vec3(i, 0, GRID_LINES), glm::vec3(i, 0, -GRID_LINES));
+		}
+	}
+}
+
+void UI::updateMaterial() {
 	if (selectedMaterial == "Matte") {
 		group_material.add(toggle_matte.setup(" Matte", true));
 		group_material.add(toggle_mirror.setup(" Mirror", false));
@@ -128,7 +157,7 @@ void UIManager::updateMaterial() {
 }
 
 // Use the interface to manipulate scene object attributes
-void UIManager::updateSelected(SceneObject *s) {
+void UI::updateSelected(SceneObject *s) {
 	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
 		sphereSelected->radius = (float)gui_value1;
@@ -198,7 +227,7 @@ void UIManager::updateSelected(SceneObject *s) {
 }
 
 // Load scene object attributes to interface
-void UIManager::updateGUI(SceneObject *s) {
+void UI::updateGUI(SceneObject *s) {
 	objectGUI.setDefaultHeight(24);
 	objectGUI.setName("			" + s->objName);
 	if (dynamic_cast<Sphere*>(s) != nullptr) {
@@ -288,7 +317,7 @@ void UIManager::updateGUI(SceneObject *s) {
 }
 
 
-void UIManager::setMatte(bool & value) {
+void UI::setMatte(bool & value) {
 	if (value) {
 		selectedMaterial = "Matte";
 		toggle_mirror = false;
@@ -299,7 +328,7 @@ void UIManager::setMatte(bool & value) {
 		toggle_matte = true;
 	}
 }
-void UIManager::setMirror(bool & value) {
+void UI::setMirror(bool & value) {
 	if (value) {
 		selectedMaterial = "Mirror";
 		toggle_matte = false;
@@ -310,7 +339,7 @@ void UIManager::setMirror(bool & value) {
 		toggle_mirror = true;
 	}
 }
-void UIManager::setGlass(bool & value) {
+void UI::setGlass(bool & value) {
 	if (value) {
 		selectedMaterial = "Glass";
 		toggle_matte = false;
@@ -321,7 +350,7 @@ void UIManager::setGlass(bool & value) {
 		toggle_glass = true;
 	}
 }
-void UIManager::setMetal(bool & value) {
+void UI::setMetal(bool & value) {
 	if (value) {
 		selectedMaterial = "Metal";
 		toggle_matte = false;
