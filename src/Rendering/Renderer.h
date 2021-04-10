@@ -3,12 +3,14 @@
 #include "ofMain.h"
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Lights/Light.h"
+#include "RenderCam.h"
 
 class Renderer {
 public:
 	vector<SceneObject*> objects;
 	vector<Light*> lights;
 	ofImage image;
+	RenderCam *renderCam;
 
 	virtual ofImage render(int samples) = 0;
 	virtual bool castRay(Ray &r, ofColor &color, int depth = 0) {

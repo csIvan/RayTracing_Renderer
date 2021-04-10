@@ -4,21 +4,24 @@
 
 class Material {
 public:
-	enum Mat {	MATTE, MIRROR, GLASS, METAL	};
+	enum Mat {	MATTE, MIRROR, GLASS, METAL, CUSTOM	};
 
 	Mat mat;
 	ofColor diffuseColor = ofColor::grey;   
 	ofColor specularColor = ofColor::lightGray;
 	float reflection = 0.0f;
 	float refraction = 0.0f;
-	float roughness = 0.0f;
+	float roughness = 1.0f;
+	int shininess = 40;
 	string materialString = "Matte";
 	
 	Material();
-	ofColor Matte();
-	ofColor Mirror();
-	ofColor Glass();
-	ofColor Metal();
+	void setMatte();
+	void setMirror();
+	void setGlass();
+	void setMetal();
+	void setCustom();
+	Material::Mat getType();
 
 	void setString(string s) { materialString = s; };
 	string toString() {	return materialString; };

@@ -12,7 +12,6 @@
 
 class RayTracer : public Renderer {
 public:
-	RenderCam *renderCam;
 	ofImage texture, sphereTexture;
 	Shader shader;
 	int imageWidth, imageHeight;

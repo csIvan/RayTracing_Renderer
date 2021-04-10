@@ -5,7 +5,7 @@ void Scene::setup() {
 	image.allocate(imageWidth, imageHeight, ofImageType::OF_IMAGE_COLOR);
 
 	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
-	rayMarcher = RayMarcher(imageWidth, imageHeight, image);
+	rayMarcher = RayMarcher(imageWidth, imageHeight, image, renderCam);
 	nearestDistance = FLT_MAX;
 }
 

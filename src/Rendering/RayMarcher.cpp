@@ -1,9 +1,10 @@
 #include "RayMarcher.h"
 
-RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image) {
+RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image, RenderCam &cam) {
 	this->imageWidth = imageWidth;
 	this->imageHeight = imageHeight;
 	this->image = image;
+	this->renderCam = &cam;
 }
 
 /*
@@ -19,7 +20,7 @@ ofImage RayMarcher::render(int samples) {
 
 			for (int i = 0; i < sqrt(samples); i++) {
 				for (int j = 0; j < sqrt(samples); j++) {
-					Ray ray = renderCam.getRay((column + (j + 0.5) / sqrt(samples)) / imageWidth,
+					Ray ray = renderCam->getRay((column + (j + 0.5) / sqrt(samples)) / imageWidth,
 						(row + (i + 0.5) / sqrt(samples)) / imageHeight);
 					ofColor color;
 
@@ -50,7 +51,7 @@ bool RayMarcher::castRay(Ray &r, ofColor &color, int depth) {
 	glm::vec3 normal = getNormalRM(p);
 	//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
 	if(hit)
-		color = shader.lambert(r, p, normal, objects[indexHit]->objMaterial.diffuseColor, objects[indexHit]->objMaterial.reflection, depth);
+		color = shader.lambert(r, p, normal, objects[indexHit], depth);
 
 	return hit;
 }

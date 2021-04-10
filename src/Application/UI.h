@@ -21,6 +21,9 @@ public:
 	void setMirror(bool & value);
 	void setGlass(bool & value);
 	void setMetal(bool & value);
+	void setCustom(bool &value);
+	void setCustomVars();
+	void clearCustomVars();
 
 	// Main GUIs
 	ofxGuiGroup objectGUI;
@@ -48,6 +51,7 @@ public:
 	ofxGuiGroup group_lights;
 	ofxGuiGroup group_rotation;
 	ofxGuiGroup group_material;
+	ofxGuiGroup group_mat_variables;
 	ofxIntSlider gui_angleX;
 	ofxIntSlider gui_angleY;
 	ofxIntSlider gui_angleZ;
@@ -55,7 +59,7 @@ public:
 	// GUI functions
 	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete;
 	ofxToggle toggle_image, toggle_grid, toggle_render_cam, toggle_matte, toggle_mirror,
-		toggle_glass, toggle_metal;;
+		toggle_glass, toggle_metal, toggle_custom;
 
 	ofxLabel label_material;
 

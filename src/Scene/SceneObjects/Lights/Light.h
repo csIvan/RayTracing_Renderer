@@ -40,4 +40,16 @@ public:
 			ofDrawSphere(ofVec3f::zero(), radius);
 		ofPopMatrix();
 	};
+
+	glm::vec3 getLightDir(glm::vec3 position, glm::vec3 hit) {
+		return glm::normalize(position - hit);
+	}
+
+	float getLightDist(glm::vec3 position, glm::vec3 hit) {
+		return glm::distance(position, hit);
+	}
+
+	float getLightIntensity(float intensity, float dist) {
+		return (intensity / (4 * PI * dist));
+	}
 };

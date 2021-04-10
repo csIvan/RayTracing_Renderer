@@ -10,12 +10,11 @@
 
 class RayMarcher : public Renderer{
 public:
-	RenderCam renderCam;
 	Shader shader;
 	int imageWidth, imageHeight;
 	int indexHit;
 
-	RayMarcher(int imageWidth, int imageHeight, ofImage image);
+	RayMarcher(int imageWidth, int imageHeight, ofImage image, RenderCam &cam);
 	RayMarcher() {};
 	~RayMarcher() {};
 

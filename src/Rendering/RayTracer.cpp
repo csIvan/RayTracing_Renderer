@@ -4,19 +4,12 @@ RayTracer::RayTracer(int imageWidth, int imageHeight, ofImage &image, RenderCam 
 	this->imageWidth = imageWidth;
 	this->imageHeight = imageHeight;
 	this->image = image;
-	renderCam = &cam;
+	this->renderCam = &cam;
 
 	texture.load("images/texture2.jpg");
 	sphereTexture.load("images/WorldMap.jpg");
 }
 
-/**
-* To call the raytracing function, press the 'r' key
-* Raytrace function. It is similar to the ray tracing function from the first project
-* but it also allows for triangle-ray intersection. Also, it checks if the object is
-* a sphere or a plane in order to apply the correct texture. It also calls for lambert
-* shading because I thought that my scene looked better in lambert, but phong can also be used.
-*/
 ofImage RayTracer::render(int samples) {
 	shader = Shader(this, lights, objects);
 	for (float row = 0; row < imageHeight; row++) {
@@ -106,8 +99,8 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, int depth) {
 				//}
 				//else {
 					//color = shader.phong(point, normal, renderCam.position, objects[index]->diffuseColor, objects[index]->specularColor, Power);
-					//color = shader.getColor(ray, point, normal, objects[index], depth);
-					color = shader.lambert(ray, point, normal, objects[index]->objMaterial.diffuseColor, objects[index]->objMaterial.reflection, depth);
+					color = shader.getColor(ray, point, normal, objects[index], depth);
+					//color = shader.lambert(ray, point, normal, objects[index]->objMaterial.diffuseColor, objects[index]->objMaterial.reflection, depth);
 				//}
 			}
 		}
