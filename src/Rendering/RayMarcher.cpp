@@ -23,8 +23,9 @@ ofImage RayMarcher::render(int samples) {
 					Ray ray = renderCam->getRay((column + (j + 0.5) / sqrt(samples)) / imageWidth,
 						(row + (i + 0.5) / sqrt(samples)) / imageHeight);
 					ofColor color;
-
-					if (castRay(ray, color))
+					glm::vec3 ptest;
+					glm::vec3 ntest;
+					if (castRay(ray, color, ptest, ntest))
 						total += glm::vec3(color.r, color.g, color.b);
 					else
 						total += glm::vec3(ofColor::black.r, ofColor::black.g, ofColor::black.b);
@@ -40,7 +41,7 @@ ofImage RayMarcher::render(int samples) {
 	return image;
 }
 
-bool RayMarcher::castRay(Ray &r, ofColor &color, int depth) {
+bool RayMarcher::castRay(Ray &r, ofColor &color, glm::vec3 &po, glm::vec3 &n, int depth) {
 
 	if (depth > 1)
 		return false;

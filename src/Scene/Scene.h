@@ -65,6 +65,8 @@ public:
 
 	int imageWidth = 1200;
 	int imageHeight = 800;
+	//int imageWidth = 300;
+	//int imageHeight = 200;
 	//int imageWidth = 90;
 	//int imageHeight = 60;
 	//int imageWidth = 150;

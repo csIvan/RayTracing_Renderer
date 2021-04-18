@@ -21,6 +21,7 @@ public:
 	vector<Light *> lights;
 	vector<SceneObject *> objects;
 	glm::vec3 opoint;
+	glm::vec3 opoint2;
 	glm::vec3 onormal;
 
 	Shader(Renderer *renderer, vector<Light *> lights, vector<SceneObject *> objects);
@@ -32,7 +33,10 @@ public:
 	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, int depth);
 	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, float reflect, int depth);
 	ofColor phong(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const glm::vec3 camPos, SceneObject* obj, int depth);
-	bool inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance);
+	bool inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, bool ref);
 
-	Ray reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal);
+	Ray reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, bool outside);
+	Ray refract(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, float ior, bool outside);
+
+	void fresnel(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, float ior, float &kr);
 };

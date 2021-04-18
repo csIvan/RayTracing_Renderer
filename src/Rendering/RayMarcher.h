@@ -19,7 +19,7 @@ public:
 	~RayMarcher() {};
 
 	ofImage render(int samples);
-	bool castRay(Ray &r, ofColor &color, int depth = 0);
+	bool castRay(Ray &r, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0);
 
 	bool rayMarch(Ray r, glm::vec3 &p);
 	float sceneSDF(glm::vec3 p);

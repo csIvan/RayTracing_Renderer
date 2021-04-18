@@ -17,13 +17,13 @@ void Material::setMirror() {
 }
 void Material::setGlass() {
 	roughness = 0.0f;
-	refraction = 1.5f;
-	reflection = 0.1f;
-	shininess = 120;
+	refraction = 1.2f;
+	reflection = 0.0f;
+	shininess = 700;
 }
 void Material::setMetal() {
 	roughness = 0.5f;
-	refraction = 0.2f;
+	refraction = 0.0f;
 	reflection = 0.5f;
 	shininess = 30;
 }

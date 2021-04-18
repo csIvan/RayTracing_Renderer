@@ -24,8 +24,9 @@ ofImage RayTracer::render(int samples) {
 					Ray ray = renderCam->getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
 						(row + (i + jitter) / sqrt(samples)) / imageHeight);
 					ofColor color;
-
-					if (castRay(ray, color))
+					glm::vec3 ptest;
+					glm::vec3 ntest;
+					if (castRay(ray, color, ptest, ntest))
 						total += glm::vec3(color.r, color.g, color.b);
 					else
 						total += glm::vec3(ofColor::black.r, ofColor::black.g, ofColor::black.b);
@@ -42,7 +43,7 @@ ofImage RayTracer::render(int samples) {
 	return image;
 }
 
-bool RayTracer::castRay(Ray &ray, ofColor &color, int depth) {
+bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth) {
 	bool hit = false;
 	float dist;
 	float nearestDist = FLT_MAX;
@@ -59,6 +60,8 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, int depth) {
 				nearestDist = dist;
 				hit = true;
 				normal = glm::normalize(normal);
+				p = point;
+				n = normal;
 				// If the object is a sphere
 				//if (typeid(*objects[index]) == typeid(Sphere)) {
 				//	Sphere *globe = (Sphere*)objects[index];

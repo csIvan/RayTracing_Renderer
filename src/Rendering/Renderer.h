@@ -13,7 +13,7 @@ public:
 	RenderCam *renderCam;
 
 	virtual ofImage render(int samples) = 0;
-	virtual bool castRay(Ray &r, ofColor &color, int depth = 0) {
+	virtual bool castRay(Ray &r, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0) {
 		return false;
 	}
 	virtual ~Renderer() {};
