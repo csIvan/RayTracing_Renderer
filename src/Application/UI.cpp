@@ -24,7 +24,6 @@ void UI::setup(Scene *s) {
 	toggle_mirror.addListener(this, &UI::setMirror);
 	toggle_glass.addListener(this, &UI::setGlass);
 	toggle_metal.addListener(this, &UI::setMetal);
-	toggle_custom.addListener(this, &UI::setCustom);
 
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
@@ -136,35 +135,24 @@ void UI::updateMaterial() {
 		group_material.add(toggle_mirror.setup(" Mirror", false));
 		group_material.add(toggle_glass.setup(" Glass", false));
 		group_material.add(toggle_metal.setup(" Metal", false));
-		group_material.add(toggle_custom.setup(" Custom", false));
 	}
 	else if (selectedMaterial == "Mirror") {
 		group_material.add(toggle_matte.setup(" Matte", false));
 		group_material.add(toggle_mirror.setup(" Mirror", true));
 		group_material.add(toggle_glass.setup(" Glass", false));
 		group_material.add(toggle_metal.setup(" Metal", false));
-		group_material.add(toggle_custom.setup(" Custom", false));
 	}
 	else if (selectedMaterial == "Glass") {
 		group_material.add(toggle_matte.setup(" Matte", false));
 		group_material.add(toggle_mirror.setup(" Mirror", false));
 		group_material.add(toggle_glass.setup(" Glass", true));
 		group_material.add(toggle_metal.setup(" Metal", false));
-		group_material.add(toggle_custom.setup(" Custom", false));
 	}
 	else if (selectedMaterial == "Metal") {
 		group_material.add(toggle_matte.setup(" Matte", false));
 		group_material.add(toggle_mirror.setup(" Mirror", false));
 		group_material.add(toggle_glass.setup(" Glass", false));
 		group_material.add(toggle_metal.setup(" Metal", true));
-		group_material.add(toggle_custom.setup(" Custom", false));
-	}
-	else if (selectedMaterial == "Custom") {
-		group_material.add(toggle_matte.setup(" Matte", false));
-		group_material.add(toggle_mirror.setup(" Mirror", false));
-		group_material.add(toggle_glass.setup(" Glass", false));
-		group_material.add(toggle_metal.setup(" Metal", false));
-		group_material.add(toggle_custom.setup(" Custom", true));
 	}
 }
 
@@ -316,7 +304,6 @@ void UI::updateGUI(SceneObject *s) {
 		toggle_mirror.setFillColor(ofColor(45, 138, 86));
 		toggle_glass.setFillColor(ofColor(45, 138, 86));
 		toggle_metal.setFillColor(ofColor(45, 138, 86));
-		toggle_custom.setFillColor(ofColor(45, 138, 86));
 		objectGUI.add(group_material.setup("Material"));
 		group_material.add(label_material.setup("Current Material ", selectedMaterial));
 		updateMaterial();
@@ -336,7 +323,6 @@ void UI::setMatte(bool & value) {
 		toggle_mirror = false;
 		toggle_glass = false;
 		toggle_metal = false;
-		toggle_custom = false;
 	}
 	else if (!value && selectedMaterial == "Matte") {
 		toggle_matte = true;
@@ -348,7 +334,6 @@ void UI::setMirror(bool & value) {
 		toggle_matte = false;
 		toggle_glass = false;
 		toggle_metal = false;
-		toggle_custom = false;
 	}
 	else if (!value && selectedMaterial == "Mirror") {
 		toggle_mirror = true;
@@ -360,7 +345,6 @@ void UI::setGlass(bool & value) {
 		toggle_matte = false;
 		toggle_mirror = false;
 		toggle_metal = false;
-		toggle_custom = false;
 	}
 	else if (!value && selectedMaterial == "Glass") {
 		toggle_glass = true;
@@ -372,37 +356,8 @@ void UI::setMetal(bool & value) {
 		toggle_matte = false;
 		toggle_glass = false;
 		toggle_mirror = false;
-		toggle_custom = false;
 	}
 	else if (!value && selectedMaterial == "Metal") {
 		toggle_metal = true;
 	}
-}
-
-void UI::setCustom(bool & value) {
-	if (value) {
-		selectedMaterial = "Custom";
-		toggle_matte = false;
-		toggle_glass = false;
-		toggle_mirror = false;
-		toggle_metal = false;
-	}
-	else if (!value && selectedMaterial == "Custom") {
-		toggle_custom = true;
-	}
-
-}
-
-void UI::setCustomVars() {
-	if (scene->selected.size() > 0) {
-		if (dynamic_cast<Light*>(scene->selected[0]) == nullptr) {
-			group_mat_variables.setBorderColor(ofColor(25, 25, 25));
-			group_material.add(group_mat_variables.setup("Custom Material"));
-			group_mat_variables.add(gui_reflect.setup("Reflection", scene->selected[0]->objMaterial.reflection, 0.0, 1.0));
-		}
-	}
-}
-
-void UI::clearCustomVars() {
-	group_mat_variables.clear();
 }

@@ -27,9 +27,6 @@ void Material::setMetal() {
 	reflection = 0.5f;
 	shininess = 30;
 }
-void Material::setCustom() {
-
-}
 
 Material::Mat Material::getType() {
 	if (materialString == "Matte") {
@@ -47,10 +44,6 @@ Material::Mat Material::getType() {
 	else if (materialString == "Metal") {
 		setMetal();
 		mat = METAL;
-	}
-	else if (materialString == "Custom") {
-		setCustom();
-		mat = CUSTOM;
 	}
 
 	return mat;

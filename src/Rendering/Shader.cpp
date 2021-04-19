@@ -18,7 +18,6 @@ ofColor Shader::getColor(Ray &ray, const glm::vec3 &point, const glm::vec3 &norm
 		case Material::MIRROR:
 		case Material::GLASS:
 		case Material::METAL:
-		case Material::CUSTOM:
 			color = phong(ray, point, norm, renderer->renderCam->position, obj, depth);
 			break;
 	}
@@ -247,8 +246,7 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 		ofColor reflectColor = 0;
 		bool reflected = false;
 		if (kr > 0.0) {
-			glm::vec3 inter;
-			glm::vec3 Nor;
+			glm::vec3 inter, Nor;
 			if (renderer->castRay(ReflectRay, reflectColor, inter, Nor, depth + 1)) {
 				reflected = true;
 			}

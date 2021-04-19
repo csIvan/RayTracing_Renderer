@@ -4,7 +4,7 @@
 
 class Material {
 public:
-	enum Mat {	MATTE, MIRROR, GLASS, METAL, CUSTOM	};
+	enum Mat {	MATTE, MIRROR, GLASS, METAL };
 
 	Mat mat;
 	ofColor diffuseColor = ofColor::grey;   
@@ -20,7 +20,6 @@ public:
 	void setMirror();
 	void setGlass();
 	void setMetal();
-	void setCustom();
 	Material::Mat getType();
 
 	void setString(string s) { materialString = s; };
