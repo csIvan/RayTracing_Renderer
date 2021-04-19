@@ -208,6 +208,7 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 
 		L = lights[i]->getLightDir(lights[i]->position, point);
 		D = lights[i]->getLightDist(lights[i]->position, point);
+		I = lights[i]->getLightIntensity(lights[i]->intensity, D);
 		//float SpotFactor = glm::dot(-L, lights[i]->direction);
 		glm::vec3 v = -glm::normalize(point - camPos);
 		glm::vec3 h = glm::normalize(v + L);
@@ -255,8 +256,8 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 		//call to calculate the falloff factor for the spotlight
 		//float falloff = lights[i]->falloff(SpotFactor);
 
-		ofColor phongCalculation = obj->objMaterial.roughness * (kd * (lights[i]->intensity / glm::pow(D, 2)) * glm::max(0.0f, glm::dot(normal, L))) +
-			ks * (lights[i]->intensity / glm::pow(D, 2)) * (glm::pow(glm::max(0.0f, glm::dot(normal, h)), obj->objMaterial.shininess));
+		ofColor phongCalculation = obj->objMaterial.roughness * (kd * I * glm::max(0.0f, glm::dot(normal, L))) +
+			ks * I * (glm::pow(glm::max(0.0f, glm::dot(normal, h)), obj->objMaterial.shininess));
 
 		if (!inShadow(shadRay, point, D, refracted)) {
 			if (refracted || reflected) {

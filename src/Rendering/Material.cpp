@@ -11,7 +11,7 @@ void Material::setMatte() {
 }
 void Material::setMirror() {
 	roughness = 0.0f;
-	refraction = 0.2f;
+	refraction = 0.0f;
 	reflection = 1.0f;
 	shininess = 100;
 }
@@ -22,7 +22,7 @@ void Material::setGlass() {
 	shininess = 700;
 }
 void Material::setMetal() {
-	roughness = 0.5f;
+	roughness = 1.0f;
 	refraction = 0.0f;
 	reflection = 0.5f;
 	shininess = 30;
