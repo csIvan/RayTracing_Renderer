@@ -23,7 +23,7 @@ void UI::setup(Scene *s) {
 	toggle_matte.addListener(this, &UI::setMatte);
 	toggle_mirror.addListener(this, &UI::setMirror);
 	toggle_glass.addListener(this, &UI::setGlass);
-	toggle_metal.addListener(this, &UI::setMetal);
+	toggle_reflective.addListener(this, &UI::setReflective);
 
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
@@ -134,25 +134,25 @@ void UI::updateMaterial() {
 		group_material.add(toggle_matte.setup(" Matte", true));
 		group_material.add(toggle_mirror.setup(" Mirror", false));
 		group_material.add(toggle_glass.setup(" Glass", false));
-		group_material.add(toggle_metal.setup(" Metal", false));
+		group_material.add(toggle_reflective.setup(" Reflective", false));
 	}
 	else if (selectedMaterial == "Mirror") {
 		group_material.add(toggle_matte.setup(" Matte", false));
 		group_material.add(toggle_mirror.setup(" Mirror", true));
 		group_material.add(toggle_glass.setup(" Glass", false));
-		group_material.add(toggle_metal.setup(" Metal", false));
+		group_material.add(toggle_reflective.setup(" Reflective", false));
 	}
 	else if (selectedMaterial == "Glass") {
 		group_material.add(toggle_matte.setup(" Matte", false));
 		group_material.add(toggle_mirror.setup(" Mirror", false));
 		group_material.add(toggle_glass.setup(" Glass", true));
-		group_material.add(toggle_metal.setup(" Metal", false));
+		group_material.add(toggle_reflective.setup(" Reflective", false));
 	}
-	else if (selectedMaterial == "Metal") {
+	else if (selectedMaterial == "Reflective") {
 		group_material.add(toggle_matte.setup(" Matte", false));
 		group_material.add(toggle_mirror.setup(" Mirror", false));
 		group_material.add(toggle_glass.setup(" Glass", false));
-		group_material.add(toggle_metal.setup(" Metal", true));
+		group_material.add(toggle_reflective.setup(" Reflective", true));
 	}
 }
 
@@ -197,17 +197,17 @@ void UI::updateSelected(SceneObject *s) {
 	}
 	else if (dynamic_cast<Light*>(s) != nullptr) {
 		Light *lightSelected = (Light*)s;
-		lightSelected->intensity = (int)gui_ivalue1;
+		lightSelected->intensity = (float)gui_value1;
 		if (dynamic_cast<SpotLight*>(s) != nullptr) {
 			SpotLight *spotLightSelected = (SpotLight*)s;
-			spotLightSelected->heightRef = (float)gui_value1;
-			spotLightSelected->totalWidth = (float)gui_value2;
-			spotLightSelected->falloffStart = (float)gui_value3;
+			spotLightSelected->heightRef = (float)gui_value2;
+			spotLightSelected->totalWidth = (float)gui_value3;
+			spotLightSelected->falloffStart = (float)gui_value4;
 		}
 		else if (dynamic_cast<AreaLight*>(s) != nullptr) {
 			AreaLight *areaLightSelected = (AreaLight*)s;
-			areaLightSelected->height = (float)gui_value1;
-			areaLightSelected->width = (float)gui_value2;
+			areaLightSelected->height = (float)gui_value2;
+			areaLightSelected->width = (float)gui_value3;
 		}
 	}
 
@@ -269,17 +269,17 @@ void UI::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<Light*>(s) != nullptr) {
 		Light *lightSelected = (Light*)s;
-		objectGUI.add(gui_ivalue1.setup("Intensity", lightSelected->intensity, 0, 150));
+		objectGUI.add(gui_value1.setup("Intensity", lightSelected->intensity, 0, 10.0));
 		if (dynamic_cast<SpotLight*>(s) != nullptr) {
 			SpotLight *spotLightSelected = (SpotLight*)s;
-			objectGUI.add(gui_value1.setup("Height Reference", spotLightSelected->heightRef, 0.5, 30));
-			objectGUI.add(gui_value2.setup("Total Width", spotLightSelected->totalWidth, 0.5, 75));
-			objectGUI.add(gui_value3.setup("Falloff Start", spotLightSelected->falloffStart, 0.5, 75));
+			objectGUI.add(gui_value2.setup("Height Reference", spotLightSelected->heightRef, 0.5, 30));
+			objectGUI.add(gui_value3.setup("Total Width", spotLightSelected->totalWidth, 0.5, 75));
+			objectGUI.add(gui_value4.setup("Falloff Start", spotLightSelected->falloffStart, 0.5, 75));
 		}
 		else if (dynamic_cast<AreaLight*>(s) != nullptr) {
 			AreaLight *areaLightSelected = (AreaLight*)s;
-			objectGUI.add(gui_value1.setup("Height", areaLightSelected->height, 0.5, 10));
-			objectGUI.add(gui_value2.setup("Width", areaLightSelected->width, 0.5, 10));
+			objectGUI.add(gui_value2.setup("Height", areaLightSelected->height, 0.5, 10));
+			objectGUI.add(gui_value3.setup("Width", areaLightSelected->width, 0.5, 10));
 		}
 	}
 
@@ -303,7 +303,7 @@ void UI::updateGUI(SceneObject *s) {
 		toggle_matte.setFillColor(ofColor(45, 138, 86));
 		toggle_mirror.setFillColor(ofColor(45, 138, 86));
 		toggle_glass.setFillColor(ofColor(45, 138, 86));
-		toggle_metal.setFillColor(ofColor(45, 138, 86));
+		toggle_reflective.setFillColor(ofColor(45, 138, 86));
 		objectGUI.add(group_material.setup("Material"));
 		group_material.add(label_material.setup("Current Material ", selectedMaterial));
 		updateMaterial();
@@ -322,7 +322,7 @@ void UI::setMatte(bool & value) {
 		selectedMaterial = "Matte";
 		toggle_mirror = false;
 		toggle_glass = false;
-		toggle_metal = false;
+		toggle_reflective = false;
 	}
 	else if (!value && selectedMaterial == "Matte") {
 		toggle_matte = true;
@@ -333,7 +333,7 @@ void UI::setMirror(bool & value) {
 		selectedMaterial = "Mirror";
 		toggle_matte = false;
 		toggle_glass = false;
-		toggle_metal = false;
+		toggle_reflective = false;
 	}
 	else if (!value && selectedMaterial == "Mirror") {
 		toggle_mirror = true;
@@ -344,20 +344,20 @@ void UI::setGlass(bool & value) {
 		selectedMaterial = "Glass";
 		toggle_matte = false;
 		toggle_mirror = false;
-		toggle_metal = false;
+		toggle_reflective = false;
 	}
 	else if (!value && selectedMaterial == "Glass") {
 		toggle_glass = true;
 	}
 }
-void UI::setMetal(bool & value) {
+void UI::setReflective(bool & value) {
 	if (value) {
-		selectedMaterial = "Metal";
+		selectedMaterial = "Reflective";
 		toggle_matte = false;
 		toggle_glass = false;
 		toggle_mirror = false;
 	}
 	else if (!value && selectedMaterial == "Metal") {
-		toggle_metal = true;
+		toggle_reflective = true;
 	}
 }

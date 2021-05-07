@@ -22,7 +22,7 @@ ofImage RayTracer::render(int samples) {
 					float jitter = (sqrt(samples) == 1) ? 0.5 : ((float)rand() / (RAND_MAX));
 
 					Ray ray = renderCam->getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
-						(row + (i + jitter) / sqrt(samples)) / imageHeight);
+						1 - (row + (i + jitter) / sqrt(samples)) / imageHeight);
 					ofColor color;
 					glm::vec3 ptest;
 					glm::vec3 ntest;
@@ -33,7 +33,7 @@ ofImage RayTracer::render(int samples) {
 				}
 			}
 			total /= samples;
-			image.setColor(column, imageHeight - row - 1, ofColor(total.x, total.y, total.z));
+			image.setColor(column, row, ofColor(total.x, total.y, total.z));
 		}
 
 		int percent = (int)(row / imageHeight * 100) + 1;
@@ -55,7 +55,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 		glm::vec3 point, normal;
 
 		if (objects[index]->intersect(ray, point, normal)) {
-			dist = glm::distance(renderCam->position, point);
+			dist = glm::distance(ray.p, point);
 			if (dist <= nearestDist) {
 				nearestDist = dist;
 				hit = true;

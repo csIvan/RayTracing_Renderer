@@ -1,5 +1,7 @@
 #pragma once
 
+#define RAY_BIAS 0.001f
+
 //Ray marching constants
 //#define MAX_RAY_STEPS 20	//LSystem
 //#define DIST_THRESHOLD .001

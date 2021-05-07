@@ -4,12 +4,12 @@
 
 class Material {
 public:
-	enum Mat {	MATTE, MIRROR, GLASS, METAL };
+	enum Mat {	MATTE, MIRROR, GLASS, REFLECTIVE  };
 
 	Mat mat;
 	ofColor diffuseColor = ofColor::grey;   
 	ofColor specularColor = ofColor::lightGray;
-	float reflection = 0.0f;
+	float ambient = 0.08f;
 	float refraction = 0.0f;
 	float roughness = 1.0f;
 	int shininess = 40;
@@ -17,9 +17,9 @@ public:
 	
 	Material();
 	void setMatte();
-	void setMirror();
+	void setReflective();
 	void setGlass();
-	void setMetal();
+	void setMirror();
 	Material::Mat getType();
 
 	void setString(string s) { materialString = s; };

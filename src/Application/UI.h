@@ -20,7 +20,7 @@ public:
 	void setMatte(bool & value);
 	void setMirror(bool & value);
 	void setGlass(bool & value);
-	void setMetal(bool & value);
+ 	void setReflective(bool & value);  
 
 	// Main GUIs
 	ofxGuiGroup objectGUI;
@@ -34,7 +34,7 @@ public:
 	ofxVec3Slider slider_location;
 	ofxVec3Slider slider_rotation;
 	ofxVec3Slider slider_scale;
-	ofxFloatSlider gui_value1, gui_value2, gui_value3, gui_reflect;
+	ofxFloatSlider gui_value1, gui_value2, gui_value3, gui_value4, gui_reflect;
 	ofxIntSlider gui_ivalue1;
 	ofxTextField gui_axiom, gui_rule1, gui_rule2, gui_rule3, gui_rule4;
 	ofxIntSlider gui_angle1;
@@ -56,7 +56,7 @@ public:
 	// GUI functions
 	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete;
 	ofxToggle toggle_image, toggle_grid, toggle_render_cam, toggle_matte, toggle_mirror,
-		toggle_glass, toggle_metal;
+		toggle_glass, toggle_reflective;
 
 	ofxLabel label_material;
 

@@ -6,7 +6,7 @@
 //Point Light class with an intensity variable
 class Light : public SceneObject {
 public:
-	float intensity = 50;
+	float intensity = 6;
 	float radius = 0.1;
 
 	Light(glm::vec3 p, float i, string name) {
@@ -41,15 +41,15 @@ public:
 		ofPopMatrix();
 	};
 
-	glm::vec3 getLightDir(glm::vec3 position, glm::vec3 hit) {
-		return glm::normalize(position - hit);
+	glm::vec3 getLightDir(glm::vec3 pos, glm::vec3 hit) {
+		return (pos - hit);
 	}
 
-	float getLightDist(glm::vec3 position, glm::vec3 hit) {
-		return glm::distance(position, hit);
+	double  getLightDist(glm::vec3 pos, glm::vec3 hit) {
+		return glm::length(hit - pos);
 	}
 
-	float getLightIntensity(float intensity, float dist) {
-		return (intensity / (4 * PI * dist));
+	double  getLightIntensity(float i, double dist) {
+		return i / glm::pow(dist, 2);
 	}
 };

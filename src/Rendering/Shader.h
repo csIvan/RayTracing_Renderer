@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include "ofMain.h"
 #include "Renderer.h"
 #include "Ray.h"
@@ -14,6 +15,7 @@
 #include "../Scene/SceneObjects/Lights/Light.h"
 #include "../Scene/SceneObjects/Lights/SpotLight.h"
 #include "../Scene/SceneObjects/Lights/AreaLight.h"
+#include "../Application/Definitions.h"
 
 class Shader {
 public:
@@ -30,9 +32,9 @@ public:
 
 	ofColor getColor(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, int depth);
 	
-	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, int depth);
+	ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj);
 	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, float reflect, int depth);
-	ofColor phong(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const glm::vec3 camPos, SceneObject* obj, int depth);
+	ofColor phong(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, int depth);
 	bool inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, bool ref);
 
 	Ray reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, bool outside);

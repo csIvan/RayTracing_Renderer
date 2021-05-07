@@ -7,6 +7,9 @@ void Scene::setup() {
 	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image, renderCam);
 	nearestDistance = FLT_MAX;
+	addSphere();
+	addPlane();
+	addPointLight();
 }
 
 void Scene::update() {}
@@ -62,7 +65,7 @@ void Scene::handleSaveImage() {
 	if (renderFinished) {
 		ofFileDialogResult result = ofSystemSaveDialog("render.jpg", "Save");
 		if (result.bSuccess) {
-			image.save(result.getPath());
+			image.save(result.getPath(), OF_IMAGE_QUALITY_BEST);
 		}
 	}
 }
@@ -136,7 +139,7 @@ void Scene::addWaterPool() {
 	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, "WaterPool_" + to_string(++waterpoolCount), ofColor::seaGreen));
 }
 void Scene::addPointLight() {
-	addLight(new Light(glm::vec3(-4, 3, 5), 50, "Point_Light_" + to_string(++pointlightCount)));
+	addLight(new Light(glm::vec3(-4, 3, 5), 6.5f, "Point_Light_" + to_string(++pointlightCount)));
 }
 
 void Scene::addSpotLight() {
