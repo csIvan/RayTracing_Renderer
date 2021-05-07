@@ -8,9 +8,11 @@ public:
 
 	Mat mat;
 	ofColor diffuseColor = ofColor::grey;   
-	ofColor specularColor = ofColor::lightGray;
+	ofColor specularColor = ofColor::white;
+	float specularCoeff = 1.0f;
 	float ambient = 0.08f;
 	float refraction = 0.0f;
+	float reflectiveCoeff = 0.2f;
 	float roughness = 1.0f;
 	int shininess = 40;
 	string materialString = "Matte";

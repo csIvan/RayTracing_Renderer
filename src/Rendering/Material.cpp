@@ -14,18 +14,21 @@ void Material::setMirror() {
 	refraction = 0.0f;
 	shininess = 800;
 	ambient = 0.0f;
+	specularCoeff = 5.0f;
 }
 void Material::setGlass() {
 	roughness = 0.0f;
 	refraction = 1.2f;
-	shininess = 800;
+	shininess = 3000;
 	ambient = 0.08f;
+	specularCoeff = 4.0f;
 }
 void Material::setReflective() {
-	roughness = 0.5f;
+	roughness = 1.0f;
 	refraction = 0.0f;
-	shininess = 700;
+	shininess = 250;
 	ambient = 0.08f;
+	specularCoeff = 2.0f;
 }
 
 Material::Mat Material::getType() {

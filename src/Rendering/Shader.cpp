@@ -56,23 +56,20 @@ ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, SceneOb
 			D = lights[i]->getLightDist(lights[i]->position, point);
 			I = lights[i]->getLightIntensity(lights[i]->intensity, D);
 
-			totalLambert += I * glm::max(0.0f, glm::dot(normal, L));
-
-			L = glm::normalize(L);
-			Ray shadRay = Ray(point + L * RAY_BIAS, L);
+			Ray shadRay = Ray(point + glm::normalize(L) * RAY_BIAS, glm::normalize(L));
 			if (!inShadow(shadRay, point, D, false)) {
 				if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
 					SpotLight *spotLight = (SpotLight*)lights[i];
 					glm::vec3 dir = spotLight->direction;
 					glm::vec4 rdd = spotLight->getRotateMatrix() * glm::vec4(dir.x, dir.y, dir.z, 1.0f);
-					float spotFactor = glm::dot(-L, glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
+					float spotFactor = glm::dot(-glm::normalize(L), glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
 
 					//call to calculate the falloff factor for the spotlight
-					totalLambert *= spotLight->falloff(spotFactor);
+					totalLambert += I * glm::max(0.0f, glm::dot(normal, L)) * spotLight->falloff(spotFactor);
 				}
+				else
+					totalLambert += I * glm::max(0.0f, glm::dot(normal, L));
 			}
-			else 
-				totalLambert *= 0;
 		}
 	}
 
@@ -195,19 +192,13 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 	ofColor ks = obj->objMaterial.specularColor;
 	float roughness = obj->objMaterial.roughness;
 	float ambientCo = obj->objMaterial.ambient;
-	float kr;
-	bool outside = (glm::dot(-ray.d, normal) < 0);
-	
+	float speculatCo = obj->objMaterial.specularCoeff;
+	int power = obj->objMaterial.shininess;
 
 	double totalLambert = 0, totalPhong = 0;
-	ofColor phongColor = kd * ambientCo;
 	for (int i = 0; i < lights.size(); i++) {
-		ofColor pColor = 0;
-		ofColor refractColor = 0, reflectColor = 0;
-		bool refracted = false, reflected = false;
 		glm::vec3 L;
-		float D;
-		double I;
+		double D, I;
 
 		L = lights[i]->getLightDir(lights[i]->position, point);
 		D = lights[i]->getLightDist(lights[i]->position, point);
@@ -215,49 +206,9 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 		glm::vec3 v = renderer->renderCam->position - point;
 		glm::vec3 h = (v + L) / glm::length(v + L);
 
-		fresnel(point, ray.d, normal, obj->objMaterial.refraction, kr);
-		Ray refractRay = refract(point, ray.d, normal, obj->objMaterial.refraction, outside);
-		Ray reflectRay = reflect(point, ray.d, normal, outside);
-
-
-		if (kr < 1) {
-			glm::vec3 refractHit, refractNor;
-			if (renderer->castRay(refractRay, refractColor, refractHit, refractNor, depth + 1)) {
-
-				Ray insideRefractRay = refract(refractHit, refractRay.d, refractNor, obj->objMaterial.refraction, true);
-				if (renderer->castRay(insideRefractRay, refractColor, refractHit, refractNor, depth + 1)) {
-					//opoint = refractRay.p;
-					//opoint2 = refractHit;
-					//onormal = refractRay.d;
-				}
-			} 
-		}
-
-		totalLambert += I * glm::max(0.0f, glm::dot(normal, L));
-		totalPhong += I * (glm::pow(glm::max(0.0f, glm::dot(normal, glm::normalize(h))), obj->objMaterial.shininess));
-
-		ofColor phongCalculation = roughness * (kd * I * glm::max(0.0f, glm::dot(normal, lights[i]->position - point))) +
-			ks * I * (glm::pow(glm::max(0.0f, glm::dot(normal, h)), obj->objMaterial.shininess));
-
-		L = glm::normalize(L);
-		Ray shadRay = Ray(point + L * RAY_BIAS, L);
-		glm::vec3 refleftHit, refleftNor;
-		if (renderer->castRay(reflectRay, reflectColor, refleftHit, refleftNor, depth + 1)) {
-			reflected = true;
-			//phongCalculation *= 0.5;
-			opoint = reflectRay.p;
-			opoint2 = refleftHit;
-			onormal = reflectRay.d;
-			//reflectColor /= (lights.size());
-		}
-
-		/*int mul = 1;
-		if (obj->objMaterial.materialString == "Reflective") {
-			mul = 2;
-		}
-		reflectColor = (reflectColor / (lights.size() * mul)) * kr;*/
-		if (!inShadow(shadRay, point, D, reflected)) {
-			phongCalculation += reflectColor * kr + refractColor * (1 - kr);
+		Ray shadRay = Ray(point + glm::normalize(L) * RAY_BIAS, glm::normalize(L));
+		if (!inShadow(shadRay, point, D, false)) {
+			totalPhong += I * (glm::pow(glm::max(0.0f, glm::dot(normal, glm::normalize(h))), power));
 
 			if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
 				SpotLight *spotLight = (SpotLight*)lights[i];
@@ -266,27 +217,52 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 				float spotFactor = glm::dot(-glm::normalize(L), glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
 
 				//call to calculate the falloff factor for the spotlight
-				float falloff = spotLight->falloff(spotFactor);
-				phongColor += phongCalculation * falloff;
-				totalLambert *= 1;
-				totalPhong *= 1;
+				totalLambert += I * glm::max(0.0f, glm::dot(normal, L)) * spotLight->falloff(spotFactor);
 			}
 			else
-				phongColor += phongCalculation;
-			totalLambert *= 1;
-			totalPhong *= 1;
-		}
-		else {
-			phongColor += (phongCalculation * 0.5f) + reflectColor * kr  + refractColor * (1 - kr);
-			totalLambert *= 0;
-			totalPhong *= 0;
-
+				totalLambert += I * glm::max(0.0f, glm::dot(normal, L));
 		}
 	}
 
-	ofColor pixelColor = kd * ambientCo + kd * totalLambert + ks * totalPhong;
+	ofColor color = kd * ambientCo + (roughness * kd * totalLambert) + ks * (totalPhong * speculatCo);
 
-	return pixelColor;
+	ofColor refractColor = 0, reflectColor = 0;
+	bool outside = (glm::dot(-ray.d, normal) < 0);
+	float kr;
+
+	fresnel(point, ray.d, normal, obj->objMaterial.refraction, kr);
+	Ray refractRay = refract(point, ray.d, normal, obj->objMaterial.refraction, outside);
+	Ray reflectRay = reflect(point, ray.d, normal, outside);
+
+	if (kr < 1) {
+		glm::vec3 refractHit, refractNor;
+		if (renderer->castRay(refractRay, refractColor, refractHit, refractNor, depth + 1)) {
+
+			Ray insideRefractRay = refract(refractHit, refractRay.d, refractNor, obj->objMaterial.refraction, true);
+			if (renderer->castRay(insideRefractRay, refractColor, refractHit, refractNor, depth + 1)) {
+				//opoint = refractRay.p;
+				//opoint2 = refractHit;
+				//onormal = refractRay.d;
+			}
+		}
+	}
+
+	glm::vec3 refleftHit, refleftNor;
+	if (renderer->castRay(reflectRay, reflectColor, refleftHit, refleftNor, depth + 1)) {
+		opoint = reflectRay.p;
+		opoint2 = refleftHit;
+		onormal = reflectRay.d;
+	}
+
+	if (obj->objMaterial.materialString == "Reflective") {
+		kr = obj->objMaterial.reflectiveCoeff;
+		color = color * (1.0 - kr) + reflectColor * kr;
+	}
+	else {
+		color += reflectColor * kr + refractColor * (1.0 - kr);
+	}
+
+	return color;
 }
 
 bool Shader::inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, bool ref) {
