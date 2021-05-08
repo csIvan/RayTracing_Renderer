@@ -200,27 +200,49 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 		glm::vec3 L;
 		double D, I;
 
-		L = lights[i]->getLightDir(lights[i]->position, point);
-		D = lights[i]->getLightDist(lights[i]->position, point);
-		I = lights[i]->getLightIntensity(lights[i]->intensity, D);
-		glm::vec3 v = renderer->renderCam->position - point;
-		glm::vec3 h = (v + L) / glm::length(v + L);
+		if (dynamic_cast<AreaLight*>(lights[i]) != nullptr) {
+			AreaLight *areaLight = (AreaLight*)lights[i];
 
-		Ray shadRay = Ray(point + glm::normalize(L) * RAY_BIAS, glm::normalize(L));
-		if (!inShadow(shadRay, point, D, false)) {
-			totalPhong += I * (glm::pow(glm::max(0.0f, glm::dot(normal, glm::normalize(h))), power));
+			for (int u = 0; u < areaLight->usteps; u++) {
+				for (int v = 0; v < areaLight->vsteps; v++) {
+					glm::vec3 sample = areaLight->pointOnLight(u, v);
+					L = areaLight->getLightDir(sample, point);
+					D = areaLight->getLightDist(sample, point);
+					I = areaLight->getLightIntensity((areaLight->intensity / areaLight->samples), D);
+					glm::vec3 va = renderer->renderCam->position - point;
+					glm::vec3 h = (va + L) / glm::length(va + L);
 
-			if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
-				SpotLight *spotLight = (SpotLight*)lights[i];
-				glm::vec3 dir = spotLight->direction;
-				glm::vec4 rdd = spotLight->getRotateMatrix() * glm::vec4(dir.x, dir.y, dir.z, 1.0f);
-				float spotFactor = glm::dot(-glm::normalize(L), glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
-
-				//call to calculate the falloff factor for the spotlight
-				totalLambert += I * glm::max(0.0f, glm::dot(normal, L)) * spotLight->falloff(spotFactor);
+					Ray shadRay = Ray(point + glm::normalize(L) * RAY_BIAS, glm::normalize(L));
+					if (!inShadow(shadRay, point, D, false)) {
+						totalLambert += I * glm::max(0.0f, glm::dot(normal, L));
+						totalPhong += I * (glm::pow(glm::max(0.0f, glm::dot(normal, glm::normalize(h))), power));
+					}
+				}
 			}
-			else
-				totalLambert += I * glm::max(0.0f, glm::dot(normal, L));
+		}
+		else {
+			L = lights[i]->getLightDir(lights[i]->position, point);
+			D = lights[i]->getLightDist(lights[i]->position, point);
+			I = lights[i]->getLightIntensity(lights[i]->intensity, D);
+			glm::vec3 v = renderer->renderCam->position - point;
+			glm::vec3 h = (v + L) / glm::length(v + L);
+
+			Ray shadRay = Ray(point + glm::normalize(L) * RAY_BIAS, glm::normalize(L));
+			if (!inShadow(shadRay, point, D, false)) {
+				totalPhong += I * (glm::pow(glm::max(0.0f, glm::dot(normal, glm::normalize(h))), power));
+
+				if (dynamic_cast<SpotLight*>(lights[i]) != nullptr) {
+					SpotLight *spotLight = (SpotLight*)lights[i];
+					glm::vec3 dir = spotLight->direction;
+					glm::vec4 rdd = spotLight->getRotateMatrix() * glm::vec4(dir.x, dir.y, dir.z, 1.0f);
+					float spotFactor = glm::dot(-glm::normalize(L), glm::normalize(glm::vec3(rdd.x, rdd.y, rdd.z)));
+
+					//call to calculate the falloff factor for the spotlight
+					totalLambert += I * glm::max(0.0f, glm::dot(normal, L)) * spotLight->falloff(spotFactor);
+				}
+				else
+					totalLambert += I * glm::max(0.0f, glm::dot(normal, L));
+			}
 		}
 	}
 
