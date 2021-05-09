@@ -2,13 +2,16 @@
 
 #include "ofMain.h"
 #include "../Rendering/Material.h"
+#include "../Rendering/Texture.h"
 #include "../Rendering/Ray.h"
 
 // Base class for any renderable object in the scene
 class SceneObject {
 public:
+	Texture objTexture;
 	Material objMaterial;
 	ofMaterial sceneMaterial;
+	ofTexture sceneTexture;
 
 	string objName = "SceneObject_";
 	bool isSelected = false;
@@ -21,12 +24,9 @@ public:
 
 	virtual ~SceneObject() {};
 	virtual void draw() = 0;    // pure virtual funcs - must be overloaded
-	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
-		return false;
-	}
-	virtual float sdf(glm::vec3 p) {
-		return 0.0f;
-	}
+	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) { return false; }
+	virtual float sdf(glm::vec3 p) { return 0.0f; }
+	virtual ofColor getTextureColor(glm::vec3& point) { return ofColor::grey; }
 
 	// Transformations
 	glm::mat4 getTranslateMatrix() {

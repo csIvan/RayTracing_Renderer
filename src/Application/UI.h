@@ -21,6 +21,8 @@ public:
 	void setMirror(bool & value);
 	void setGlass(bool & value);
  	void setReflective(bool & value);  
+	void LoadTextureFile();
+	void LoadBumpMap();
 
 	// Main GUIs
 	ofxGuiGroup objectGUI;
@@ -48,10 +50,16 @@ public:
 	ofxGuiGroup group_lights;
 	ofxGuiGroup group_rotation;
 	ofxGuiGroup group_material;
+	ofxGuiGroup group_texture;
 	ofxGuiGroup group_mat_variables;
 	ofxIntSlider gui_angleX;
 	ofxIntSlider gui_angleY;
 	ofxIntSlider gui_angleZ;
+
+	ofParameter<void> button_texture = { " Load Texture file" };
+	ofParameter<void> button_bump = { " Load Bump Map" };
+	ofParameter<void> button_remove_texture = { " Clear Texture" };
+	ofParameter<void> button_remove_bumpmap = { " Clear Bump Map" };
 
 	// GUI functions
 	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete;

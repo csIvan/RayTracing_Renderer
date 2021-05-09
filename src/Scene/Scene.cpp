@@ -89,6 +89,22 @@ void Scene::handleDelete() {
 	}
 }
 
+void Scene::handleRemoveTexture() {
+	for (int i = 0; i < objects.size(); i++) {
+		if (selected.size() > 0 && objects[i]->objName == selected[0]->objName) {
+			objects[i]->objTexture.removeTexture();
+		}
+	}
+}
+
+void Scene::handleRemoveBumpMap() {
+	for (int i = 0; i < objects.size(); i++) {
+		if (selected.size() > 0 && objects[i]->objName == selected[0]->objName) {
+			objects[i]->objTexture.removeBumpMap();
+		}
+	}
+}
+
 
 void Scene::addObject(SceneObject *s) {
 	objects.push_back(s);

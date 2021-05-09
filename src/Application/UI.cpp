@@ -20,10 +20,15 @@ void UI::setup(Scene *s) {
 	button_point_light.addListener(scene, &Scene::addPointLight);
 	button_spot_light.addListener(scene, &Scene::addSpotLight);
 	button_area_light.addListener(scene, &Scene::addAreaLight);
+	button_remove_texture.addListener(scene, &Scene::handleRemoveTexture);
+	button_remove_bumpmap.addListener(scene, &Scene::handleRemoveBumpMap);
 	toggle_matte.addListener(this, &UI::setMatte);
 	toggle_mirror.addListener(this, &UI::setMirror);
 	toggle_glass.addListener(this, &UI::setGlass);
 	toggle_reflective.addListener(this, &UI::setReflective);
+	button_texture.addListener(this, &UI::LoadTextureFile);
+	button_bump.addListener(this, &UI::LoadBumpMap);
+
 
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
@@ -72,6 +77,7 @@ void UI::setup(Scene *s) {
 	group_scene.add(toggle_render_cam.setup(" Toggle Render Cam", false));
 	group_scene.add(toggle_image.setup(" Show Render", true));
 	group_scene.add(button_delete.setup(" Delete Selected Object"));
+	
 
 	objectGUI.setup("Sphere");
 	objectGUI.setBorderColor(ofColor::black);
@@ -299,11 +305,17 @@ void UI::updateGUI(SceneObject *s) {
 	if (dynamic_cast<Light*>(s) == nullptr) {
 		objectGUI.add(slider_scale.setup("Scale", s->scale, glm::vec3(1, 1, 1), glm::vec3(10, 10, 10)));
 
+		group_texture.setBorderColor(ofColor(25, 25, 25));
 		group_material.setBorderColor(ofColor(25, 25, 25));
 		toggle_matte.setFillColor(ofColor(45, 138, 86));
 		toggle_mirror.setFillColor(ofColor(45, 138, 86));
 		toggle_glass.setFillColor(ofColor(45, 138, 86));
 		toggle_reflective.setFillColor(ofColor(45, 138, 86));
+		objectGUI.add(group_texture.setup("Texture"));
+		group_texture.add(button_texture);
+		group_texture.add(button_bump);
+		group_texture.add(button_remove_texture);
+		group_texture.add(button_remove_bumpmap);
 		objectGUI.add(group_material.setup("Material"));
 		group_material.add(label_material.setup("Current Material ", selectedMaterial));
 		updateMaterial();
@@ -359,5 +371,27 @@ void UI::setReflective(bool & value) {
 	}
 	else if (!value && selectedMaterial == "Metal") {
 		toggle_reflective = true;
+	}
+}
+
+void UI::LoadTextureFile() {
+	cout << "Textured" << endl;
+	if (scene->selected.size() > 0) {
+		ofFileDialogResult result = ofSystemLoadDialog("Choose image(.jpg, .png) texture file");
+		if (result.bSuccess) {
+			scene->selected[0]->objTexture.addTexture(result.getPath());
+		}
+		
+	}
+}
+
+void UI::LoadBumpMap() {
+	cout << "Bumped" << endl;
+	if (scene->selected.size() > 0) {
+		ofFileDialogResult result = ofSystemLoadDialog("Choose image(.jpg, .png) bump file");
+		if (result.bSuccess) {
+			scene->selected[0]->objTexture.addBumpMap(result.getPath());
+		}
+
 	}
 }

@@ -203,6 +203,7 @@
     <ClCompile Include="src\Rendering\RayTracer.cpp" />
     <ClCompile Include="src\Rendering\RenderCam.cpp" />
     <ClCompile Include="src\Rendering\Shader.cpp" />
+    <ClCompile Include="src\Rendering\Texture.cpp" />
     <ClCompile Include="src\Rendering\ViewPlane.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cone.cpp" />
@@ -286,6 +287,7 @@
     <ClInclude Include="src\Rendering\RenderCam.h" />
     <ClInclude Include="src\Rendering\Renderer.h" />
     <ClInclude Include="src\Rendering\Shader.h" />
+    <ClInclude Include="src\Rendering\Texture.h" />
     <ClInclude Include="src\Rendering\ViewPlane.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneObject.h" />

@@ -33,6 +33,8 @@ public:
 	void handleRayMarch();
 	void handleSaveImage();
 	void handleDelete();
+	void handleRemoveTexture();
+	void handleRemoveBumpMap();
 	void addObject(SceneObject *s);
 	void addLight(Light *light);
 	void addSphere();
