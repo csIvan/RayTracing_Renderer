@@ -311,11 +311,14 @@ void UI::updateGUI(SceneObject *s) {
 		toggle_mirror.setFillColor(ofColor(45, 138, 86));
 		toggle_glass.setFillColor(ofColor(45, 138, 86));
 		toggle_reflective.setFillColor(ofColor(45, 138, 86));
-		objectGUI.add(group_texture.setup("Texture"));
-		group_texture.add(button_texture);
-		group_texture.add(button_bump);
-		group_texture.add(button_remove_texture);
-		group_texture.add(button_remove_bumpmap);
+
+		if (dynamic_cast<LSystem*>(s) == nullptr) {
+			objectGUI.add(group_texture.setup("Texture"));
+			group_texture.add(button_texture);
+			group_texture.add(button_bump);
+			group_texture.add(button_remove_texture);
+			group_texture.add(button_remove_bumpmap);
+		}
 		objectGUI.add(group_material.setup("Material"));
 		group_material.add(label_material.setup("Current Material ", selectedMaterial));
 		updateMaterial();

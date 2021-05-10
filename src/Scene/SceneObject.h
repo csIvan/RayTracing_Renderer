@@ -26,7 +26,7 @@ public:
 	virtual void draw() = 0;    // pure virtual funcs - must be overloaded
 	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) { return false; }
 	virtual float sdf(glm::vec3 p) { return 0.0f; }
-	virtual ofColor getTextureColor(glm::vec3& point) { return ofColor::grey; }
+	virtual ofColor getTextureColor(glm::vec3 point) { return ofColor::grey; }
 
 	// Transformations
 	glm::mat4 getTranslateMatrix() {

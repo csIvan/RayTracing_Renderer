@@ -26,7 +26,8 @@ ofColor Shader::getColor(Ray &ray, const glm::vec3 &point, const glm::vec3 &norm
 }
 
 ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, SceneObject* obj) {
-	ofColor kd = obj->objMaterial.diffuseColor;
+	ofColor kd = (obj->objTexture.hasTexture) ? obj->getTextureColor(point) : obj->objMaterial.diffuseColor;
+
 	float ambientCo = obj->objMaterial.ambient;
 
 	double totalLambert = 0;

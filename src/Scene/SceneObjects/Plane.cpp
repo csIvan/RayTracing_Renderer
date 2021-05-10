@@ -93,3 +93,23 @@ float Plane::sdf(const glm::vec3 p1) {
 glm::vec3 Plane::getNormal(const glm::vec3 &p) {
 	return this->normal;
 }
+
+ofColor Plane::getTextureColor(glm::vec3 point) {
+	int textConst = 16;
+	//get projected texture dimensions
+	float projTextHeight = width / textConst;
+	float projTextWidth = height / textConst;
+	//get texture image dimensions
+	int textHeight = objTexture.texture.getHeight();
+	int textWidth = objTexture.texture.getWidth();
+	//get x,y coordinates of point of intersection (add dimension/2 to get coordinates to start at corner)
+	float x = point.x + width / 2;
+	float y = point.z + height / 2;
+	//get u,v coordinates on texture
+	float u = x / (projTextWidth);
+	float v = y / (projTextHeight);
+	//transform u,v to i,j
+	int i = fmod(u, 1) * textWidth;
+	int j = fmod(v, 1) * textHeight;
+	return objTexture.texture.getColor(i, j);
+}

@@ -65,3 +65,17 @@ float Sphere::sdf(glm::vec3 p1) {
 	float distance = glm::distance(p, glm::vec3(0, 0, 0)) - radius;
 	return distance;
 }
+
+ofColor Sphere::getTextureColor(glm::vec3 p) {
+	float texHeight = objTexture.texture.getHeight();
+	float texWidth = objTexture.texture.getWidth();
+
+	glm::vec3 n = glm::normalize(p - position);
+	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
+	float v = 0.5f + (asin(n.y) / PI);
+
+	float x = fmod(u * texWidth, texWidth);
+	float y = fmod(texHeight - v * texHeight, texHeight);
+
+	return  objTexture.texture.getColor(x, y);
+}

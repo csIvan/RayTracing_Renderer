@@ -22,4 +22,6 @@ public:
 	float sdf(glm::vec3  p);
 
 	glm::vec3 getNormal(const glm::vec3 &p);
+
+	ofColor getTextureColor(glm::vec3 point);
 };
