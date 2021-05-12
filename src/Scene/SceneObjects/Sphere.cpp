@@ -7,7 +7,7 @@ Sphere::Sphere(glm::vec3 p, float r, string name, ofColor diffuse) {
 	objMaterial.diffuseColor = diffuse;
 }
 
-bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -20,6 +20,7 @@ bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
+	uv = getUV(point);
 	return hit;
 }
 
@@ -66,16 +67,10 @@ float Sphere::sdf(glm::vec3 p1) {
 	return distance;
 }
 
-ofColor Sphere::getTextureColor(glm::vec3 p) {
-	float texHeight = objTexture.texture.getHeight();
-	float texWidth = objTexture.texture.getWidth();
-
+glm::vec2 Sphere::getUV(glm::vec3 p) {
 	glm::vec3 n = glm::normalize(p - position);
 	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
-	float v = 0.5f + (asin(n.y) / PI);
+	float v = 0.5f - (asin(n.y) / PI);
 
-	float x = fmod(u * texWidth, texWidth);
-	float y = fmod(texHeight - v * texHeight, texHeight);
-
-	return  objTexture.texture.getColor(x, y);
+	return  glm::vec2(u, v);
 }

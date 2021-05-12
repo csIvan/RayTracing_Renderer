@@ -4,7 +4,7 @@ RenderCam::RenderCam() {
 	position = glm::vec3(0, 0, 12);
 }
 
-bool RenderCam::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool RenderCam::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
 	Ray rTemp = Ray(ray.p, ray.d);
 

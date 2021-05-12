@@ -53,8 +53,9 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 
 	for (int index = 0; index < objects.size(); index++) {
 		glm::vec3 point, normal;
+		glm::vec2 uv;
 
-		if (objects[index]->intersect(ray, point, normal)) {
+		if (objects[index]->intersect(ray, point, normal, uv)) {
 			dist = glm::distance(ray.p, point);
 			if (dist <= nearestDist) {
 				nearestDist = dist;
@@ -102,7 +103,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 				//}
 				//else {
 					//color = shader.phong(point, normal, renderCam.position, objects[index]->diffuseColor, objects[index]->specularColor, Power);
-					color = shader.getColor(ray, point, normal, objects[index], depth);
+					color = shader.getColor(ray, point, normal, uv, objects[index], depth);
 					//color = shader.lambert(ray, point, normal, objects[index]->objMaterial.diffuseColor, objects[index]->objMaterial.reflection, depth);
 				//}
 			}

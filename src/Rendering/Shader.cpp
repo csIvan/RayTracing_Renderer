@@ -8,25 +8,25 @@ Shader::Shader(Renderer *renderer, vector<Light *> lights, vector<SceneObject *>
 	this->renderer = renderer;
 }
 
-ofColor Shader::getColor(Ray &ray, const glm::vec3 &point, const glm::vec3 &norm, SceneObject *obj, int depth) {
+ofColor Shader::getColor(Ray &ray, const glm::vec3 &point, const glm::vec3 &norm, const glm::vec2 &uv, SceneObject *obj, int depth) {
 	// Check material
 	ofColor color;
 	switch (obj->objMaterial.getType()) {
 		case Material::MATTE:
-			color = lambert(point, norm, obj);
+			color = lambert(point, norm, uv, obj);
 			break;
 		case Material::MIRROR:
 		case Material::GLASS:
 		case Material::REFLECTIVE:
-			color = phong(ray, point, norm, obj, depth);
+			color = phong(ray, point, norm, uv, obj, depth);
 			break;
 	}
 
 	return color;
 }
 
-ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, SceneObject* obj) {
-	ofColor kd = (obj->objTexture.hasTexture) ? obj->getTextureColor(point) : obj->objMaterial.diffuseColor;
+ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const glm::vec2 &uv, SceneObject* obj) {
+	ofColor kd = (obj->objTexture.hasTexture) ? obj->objTexture.getTextureColor(uv) : obj->objMaterial.diffuseColor;
 
 	float ambientCo = obj->objMaterial.ambient;
 
@@ -188,7 +188,7 @@ ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &norma
 	return lambertColor;
 }
 
-ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, SceneObject* obj, int depth) {
+ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const glm::vec2 &uv, SceneObject* obj, int depth) {
 	ofColor kd = obj->objMaterial.diffuseColor;
 	ofColor ks = obj->objMaterial.specularColor;
 	float roughness = obj->objMaterial.roughness;
@@ -293,7 +293,7 @@ bool Shader::inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, boo
 	float dist = FLT_MAX;
 	for (int index = 0; index < objects.size(); index++) {
 		glm::vec3 point, normal;
-
+		glm::vec2 uv;
 		//calculate shadows using rayMarch()
 		//if (rayMarch(r, point)) {
 		//	blocked = true;
@@ -313,7 +313,7 @@ bool Shader::inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, boo
 			}
 			
 		}
-		if (objects[index]->intersect(r, point, normal)) {
+		if (objects[index]->intersect(r, point, normal, uv)) {
 			objectDistance = glm::distance(point, hitPoint);
 			if (objectDistance < dist) {
 				dist = objectDistance;

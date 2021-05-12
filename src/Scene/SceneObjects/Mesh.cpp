@@ -26,7 +26,7 @@ Mesh::Mesh(glm::vec3 p, vector<Triangle> t, vector<glm::vec3> v, vector<glm::vec
 * on the barycentric coordinates. Also, it takes the closest hit triangle, so that
 * triangles behind it are not shown in front.
 */
-bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation

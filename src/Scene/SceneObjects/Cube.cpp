@@ -7,7 +7,7 @@ Cube::Cube(glm::vec3 p, float s, string name, ofColor diffuse) {
 	objMaterial.diffuseColor = diffuse;
 }
 
-bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
 	Ray rTemp = Ray(ray.p, ray.d);
 

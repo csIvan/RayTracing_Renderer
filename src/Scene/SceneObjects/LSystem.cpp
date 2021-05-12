@@ -56,7 +56,7 @@ void LSystem::generate() {
 	rules.clear();
 }
 
-bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -104,7 +104,8 @@ bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 			tube = Cylinder(glm::vec3(0, 0, 0), tubeHeight * 2, tubeRadius, "", ofColor::seaGreen);
 			glm::vec3 poi, nor;
-			if (tube.intersect(rayTemp, poi, nor)) {
+			glm::vec2 uv2;
+			if (tube.intersect(rayTemp, poi, nor, uv2)) {
 				dist = glm::distance(roop, poi);
 				if (dist < nearestDist) {
 					nearestDist = dist;
@@ -126,7 +127,8 @@ bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 				joint = Sphere(glm::vec3(0, 0, 0), tubeRadius, "", ofColor::seaGreen);
 				glm::vec3 jpoi, jnor;
-				if (joint.intersect(jr, jpoi, jnor)) {
+				glm::vec2 juv;
+				if (joint.intersect(jr, jpoi, jnor, juv)) {
 					dist = glm::distance(jroop, jpoi);
 					if (dist <= nearestDist) {
 						nearestDist = dist;

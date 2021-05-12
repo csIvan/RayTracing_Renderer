@@ -7,7 +7,7 @@ WaterPool::WaterPool(glm::vec3 p, float r, string name, ofColor diffuse) {
 	objMaterial.diffuseColor = diffuse;
 }
 
-bool WaterPool::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool WaterPool::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	// Proxy plane intersect for waterpool
 	glm::vec3 rdd, roo;
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);

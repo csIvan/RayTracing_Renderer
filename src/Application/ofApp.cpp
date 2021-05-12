@@ -89,21 +89,23 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 	for (int i = 0; i < scene.objects.size(); i++) {
 		glm::vec3 point, normal;
-
-		if (scene.objects[i]->intersect(Ray(p, dn), point, normal)) {
+		glm::vec2 uv;
+		if (scene.objects[i]->intersect(Ray(p, dn), point, normal, uv)) {
 			hits.push_back(scene.objects[i]);
 		}
 	}
 
 	for (int i = 0; i < scene.lights.size(); i++) {
 		glm::vec3 point, normal;
-		if (scene.lights[i]->intersect(Ray(p, dn), point, normal)) {
+		glm::vec2 luv;
+		if (scene.lights[i]->intersect(Ray(p, dn), point, normal, luv)) {
 			hits.push_back(scene.lights[i]);
 		}
 	}
 
 	glm::vec3 tempPoint, tempNormal;
-	if (scene.renderCam.intersect(Ray(p, dn), tempPoint, tempNormal)) {
+	glm::vec2 ruv;
+	if (scene.renderCam.intersect(Ray(p, dn), tempPoint, tempNormal, ruv)) {
 		hits.push_back(&(scene.renderCam));
 	}
 

@@ -224,6 +224,7 @@ void UI::updateSelected(SceneObject *s) {
 	s->rotation.y = static_cast<int>(gui_angleY);
 	s->rotation.z = static_cast<int>(gui_angleZ);
 	s->objMaterial.diffuseColor = (ofColor)color;
+	s->objTexture.uvTileFactor = gui_uvTile;
 
 	// Don't need scale for lights
 	if (dynamic_cast<Light*>(s) == nullptr) {
@@ -312,8 +313,9 @@ void UI::updateGUI(SceneObject *s) {
 		toggle_glass.setFillColor(ofColor(45, 138, 86));
 		toggle_reflective.setFillColor(ofColor(45, 138, 86));
 
-		if (dynamic_cast<LSystem*>(s) == nullptr) {
+		if (dynamic_cast<LSystem*>(s) == nullptr && dynamic_cast<Mesh*>(s) == nullptr) {
 			objectGUI.add(group_texture.setup("Texture"));
+			group_texture.add(gui_uvTile.setup("Tile Factor", s->objTexture.uvTileFactor, 1, 10));
 			group_texture.add(button_texture);
 			group_texture.add(button_bump);
 			group_texture.add(button_remove_texture);

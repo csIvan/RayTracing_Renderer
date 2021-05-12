@@ -18,7 +18,7 @@ public:
 	AreaLight() {};
 	~AreaLight() {};
 
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);
+	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
 	void draw();
 
 	glm::vec3 pointOnLight(int u, int v);

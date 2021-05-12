@@ -9,7 +9,7 @@ Cylinder::Cylinder(glm::vec3 p, float h, float r, string name, ofColor diffuse) 
 	objMaterial.diffuseColor = diffuse;
 }
 
-bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -135,4 +135,9 @@ float Cylinder::sdf(const glm::vec3 p1) {
 	float s = (cbx < 0.0 && cay < 0.0) ? -1.0 : 1.0;
 
 	return (s * sqrt(min(cax * cax + cay * cay * m0, cbx * cbx + cby * cby * m0)));
+}
+
+glm::vec2 Cylinder::getUV(glm::vec3 p){
+
+	return  glm::vec2(0, 0);
 }

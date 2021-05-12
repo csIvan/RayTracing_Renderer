@@ -37,7 +37,7 @@ public:
 	ofxVec3Slider slider_rotation;
 	ofxVec3Slider slider_scale;
 	ofxFloatSlider gui_value1, gui_value2, gui_value3, gui_value4, gui_reflect;
-	ofxIntSlider gui_ivalue1;
+	ofxIntSlider gui_ivalue1, gui_uvTile;
 	ofxTextField gui_axiom, gui_rule1, gui_rule2, gui_rule3, gui_rule4;
 	ofxIntSlider gui_angle1;
 	ofxIntSlider gui_angle2;

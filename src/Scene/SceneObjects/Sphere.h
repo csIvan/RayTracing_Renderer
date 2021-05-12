@@ -15,8 +15,8 @@ public:
 	Sphere() {}
 	~Sphere() {};
 
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal);
+	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
 	void draw();
 	float sdf(glm::vec3 p);
-	ofColor getTextureColor(glm::vec3 point);
+	glm::vec2 getUV(glm::vec3 p);
 };

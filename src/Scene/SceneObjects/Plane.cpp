@@ -17,7 +17,7 @@ Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, fl
 	}
 }
 
-bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo;
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
 	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
@@ -39,6 +39,7 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
 
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
+	uv = getUV(point);
 	glm::vec2 xRange = glm::vec2(position.x - width / 2, position.x + width / 2);
 	glm::vec2 zRange = glm::vec2(position.z - height / 2, position.z + height / 2);
 	if (hit && point.x < xRange[1] && point.x > xRange[0] && point.z < zRange[1] && point.z > zRange[0]) {
@@ -94,22 +95,37 @@ glm::vec3 Plane::getNormal(const glm::vec3 &p) {
 	return this->normal;
 }
 
-ofColor Plane::getTextureColor(glm::vec3 point) {
-	int textConst = 16;
-	//get projected texture dimensions
-	float projTextHeight = width / textConst;
-	float projTextWidth = height / textConst;
-	//get texture image dimensions
-	int textHeight = objTexture.texture.getHeight();
-	int textWidth = objTexture.texture.getWidth();
-	//get x,y coordinates of point of intersection (add dimension/2 to get coordinates to start at corner)
-	float x = point.x + width / 2;
-	float y = point.z + height / 2;
-	//get u,v coordinates on texture
-	float u = x / (projTextWidth);
-	float v = y / (projTextHeight);
-	//transform u,v to i,j
-	int i = fmod(u, 1) * textWidth;
-	int j = fmod(v, 1) * textHeight;
-	return objTexture.texture.getColor(i, j);
+glm::vec2 Plane::getUV(glm::vec3 p) {
+	// Get texture image dimensions
+	int texHeight = objTexture.texture.getHeight();
+	int texWidth = objTexture.texture.getWidth();
+	
+	// 10x10 tiles
+	int uvTileFactor = 1;
+
+	float u = (p.x + width / 2) / (width / uvTileFactor);
+	float v = (p.z + height / 2) / (height / uvTileFactor);
+
+	return  glm::vec2(u, v);
+
+	//int x = glm::mod(u * texWidth, texWidth);
+	//int y = glm::mod(v * texHeight, texHeight);
+
+	//return  objTexture.texture.getColor(x, y);
+
+
+	//int textConst = 16;
+	////get projected texture dimensions
+	//float projTextHeight = width / textConst;
+	//float projTextWidth = height / textConst;
+	////get x,y coordinates of point of intersection (add dimension/2 to get coordinates to start at corner)
+	//float x = point.x + width / 2;
+	//float y = point.z + height / 2;
+	////get u,v coordinates on texture
+	//float u = x / (projTextWidth);
+	//float v = y / (projTextHeight);
+	////transform u,v to i,j
+	//int i = fmod(u, 1) * texWidth;
+	//int j = fmod(v, 1) * texHeight;
+	//return objTexture.texture.getColor(i, j);
 }

@@ -24,9 +24,9 @@ public:
 
 	virtual ~SceneObject() {};
 	virtual void draw() = 0;    // pure virtual funcs - must be overloaded
-	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) { return false; }
+	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) { return false; }
 	virtual float sdf(glm::vec3 p) { return 0.0f; }
-	virtual ofColor getTextureColor(glm::vec3 point) { return ofColor::grey; }
+	virtual glm::vec2 getUV(glm::vec3 p) { return glm::vec2(0, 0); };
 
 	// Transformations
 	glm::mat4 getTranslateMatrix() {

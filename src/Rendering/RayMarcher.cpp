@@ -50,9 +50,10 @@ bool RayMarcher::castRay(Ray &r, ofColor &color, glm::vec3 &po, glm::vec3 &n, in
 	bool hit = rayMarch(r, p);
 
 	glm::vec3 normal = getNormalRM(p);
+	glm::vec2 uv;
 	//color = shader.phong(p, normal, renderCam.position, objects[indexHit]->diffuseColor, ofColor::lightGray, 50);
 	if(hit)
-		color = shader.getColor(r, p, normal, objects[indexHit], depth);
+		color = shader.getColor(r, p, normal, uv, objects[indexHit], depth);
 		//color = shader.lambert(r, p, normal, objects[indexHit], depth);
 
 	return hit;

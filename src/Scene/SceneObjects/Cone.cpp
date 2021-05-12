@@ -9,7 +9,7 @@ Cone::Cone(glm::vec3 p, float h, float r, string name, ofColor diffuse) {
 	objMaterial.diffuseColor = diffuse;
 }
 
-bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal) {
+bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
