@@ -44,6 +44,7 @@ bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, gl
 
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(-ba * glm::inversesqrt(m0), 1.0));
+			uv = getUV(point);
 			return true;
 		}
 	}
@@ -54,6 +55,7 @@ bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, gl
 
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(ba * glm::inversesqrt(m0), 1.0));
+			uv = getUV(point);
 			return true;
 		}
 	}
@@ -72,6 +74,7 @@ bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, gl
 	if (y > 0.0 && y < m0 && t >= EPSILON) {
 		point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 		normal = glm::normalize(getRotateMatrix() * glm::vec4((m0 * (m0 * (oa + t * rdd)) - ba * m0 * y), 1.0));
+		uv = getUV(point);
 		return true;
 	}
 
@@ -138,6 +141,9 @@ float Cylinder::sdf(const glm::vec3 p1) {
 }
 
 glm::vec2 Cylinder::getUV(glm::vec3 p){
+	glm::vec3 n = glm::normalize(p - position);
+	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
+	float v = (-p.y + height / 2) / (height );
 
-	return  glm::vec2(0, 0);
+	return  glm::vec2(u, v);
 }
