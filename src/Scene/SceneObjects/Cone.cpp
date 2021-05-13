@@ -40,6 +40,7 @@ bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(-ba * glm::inversesqrt(m0), 1.0));
+			uv = getUV(point);
 			return true;
 		}
 	}
@@ -50,6 +51,7 @@ bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(ba * glm::inversesqrt(m0), 1.0));
+			uv = getUV(point);
 			return true;
 		}
 	}
@@ -73,6 +75,7 @@ bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 		point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 		normal = glm::normalize(getRotateMatrix() * 
 			glm::vec4((m0 * (m0 * (oa + t * rdd) + radius * ba * radius) - ba * hy * y), 1.0));
+		uv = getUV(point);
 		return true;
 	}
 
@@ -144,4 +147,12 @@ float Cone::sdf(const glm::vec3 p1) {
 	float s = (cbx < 0.0 && cay < 0.0) ? -1.0 : 1.0;
 
 	return (s * sqrt(min(cax * cax + cay * cay * m0, cbx * cbx + cby * cby * m0)));
+}
+
+glm::vec2 Cone::getUV(glm::vec3 p) {
+	glm::vec3 n = glm::normalize(p - position);
+	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
+	float v = (-p.y + height / 2) / (height);
+
+	return  glm::vec2(u, v);
 }
