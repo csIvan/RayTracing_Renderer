@@ -173,8 +173,10 @@ void Scene::addAreaLight() {
 bool Scene::FileLoader(const char * path) {
 	vector<int> tempIndices;
 	vector<int> tempVertNormIndices;
+	vector<int> tempVertTexIndices;
 	vector<glm::vec3> tempVertices;
 	vector<glm::vec3> tempVertNormals;
+	vector<glm::vec2> tempVertTextures;
 	FILE * file;
 	errno_t err = fopen_s(&file, path, "r");
 	if (err != 0) {
@@ -192,21 +194,30 @@ bool Scene::FileLoader(const char * path) {
 			fscanf_s(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
 			tempVertices.push_back(vertex);
 		}
-		if (strcmp(line, "vn") == 0) {
+		else if (strcmp(line, "vn") == 0) {
 			glm::vec3 vertNormal;
 			fscanf_s(file, "%f %f %f\n", &vertNormal.x, &vertNormal.y, &vertNormal.z);
 			tempVertNormals.push_back(vertNormal);
 		}
+		else if (strcmp(line, "vt") == 0) {
+			glm::vec2 vertTex;
+			fscanf_s(file, "%f %f %f\n", &vertTex.x, &vertTex.y);
+			tempVertTextures.push_back(vertTex);
+		}
 		else if (strcmp(line, "f") == 0) {
 			unsigned int vertexIndex[3];
 			unsigned int vertNormIndex[3];
+			unsigned int vertTexIndex[3];
 
 			//Only taking the vertex indices so we ignore the other numbers
-			fscanf(file, "%d/%*d/%d %d/%*d/%d %d/%*d/%d\n", &vertexIndex[0], &vertNormIndex[0],
-				&vertexIndex[1], &vertNormIndex[1], &vertexIndex[2], &vertNormIndex[2]);
+			fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &vertTexIndex[0], &vertNormIndex[0],
+				&vertexIndex[1], &vertTexIndex[1], &vertNormIndex[1], &vertexIndex[2], &vertTexIndex[2], &vertNormIndex[2]);
 			tempIndices.push_back(vertexIndex[0]);
 			tempIndices.push_back(vertexIndex[1]);
 			tempIndices.push_back(vertexIndex[2]);
+			tempVertTexIndices.push_back(vertTexIndex[0]);
+			tempVertTexIndices.push_back(vertTexIndex[1]);
+			tempVertTexIndices.push_back(vertTexIndex[2]);
 			tempVertNormIndices.push_back(vertNormIndex[0]);
 			tempVertNormIndices.push_back(vertNormIndex[1]);
 			tempVertNormIndices.push_back(vertNormIndex[2]);
@@ -215,6 +226,7 @@ bool Scene::FileLoader(const char * path) {
 
 	vector<glm::vec3> meshVertices;
 	vector<glm::vec3> meshVerticesNormals;
+	vector<glm::vec2> meshVerticesTex;
 	vector<Triangle> meshTris;
 
 	for (unsigned int i = 0; i < tempIndices.size(); i++) {
@@ -227,6 +239,11 @@ bool Scene::FileLoader(const char * path) {
 		glm::vec3 vn = tempVertNormals[vertNormIndex - 1];
 		meshVerticesNormals.push_back(vn);
 	}
+	for (unsigned int i = 0; i < tempVertTexIndices.size(); i++) {
+		unsigned int vertTexIndex = tempVertTexIndices[i];
+		glm::vec2 vn = tempVertTextures[vertTexIndex - 1];
+		meshVerticesTex.push_back(vn);
+	}
 
 	int count = 0;
 	vector<int> temp;
@@ -237,16 +254,19 @@ bool Scene::FileLoader(const char * path) {
 			Triangle triangle;
 			triangle.i = temp[0];
 			triangle.in = temp[0];
+			triangle.it = temp[0];
 			triangle.j = temp[1];
 			triangle.jn = temp[1];
+			triangle.jt = temp[1];
 			triangle.k = temp[2];
 			triangle.kn = temp[2];
+			triangle.kt = temp[2];
 			meshTris.push_back(triangle);
 			temp.clear();
 			count = 0;
 		}
 	}
-	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), meshTris, meshVertices, meshVerticesNormals, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
+	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), meshTris, meshVertices, meshVerticesNormals, meshVerticesTex, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
 
 	objects.push_back(meshObj);
 	rayTracer.addObject(*meshObj);

@@ -47,6 +47,7 @@ bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 		normal = glm::vec3(Transform[1].x * sign.y, Transform[1].y*sign.y, Transform[1].z*sign.y);
 	else
 		normal = glm::vec3(Transform[2].x * sign.z, Transform[2].y*sign.z, Transform[2].z*sign.z);
+	uv = getUV(point);
 
 	return true;
 }
@@ -80,4 +81,24 @@ float Cube::sdf(const glm::vec3 p1) {
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 q = abs(p) - side;
 	return MIN(MAX(q.x, max(q.y, q.z)), 0.0) + length(max(q, 0.0f));
+}
+
+glm::vec2 Cube::getUV(glm::vec3 p) {
+	glm::vec3 np = p - position;
+	float u, v;
+	float eps = 0.001f;
+	if (abs((np.x / side)) >= (1.0f - eps) && abs((np.x / side)) <= (1.0f + eps)) {
+		u = (np.z + 1.0f) / 2.0f;
+		v = (np.y + 1.0f) / 2.0f;
+	} 
+	else if (abs((np.y / side)) >= (1.0f - eps) && abs((np.y / side)) <= (1.0f + eps)) {
+		u = (np.x + 1.0f) / 2.0f;
+		v = (np.z + 1.0f) / 2.0f;
+	}
+	else if (abs((np.z / side)) >= (1.0f - eps) && abs((np.z / side)) <= (1.0f + eps)) {
+		u = (np.x + 1.0f) / 2.0f;
+		v = (np.y + 1.0f) / 2.0f;
+	}
+
+	return  glm::vec2(u, v);
 }

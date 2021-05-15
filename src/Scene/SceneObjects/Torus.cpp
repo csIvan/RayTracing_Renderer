@@ -60,6 +60,7 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::
 	normal = point * (dot(point, point) - r * r - R * R * glm::vec3(1.0, 1.0, -1.0));
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
+	uv = getUV(point);
 
 
 	// For Debugging
@@ -134,4 +135,35 @@ float Torus::sdf(glm::vec3 p1) {
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec2 q = glm::vec2(glm::length(glm::vec2(p.x, p.y)) - R, p.z);
 	return glm::length(q) - r;
+}
+
+glm::vec2 Torus::getUV(glm::vec3 p) {
+	//glm::vec3 n = glm::normalize(p - position);
+	//float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
+	//float v = 0.5f - (asin(n.y) / PI);
+	//float v = 0.5f + (atan2(n.y, glm::sqrt(glm::pow2(n.x) + glm::pow2(n.z)) - R) / (2 * PI));
+	//float v = fmod(n.z, 1);
+	//float v = atan2(glm::length(glm::vec2(p.x, p.y)) - R, p.z) * glm::vec2(3.0*sqrt(3.0), 2.0) / PI;
+
+	//float u = (asin(n.z) / ( r));
+	//float v = asin(n.y) / (R + r * cos(u));
+
+	//u = 0.5 + v /(2* PI);
+	//v = 0.5 + u / PI;
+
+	glm::vec3 j = glm::vec3(0, 0, 1);
+	j = glm::normalize(getRotateMatrix() * glm::vec4(j.x, j.y, j.z, 1.0));
+	glm::vec3 projDN = ((dot(p, j)) * j);
+
+	glm::vec3 cR = normalize(p - projDN);
+
+	glm::vec3 C = cR * (R + r * 0.5);
+	glm::vec3 V = normalize(p - C);
+
+	glm::vec2 uv = glm::vec2(0.5f + (atan2(p.x, p.y) / (2 * PI)), acos(dot(cR, V)) / PI);
+	//glm::vec2 uv = glm::vec2(atan2(p.x, p.y) / (PI), atan2(glm::length(glm::vec2(p.x, p.y)) - R, p.z)) * glm::vec2(3.0*sqrt(3.0), 2.0) / PI;
+	//glm::vec2 uv = glm::vec2(0.5f + (atan2(p.x, p.y) / (2 * PI)), atan2(glm::length(glm::vec2(p.x, p.y)) - R, p.z) / PI);
+	//uv.x = (uv.x + 1.)*0.5;
+
+	return  glm::vec2(glm::abs(uv.x), glm::abs(uv.y));
 }

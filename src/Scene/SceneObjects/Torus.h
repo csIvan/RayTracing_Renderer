@@ -25,5 +25,5 @@ public:
 	void draw();
 	void drawTorus();
 	float sdf(glm::vec3 p1);
-
+	glm::vec2 getUV(glm::vec3 p);
 };

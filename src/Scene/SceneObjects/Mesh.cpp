@@ -1,10 +1,11 @@
 #include "Mesh.h"
 
-Mesh::Mesh(glm::vec3 p, vector<Triangle> t, vector<glm::vec3> v, vector<glm::vec3> vn, string name, ofColor diffuse) {
+Mesh::Mesh(glm::vec3 p, vector<Triangle> t, vector<glm::vec3> v, vector<glm::vec3> vn, vector<glm::vec2> vt, string name, ofColor diffuse) {
 	position = p;
 	tris = t;
 	vertices = v;
 	vertNormals = vn;
+	vertTextures = vt;
 	objName = name;
 	objMaterial.diffuseColor = diffuse;
 
@@ -39,10 +40,12 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 	float maxLocalDist = FLT_MAX;
 	float dist;
 	glm::vec3 po, no;
+	selectedTri = new Triangle();
 	for (Triangle triangle : tris) {
 		glm::vec3 na, nb, nc;
 		glm::vec3 bary;
 		if (glm::intersectRayTriangle(roo, rdd, vertices[triangle.i], vertices[triangle.j], vertices[triangle.k], bary)) {
+			
 			//get the vertex normals from the mesh vector
 			na = vertNormals[triangle.in];
 			nb = vertNormals[triangle.jn];
@@ -60,11 +63,13 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 				insideTri = true;
 				po = point;
 				no = normal;
+				selectedTri = &triangle;
 			}
 		}
 	}
 	point = Transform * glm::vec4(po, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(no, 1.0));
+	uv = getUV(point);
 	return insideTri;
 }
 
@@ -136,4 +141,12 @@ float Mesh::sdf(const glm::vec3 p1) {
 		}
 	}
 	return dist;
+}
+
+glm::vec2 Mesh::getUV(glm::vec3 p) {
+	glm::vec3 n = glm::normalize(p - position);
+	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
+	float v = (-p.y / 2) ;
+
+	return  glm::vec2(u, v);
 }
