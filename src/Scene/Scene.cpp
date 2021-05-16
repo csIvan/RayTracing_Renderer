@@ -7,7 +7,7 @@ void Scene::setup() {
 	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image, renderCam);
 	nearestDistance = FLT_MAX;
-	addSphere();
+	addTorus();
 	addPlane();
 	addPointLight();
 }

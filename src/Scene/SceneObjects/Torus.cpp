@@ -138,32 +138,8 @@ float Torus::sdf(glm::vec3 p1) {
 }
 
 glm::vec2 Torus::getUV(glm::vec3 p) {
-	//glm::vec3 n = glm::normalize(p - position);
-	//float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
-	//float v = 0.5f - (asin(n.y) / PI);
-	//float v = 0.5f + (atan2(n.y, glm::sqrt(glm::pow2(n.x) + glm::pow2(n.z)) - R) / (2 * PI));
-	//float v = fmod(n.z, 1);
-	//float v = atan2(glm::length(glm::vec2(p.x, p.y)) - R, p.z) * glm::vec2(3.0*sqrt(3.0), 2.0) / PI;
+	float u = 1.0f - (atan2(p.x, p.y) / (2 * PI));
+	float v = 0.5f + atan2(-p.z, glm::length(glm::vec2(p.x, p.y)) - R) / (2 * PI);
 
-	//float u = (asin(n.z) / ( r));
-	//float v = asin(n.y) / (R + r * cos(u));
-
-	//u = 0.5 + v /(2* PI);
-	//v = 0.5 + u / PI;
-
-	glm::vec3 j = glm::vec3(0, 0, 1);
-	j = glm::normalize(getRotateMatrix() * glm::vec4(j.x, j.y, j.z, 1.0));
-	glm::vec3 projDN = ((dot(p, j)) * j);
-
-	glm::vec3 cR = normalize(p - projDN);
-
-	glm::vec3 C = cR * (R + r * 0.5);
-	glm::vec3 V = normalize(p - C);
-
-	glm::vec2 uv = glm::vec2(0.5f + (atan2(p.x, p.y) / (2 * PI)), acos(dot(cR, V)) / PI);
-	//glm::vec2 uv = glm::vec2(atan2(p.x, p.y) / (PI), atan2(glm::length(glm::vec2(p.x, p.y)) - R, p.z)) * glm::vec2(3.0*sqrt(3.0), 2.0) / PI;
-	//glm::vec2 uv = glm::vec2(0.5f + (atan2(p.x, p.y) / (2 * PI)), atan2(glm::length(glm::vec2(p.x, p.y)) - R, p.z) / PI);
-	//uv.x = (uv.x + 1.)*0.5;
-
-	return  glm::vec2(glm::abs(uv.x), glm::abs(uv.y));
+	return  glm::vec2(glm::abs(u), glm::abs(v));
 }
