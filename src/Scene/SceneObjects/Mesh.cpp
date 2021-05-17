@@ -1,22 +1,79 @@
 #include "Mesh.h"
 
-Mesh::Mesh(glm::vec3 p, vector<Triangle> t, vector<glm::vec3> v, vector<glm::vec3> vn, vector<glm::vec2> vt, string name, ofColor diffuse) {
+void MeshObject::processData(int vstart, int nstart, int tstart, vector<int> verti, vector<int> normi, vector<int> texi) {
+	vector<glm::vec3> meshVertices;
+	vector<glm::vec3> meshVerticesNormals;
+	vector<glm::vec2> meshVerticesTex;
+	vector<Triangle> meshTris;
+
+	for (unsigned int i = 0; i < verti.size(); i++) {
+		unsigned int vertexIndex = verti[i];
+		glm::vec3 vertex = vertices[vertexIndex - vstart];
+		meshVertices.push_back(vertex);
+	}
+	cout << "Test" << endl;
+	for (unsigned int i = 0; i < normi.size(); i++) {
+		unsigned int vertNormIndex = normi[i];
+		glm::vec3 vn = vertNormals[vertNormIndex - nstart];
+		meshVerticesNormals.push_back(vn);
+	}
+	cout << "Test2" << endl;
+	for (unsigned int i = 0; i < texi.size(); i++) {
+		unsigned int vertTexIndex = texi[i];
+		glm::vec2 vn = vertTextures[vertTexIndex - tstart];
+		meshVerticesTex.push_back(vn);
+	}
+
+	int count = 0;
+	vector<int> temp;
+	for (unsigned int i = 0; i < meshVertices.size(); i++) {
+		temp.push_back(i);
+		count++;
+		if (count == 3) {
+			Triangle triangle;
+			triangle.i = temp[0];
+			triangle.in = temp[0];
+			triangle.it = temp[0];
+			triangle.j = temp[1];
+			triangle.jn = temp[1];
+			triangle.jt = temp[1];
+			triangle.k = temp[2];
+			triangle.kn = temp[2];
+			triangle.kt = temp[2];
+			meshTris.push_back(triangle);
+			temp.clear();
+			count = 0;
+		}
+	}
+	vertices = meshVertices;
+	vertNormals = meshVerticesNormals;
+	vertTextures = meshVerticesTex;
+	tris = meshTris;
+	cout << textureMap << endl;
+
+}
+
+Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, string name, ofColor diffuse) {
 	position = p;
-	tris = t;
-	vertices = v;
-	vertNormals = vn;
-	vertTextures = vt;
+	mObjects = objs;
 	objName = name;
 	objMaterial.diffuseColor = diffuse;
 
+	cout << "Finish" << endl;
 	// Create scene mesh
-	for (int i = 0; i < tris.size(); i++) {
-		mesh.addIndex(tris[i].i);
-		mesh.addIndex(tris[i].j);
-		mesh.addIndex(tris[i].k);
+	for (MeshObject *o : mObjects) {
+		ofMesh *mesh = new ofMesh();
+		cout << o->tris.size() << endl;
+		for (int i = 0; i < o->tris.size(); i++) {
+			mesh->addIndex(o->tris[i].i);
+			mesh->addIndex(o->tris[i].j);
+			mesh->addIndex(o->tris[i].k);
+		}
+		mesh->addVertices(o->vertices);
+		mesh->addNormals(o->vertNormals);
+		meshes.push_back(mesh);
 	}
-	mesh.addVertices(vertices);
-	mesh.addNormals(vertNormals);
+		cout << "IN" << endl;
 }
 
 /**
@@ -41,6 +98,7 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 	float dist;
 	glm::vec3 po, no;
 	selectedTri = new Triangle();
+	barySelected = glm::vec2(0.0, 0.0);
 	for (Triangle triangle : tris) {
 		glm::vec3 na, nb, nc;
 		glm::vec3 bary;
@@ -64,6 +122,7 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 				po = point;
 				no = normal;
 				selectedTri = &triangle;
+				barySelected = glm::vec2(bary.x, bary.y);
 			}
 		}
 	}
@@ -92,7 +151,9 @@ void Mesh::draw() {
 		ofNoFill();
 		ofPushMatrix();
 			ofMultMatrix(Transform);
-			mesh.drawWireframe();
+			for (ofMesh *m : meshes) {
+				m->drawWireframe();
+			}
 		ofPopMatrix();
 		ofFill();
 		ofEnableLighting();
@@ -103,7 +164,9 @@ void Mesh::draw() {
 	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();
 		ofMultMatrix(Transform);
-		mesh.drawFaces();
+		for (ofMesh *m : meshes) {
+			m->drawFaces();
+		}
 	ofPopMatrix();
 	sceneMaterial.end();
 }
@@ -144,9 +207,13 @@ float Mesh::sdf(const glm::vec3 p1) {
 }
 
 glm::vec2 Mesh::getUV(glm::vec3 p) {
-	glm::vec3 n = glm::normalize(p - position);
-	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
-	float v = (-p.y / 2) ;
 
-	return  glm::vec2(u, v);
+	//glm::vec2 tC0 = vertTextures[selectedTri->it];
+	//glm::vec2 tC1 = vertTextures[selectedTri->it];
+	//glm::vec2 tC2 = vertTextures[selectedTri->it];
+
+	////this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
+	//glm::vec2 uv = (tC1 - tC0) * barySelected.x + (tC2 - tC0) * barySelected.y + tC0;
+
+	return  glm::vec2(1, 1);
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include <iostream>
+#include <fstream>
 #include "../Application/Definitions.h"
 #include "../Rendering/RayTracer.h"
 #include "../Rendering/RayMarcher.h"

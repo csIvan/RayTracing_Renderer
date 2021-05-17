@@ -7,7 +7,6 @@ void Scene::setup() {
 	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image, renderCam);
 	nearestDistance = FLT_MAX;
-	addTorus();
 	addPlane();
 	addPointLight();
 }
@@ -178,102 +177,247 @@ bool Scene::FileLoader(const char * path) {
 	vector<glm::vec3> tempVertNormals;
 	vector<glm::vec2> tempVertTextures;
 	FILE * file;
-	errno_t err = fopen_s(&file, path, "r");
-	if (err != 0) {
-		printf("Could not open file!\n");
-		return false;
-	}
-	while (1) {
-		char line[128];
-		int res = fscanf(file, "%s", line);
-		if (res == EOF)
-			break;
+	char mtl[100];
+	MeshObject *tempObj;
+	vector<MeshObject *> mObjects;
+	bool firstObject = true;
 
-		if (strcmp(line, "v") == 0) {
-			glm::vec3 vertex;
-			fscanf_s(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
-			tempVertices.push_back(vertex);
-		}
-		else if (strcmp(line, "vn") == 0) {
-			glm::vec3 vertNormal;
-			fscanf_s(file, "%f %f %f\n", &vertNormal.x, &vertNormal.y, &vertNormal.z);
-			tempVertNormals.push_back(vertNormal);
-		}
-		else if (strcmp(line, "vt") == 0) {
-			glm::vec2 vertTex;
-			fscanf_s(file, "%f %f %f\n", &vertTex.x, &vertTex.y);
-			tempVertTextures.push_back(vertTex);
-		}
-		else if (strcmp(line, "f") == 0) {
-			unsigned int vertexIndex[3];
-			unsigned int vertNormIndex[3];
-			unsigned int vertTexIndex[3];
+	ifstream objFile;
+	objFile.open(string(path));
+	string line;
+	int vCount = 0, nCount = 0, tCount = 0;
+	int vstart = 1, nstart = 1, tstart = 1;
 
-			//Only taking the vertex indices so we ignore the other numbers
-			fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &vertTexIndex[0], &vertNormIndex[0],
-				&vertexIndex[1], &vertTexIndex[1], &vertNormIndex[1], &vertexIndex[2], &vertTexIndex[2], &vertNormIndex[2]);
-			tempIndices.push_back(vertexIndex[0]);
-			tempIndices.push_back(vertexIndex[1]);
-			tempIndices.push_back(vertexIndex[2]);
-			tempVertTexIndices.push_back(vertTexIndex[0]);
-			tempVertTexIndices.push_back(vertTexIndex[1]);
-			tempVertTexIndices.push_back(vertTexIndex[2]);
-			tempVertNormIndices.push_back(vertNormIndex[0]);
-			tempVertNormIndices.push_back(vertNormIndex[1]);
-			tempVertNormIndices.push_back(vertNormIndex[2]);
+	vector <string> tokens;
+	while (getline(objFile, line, '\n')) {
+		stringstream   linestream(line);
+		string token;
+		linestream >> token;
+		//cout << dataT << endl;
+
+		if (token == "mtllib") {
+			string name;
+			linestream >> name;
+			cout << name << endl;
+		}
+		else if (token == "o") {
+			string name;
+			linestream >> name;
+			if (firstObject) {
+				tempObj = new MeshObject(name);
+				mObjects.push_back(tempObj);
+				firstObject = false;
+				
+			}
+			else {
+				cout << "Size: " << vCount << endl;
+				cout << "Size2: " << tempIndices.size() << endl;
+				tempObj->processData(vstart, nstart, tstart, tempIndices, tempVertNormIndices, tempVertTexIndices);
+				vstart += vCount;
+				nstart += nCount;
+				tstart += tCount;
+				vCount = 0, nCount = 0, tCount = 0;
+				tempIndices.clear();
+				tempVertNormIndices.clear();
+				tempVertTexIndices.clear();
+				tempObj = new MeshObject(name);
+				mObjects.push_back(tempObj);
+				cout << "new" << endl;
+			}
+		}
+		else if (token == "v") {
+			float v1, v2, v3;
+			linestream >> v1 >> v2 >> v3;
+			tempObj->vertices.push_back(glm::vec3(v1, v2, v3));
+			vCount++;
+		}
+		else if (token == "vn") {
+			float v1, v2, v3;
+			linestream >> v1 >> v2 >> v3;
+			tempObj->vertNormals.push_back(glm::vec3(v1, v2, v3));
+			nCount++;
+		}
+		else if (token == "vt") {
+			float u, v;
+			linestream >> u >> v;
+			tempObj->vertTextures.push_back(glm::vec2(u, v));
+			tCount++;
+		}
+		else if (token == "f") {
+			vector<string> vs;
+			for (int i = 0; i < 3; i++) {
+				string v;
+				linestream >> v;
+				stringstream fp(v);
+
+				int count = 0;
+				string tok;
+				while (getline(fp, tok, '/')) {
+					if (count == 0)
+						tempIndices.push_back(stoi(tok));
+					else if (count == 1) {
+						tempVertTexIndices.push_back(stoi(tok));
+					}
+					else if (count == 2) {
+						tempVertNormIndices.push_back(stoi(tok));
+					}
+					count++;
+					//cout << tok << "/";
+				}
+				//cout << " ";
+			}
+			//cout << endl;
+			//for (int i = 0; i < tempIndices.size(); i++) {
+			//	cout << i << " : " << tempIndices[i] << "/" << tempVertTexIndices[i] << "/" << tempVertNormIndices[i] <<  " ";
+			//}
+			//cout << endl;
 		}
 	}
 
-	vector<glm::vec3> meshVertices;
-	vector<glm::vec3> meshVerticesNormals;
-	vector<glm::vec2> meshVerticesTex;
-	vector<Triangle> meshTris;
+	if (!firstObject) {
+		tempObj->processData(vstart, nstart, tstart, tempIndices, tempVertNormIndices, tempVertTexIndices);
+		tempIndices.clear();
+		tempVertNormIndices.clear();
+		tempVertTexIndices.clear();
+	}
+	
 
-	for (unsigned int i = 0; i < tempIndices.size(); i++) {
-		unsigned int vertexIndex = tempIndices[i];
-		glm::vec3 vertex = tempVertices[vertexIndex - 1];
-		meshVertices.push_back(vertex);
-	}
-	for (unsigned int i = 0; i < tempVertNormIndices.size(); i++) {
-		unsigned int vertNormIndex = tempVertNormIndices[i];
-		glm::vec3 vn = tempVertNormals[vertNormIndex - 1];
-		meshVerticesNormals.push_back(vn);
-	}
-	for (unsigned int i = 0; i < tempVertTexIndices.size(); i++) {
-		unsigned int vertTexIndex = tempVertTexIndices[i];
-		glm::vec2 vn = tempVertTextures[vertTexIndex - 1];
-		meshVerticesTex.push_back(vn);
-	}
+	//errno_t err = fopen_s(&file, path, "r");
+	//if (err != 0) {
+	//	printf("Could not open file!\n");
+	//	return false;
+	//}
+	//while (1) {
+	//	char line[128];
+	//	int res = fscanf(file, "%s", line);
+	//	if (res == EOF) {
+	//		if (!firstObject) {
+	//			tempObj->processData(tempIndices, tempVertNormIndices, tempVertTexIndices);
+	//			cout << "Hey" << endl;
+	//			tempIndices.clear();
+	//			tempVertNormIndices.clear();
+	//			tempVertTexIndices.clear();
+	//		}
+	//		break;
+	//	}
 
-	int count = 0;
-	vector<int> temp;
-	for (unsigned int i = 0; i < meshVertices.size(); i++) {
-		temp.push_back(i);
-		count++;
-		if (count == 3) {
-			Triangle triangle;
-			triangle.i = temp[0];
-			triangle.in = temp[0];
-			triangle.it = temp[0];
-			triangle.j = temp[1];
-			triangle.jn = temp[1];
-			triangle.jt = temp[1];
-			triangle.k = temp[2];
-			triangle.kn = temp[2];
-			triangle.kt = temp[2];
-			meshTris.push_back(triangle);
-			temp.clear();
-			count = 0;
-		}
-	}
-	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), meshTris, meshVertices, meshVerticesNormals, meshVerticesTex, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
+	//	if (strcmp(line, "mtllib") == 0) {
+	//		fscanf_s(file, "%s\n", mtl);
+	//	}
+
+
+	//	if (strcmp(line, "o") == 0) {
+	//		char n[100];
+	//		fscanf_s(file, "%s\n", n);
+
+	//		if (firstObject) {			
+	//			tempObj = new MeshObject(n);
+	//			mObjects.push_back(tempObj);
+	//			firstObject = false;
+	//		}
+	//		else {
+	//			tempObj->processData(tempIndices, tempVertNormIndices, tempVertTexIndices);
+	//			tempIndices.clear();
+	//			tempVertNormIndices.clear();
+	//			tempVertTexIndices.clear();
+	//			tempObj = new MeshObject(n);
+	//			mObjects.push_back(tempObj);
+	//		}
+	//	}
+	//	
+
+	//	if (strcmp(line, "v") == 0) {
+	//		glm::vec3 vertex;
+	//		fscanf_s(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+	//		tempObj->vertices.push_back(vertex);
+	//	}
+	//	else if (strcmp(line, "vn") == 0) {
+	//		glm::vec3 vertNormal;
+	//		fscanf_s(file, "%f %f %f\n", &vertNormal.x, &vertNormal.y, &vertNormal.z);
+	//		tempObj->vertNormals.push_back(vertNormal);
+	//	}
+	//	else if (strcmp(line, "vt") == 0) {
+	//		glm::vec2 vertTex;
+	//		fscanf_s(file, "%f %f %f\n", &vertTex.x, &vertTex.y);
+	//		tempObj->vertTextures.push_back(vertTex);
+	//	}
+	//	else if (strcmp(line, "f") == 0) {
+	//		unsigned int vertexIndex[3];
+	//		unsigned int vertNormIndex[3];
+	//		unsigned int vertTexIndex[3];
+
+	//		fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &vertTexIndex[0], &vertNormIndex[0],
+	//			&vertexIndex[1], &vertTexIndex[1], &vertNormIndex[1], &vertexIndex[2], &vertTexIndex[2], &vertNormIndex[2]);
+	//		tempIndices.push_back(vertexIndex[0]);
+	//		tempIndices.push_back(vertexIndex[1]);
+	//		tempIndices.push_back(vertexIndex[2]);
+	//		tempVertTexIndices.push_back(vertTexIndex[0]);
+	//		tempVertTexIndices.push_back(vertTexIndex[1]);
+	//		tempVertTexIndices.push_back(vertTexIndex[2]);
+	//		tempVertNormIndices.push_back(vertNormIndex[0]);
+	//		tempVertNormIndices.push_back(vertNormIndex[1]);
+	//		tempVertNormIndices.push_back(vertNormIndex[2]);
+	//	}
+	//}
+	//cout << "yo" << endl;
+	//fclose(file);
+
+	//
+
+	//// Read .MTL file
+	//string dir = string(path);
+	//string matLib = dir.substr(0, dir.find_last_of("\\")) + "\\" + mtl;
+	//char *matLibDir = new char[matLib.length() + 1];
+	//strcpy(matLibDir, matLib.c_str());
+
+	//FILE *mtlfile;
+	//errno_t mtlErr = fopen_s(&mtlfile, matLibDir, "r");
+	//if (mtlErr != 0) {
+	//	printf("Could not open file!\n");
+	//	return false;
+	//}
+
+	//vector<string> mtlNames;
+	//vector<string> mtlPaths;
+	//vector<glm::vec3> mtlKds;
+
+	//while (1) {
+	//	char line[128];
+	//	int res = fscanf(mtlfile, "%s", line);
+	//	if (res == EOF)
+	//		break;
+
+	//	if (strcmp(line, "newmtl") == 0) {
+	//		char mtlName[100];
+	//		fscanf_s(mtlfile, "%s\n", mtlName);
+	//		mtlNames.push_back(mtlName);
+	//	}
+	//	else if (strcmp(line, "Kd") == 0) {
+	//		glm::vec3 kd;
+	//		fscanf_s(mtlfile, "%f %f %f\n", &kd.x, &kd.y, &kd.z);
+	//		mtlKds.push_back(kd);
+	//	}
+	//	else if (strcmp(line, "map_Kd") == 0) {
+	//		char mtlPath[100];
+	//		fscanf_s(mtlfile, "%s\n", mtlPath);
+	//		mtlPaths.push_back(dir.substr(0, dir.find_last_of("\\")) + "\\" + mtlPath);
+	//	}
+	//}
+
+	//for (int i = 0; i < mtlNames.size(); i++) {
+	//	cout << "Name: " << mtlNames[i] << endl << "Path: " << mtlPaths[i] << endl << "Kd: " << mtlKds[i] << endl << endl;
+	//}
+
+	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), mObjects, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
 
 	objects.push_back(meshObj);
 	rayTracer.addObject(*meshObj);
 	rayMarcher.addObject(*meshObj);
+	
+	return true;
 
 	// Display diagnostic information
-	cout << "Number of Vertices: " << meshVertices.size() << endl;
-	cout << "Number of Faces: " << meshTris.size() << endl;
-	cout << "Number of Vertex Normals: " << meshVerticesNormals.size() << endl;
+	//cout << "Number of Vertices: " << meshVertices.size() << endl;
+	//cout << "Number of Faces: " << meshTris.size() << endl;
+	//cout << "Number of Vertex Normals: " << meshVerticesNormals.size() << endl;
 }
