@@ -185,8 +185,12 @@ bool Scene::FileLoader(const char * path) {
 	ifstream objFile;
 	objFile.open(string(path));
 	string line;
+	string matLibName;
 	int vCount = 0, nCount = 0, tCount = 0;
 	int vstart = 1, nstart = 1, tstart = 1;
+
+	string objDir = string(path);
+	string dir = objDir.substr(0, objDir.find_last_of("\\")) + "\\";
 
 	vector <string> tokens;
 	while (getline(objFile, line, '\n')) {
@@ -198,20 +202,17 @@ bool Scene::FileLoader(const char * path) {
 		if (token == "mtllib") {
 			string name;
 			linestream >> name;
-			cout << name << endl;
+			matLibName = name;
 		}
 		else if (token == "o") {
 			string name;
 			linestream >> name;
 			if (firstObject) {
-				tempObj = new MeshObject(name);
+				tempObj = new MeshObject();
 				mObjects.push_back(tempObj);
-				firstObject = false;
-				
+				firstObject = false;				
 			}
 			else {
-				cout << "Size: " << vCount << endl;
-				cout << "Size2: " << tempIndices.size() << endl;
 				tempObj->processData(vstart, nstart, tstart, tempIndices, tempVertNormIndices, tempVertTexIndices);
 				vstart += vCount;
 				nstart += nCount;
@@ -220,10 +221,14 @@ bool Scene::FileLoader(const char * path) {
 				tempIndices.clear();
 				tempVertNormIndices.clear();
 				tempVertTexIndices.clear();
-				tempObj = new MeshObject(name);
+				tempObj = new MeshObject();
 				mObjects.push_back(tempObj);
-				cout << "new" << endl;
 			}
+		}
+		else if (token == "usemtl") {
+			string name;
+			linestream >> name;
+			tempObj->setMtlName(name);
 		}
 		else if (token == "v") {
 			float v1, v2, v3;
@@ -280,7 +285,60 @@ bool Scene::FileLoader(const char * path) {
 		tempVertNormIndices.clear();
 		tempVertTexIndices.clear();
 	}
-	
+
+
+
+	string matLibPath = dir + matLibName;
+
+	bool firstMap = true;
+	MeshTextureMap *tempMap;
+	vector<MeshTextureMap *> mMaps;
+	ifstream matFile;
+	matFile.open(string(matLibPath));
+	string mline;
+
+	while (getline(matFile, mline, '\n')) {
+		stringstream   linestream(mline);
+		string token;
+		linestream >> token;
+
+		if (token == "newmtl") {
+			string name;
+			linestream >> name;		
+			tempMap = new MeshTextureMap();
+			tempMap->name = name;
+			tempMap->hasTexture = false;
+			mMaps.push_back(tempMap);
+		}
+		else if (token == "Kd") {
+			float v1, v2, v3;;
+			linestream >> v1 >> v2 >> v3;
+			tempMap->kd = glm::vec3(v1, v2, v3);
+		}
+		else if (token == "map_Kd") {
+			string name;
+			linestream >> name;
+
+			string mapName;
+			bool correctFormat = false;
+
+			if ((name.find("\\") == std::string::npos) && (name.find(".") != std::string::npos)) {
+				mapName = name;
+				correctFormat = true;
+			}
+
+
+			if (correctFormat) {
+				string mapDir = string(path);
+				string mapPath = mapDir.substr(0, mapDir.find_last_of("\\")) + "\\" + mapName;
+
+				tempMap->path = mapPath;
+				tempMap->hasTexture = true;
+			}
+			
+		}
+	}
+
 
 	//errno_t err = fopen_s(&file, path, "r");
 	//if (err != 0) {
@@ -408,7 +466,7 @@ bool Scene::FileLoader(const char * path) {
 	//	cout << "Name: " << mtlNames[i] << endl << "Path: " << mtlPaths[i] << endl << "Kd: " << mtlKds[i] << endl << endl;
 	//}
 
-	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), mObjects, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
+	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), mObjects, mMaps, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
 
 	objects.push_back(meshObj);
 	rayTracer.addObject(*meshObj);

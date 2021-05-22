@@ -26,7 +26,13 @@ ofColor Shader::getColor(Ray &ray, const glm::vec3 &point, const glm::vec3 &norm
 }
 
 ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const glm::vec2 &uv, SceneObject* obj) {
-	ofColor kd = (obj->objTexture.hasTexture) ? obj->objTexture.getTextureColor(uv) : obj->objMaterial.diffuseColor;
+	ofColor kd;
+	if (dynamic_cast<Mesh*>(obj) != nullptr) {
+		Mesh *meshSelected = (Mesh*)obj;
+		kd = (meshSelected->objSel->meshTex->hasTexture) ? meshSelected->objTexture.getMeshTextureColor(uv, meshSelected->objSel->meshTex->path) : meshSelected->objMaterial.diffuseColor;
+	}
+	else
+		kd = (obj->objTexture.hasTexture) ? obj->objTexture.getTextureColor(uv) : obj->objMaterial.diffuseColor;
 
 	float ambientCo = obj->objMaterial.ambient;
 

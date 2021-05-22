@@ -11,13 +11,13 @@ void MeshObject::processData(int vstart, int nstart, int tstart, vector<int> ver
 		glm::vec3 vertex = vertices[vertexIndex - vstart];
 		meshVertices.push_back(vertex);
 	}
-	cout << "Test" << endl;
+
 	for (unsigned int i = 0; i < normi.size(); i++) {
 		unsigned int vertNormIndex = normi[i];
 		glm::vec3 vn = vertNormals[vertNormIndex - nstart];
 		meshVerticesNormals.push_back(vn);
 	}
-	cout << "Test2" << endl;
+
 	for (unsigned int i = 0; i < texi.size(); i++) {
 		unsigned int vertTexIndex = texi[i];
 		glm::vec2 vn = vertTextures[vertTexIndex - tstart];
@@ -49,21 +49,24 @@ void MeshObject::processData(int vstart, int nstart, int tstart, vector<int> ver
 	vertNormals = meshVerticesNormals;
 	vertTextures = meshVerticesTex;
 	tris = meshTris;
-	cout << textureMap << endl;
 
 }
 
-Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, string name, ofColor diffuse) {
+Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps, string name, ofColor diffuse) {
 	position = p;
 	mObjects = objs;
 	objName = name;
 	objMaterial.diffuseColor = diffuse;
 
-	cout << "Finish" << endl;
 	// Create scene mesh
 	for (MeshObject *o : mObjects) {
+		for (MeshTextureMap *m : maps) {
+			if (m->name == o->mtlName) {
+				o->meshTex = m;
+			}
+		}
+
 		ofMesh *mesh = new ofMesh();
-		cout << o->tris.size() << endl;
 		for (int i = 0; i < o->tris.size(); i++) {
 			mesh->addIndex(o->tris[i].i);
 			mesh->addIndex(o->tris[i].j);
@@ -72,8 +75,13 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, string name, ofColor diffuse)
 		mesh->addVertices(o->vertices);
 		mesh->addNormals(o->vertNormals);
 		meshes.push_back(mesh);
+
+
+		cout << endl << "Mesh: " << o->mtlName << endl;
+		cout << "newmtl: " << o->meshTex->name << endl;
+		cout << "Kd: " << o->meshTex->kd << endl;
+		cout << "Kd_map: " << o->meshTex->path << endl;
 	}
-		cout << "IN" << endl;
 }
 
 /**
@@ -97,38 +105,50 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 	float maxLocalDist = FLT_MAX;
 	float dist;
 	glm::vec3 po, no;
+	Triangle *tri;
+	objSel = nullptr;
 	selectedTri = new Triangle();
 	barySelected = glm::vec2(0.0, 0.0);
-	for (Triangle triangle : tris) {
-		glm::vec3 na, nb, nc;
-		glm::vec3 bary;
-		if (glm::intersectRayTriangle(roo, rdd, vertices[triangle.i], vertices[triangle.j], vertices[triangle.k], bary)) {
-			
-			//get the vertex normals from the mesh vector
-			na = vertNormals[triangle.in];
-			nb = vertNormals[triangle.jn];
-			nc = vertNormals[triangle.kn];
+	glm::vec3 texCoors = glm::vec3(0, 0, 0);
 
-			//Use barycentric coordinates and vertex normals to interpolate the normal
-			normal = glm::normalize((1 - bary.x - bary.y) * na + bary.x *nb + bary.y * nc);
+	for (MeshObject *o : mObjects) {
+		for (Triangle triangle : o->tris) {
+			glm::vec3 na, nb, nc;
+			glm::vec3 bary;
+			if (glm::intersectRayTriangle(roo, rdd, o->vertices[triangle.i], o->vertices[triangle.j], o->vertices[triangle.k], bary)) {
 
-			//Use barycentric coordinates to find the point on the triangle
-			point = vertices[triangle.i] + bary.x * (vertices[triangle.j] - vertices[triangle.i])
-				+ bary.y * (vertices[triangle.k] - vertices[triangle.i]);
-			dist = glm::distance(roo, point);
-			if (dist < maxLocalDist) {
-				maxLocalDist = dist;
-				insideTri = true;
-				po = point;
-				no = normal;
-				selectedTri = &triangle;
-				barySelected = glm::vec2(bary.x, bary.y);
+				//get the vertex normals from the mesh vector
+				na = o->vertNormals[triangle.in];
+				nb = o->vertNormals[triangle.jn];
+				nc = o->vertNormals[triangle.kn];
+
+				//Use barycentric coordinates and vertex normals to interpolate the normal
+				normal = glm::normalize((1 - bary.x - bary.y) * na + bary.x *nb + bary.y * nc);
+
+				//Use barycentric coordinates to find the point on the triangle
+				point = o->vertices[triangle.i] + bary.x * (o->vertices[triangle.j] - o->vertices[triangle.i])
+					+ bary.y * (o->vertices[triangle.k] - o->vertices[triangle.i]);
+				dist = glm::distance(roo, point);
+				if (dist < maxLocalDist) {
+					maxLocalDist = dist;
+					insideTri = true;
+					po = point;
+					no = normal;
+					texCoors = glm::vec3(triangle.it, triangle.jt, triangle.kt);
+					//cout << selectedTri->it << ", " << selectedTri->jt << ", " << selectedTri->kt << endl;
+					barySelected = glm::vec2(bary.x, bary.y);
+					objSel = o;
+				}
 			}
 		}
 	}
+	
+	//cout << texCoors << endl;
 	point = Transform * glm::vec4(po, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(no, 1.0));
-	uv = getUV(point);
+	if (objSel) {
+		uv = getMeshUV(point, objSel, texCoors, barySelected);
+	}
 	return insideTri;
 }
 
@@ -216,4 +236,23 @@ glm::vec2 Mesh::getUV(glm::vec3 p) {
 	//glm::vec2 uv = (tC1 - tC0) * barySelected.x + (tC2 - tC0) * barySelected.y + tC0;
 
 	return  glm::vec2(1, 1);
+}
+
+
+glm::vec2 Mesh::getMeshUV(glm::vec3 p, MeshObject *o, glm::vec3 texCoors, glm::vec2 bary) {
+	glm::vec2 tC0 = o->vertTextures[texCoors.x];
+	glm::vec2 tC1 = o->vertTextures[texCoors.y];
+	glm::vec2 tC2 = o->vertTextures[texCoors.z];
+
+	//this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
+	glm::vec2 uv = (tC1 - tC0) * bary.x + (tC2 - tC0) * bary.y + tC0;
+	//cout << uv << endl;
+	//cout << tri->it << ", " << tri->jt << ", " << tri->kt << endl;
+	//for (glm::vec2 v : o->vertTextures) {
+	//	cout << "vt " << v << endl;
+	//}
+	float u = uv.x;
+	float v = 1.0f - uv.y;
+
+	return glm::vec2(glm::abs(u), glm::abs(v));
 }

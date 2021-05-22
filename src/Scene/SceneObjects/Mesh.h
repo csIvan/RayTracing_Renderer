@@ -4,9 +4,10 @@
 #include "../SceneObject.h"
 
 struct MeshTextureMap {
-	Texture map;
+	string path;
 	string name;
 	glm::vec3 kd;
+	bool hasTexture;
 };
 
 class Triangle {
@@ -21,16 +22,17 @@ public:
 class MeshObject {
 public:
 	MeshObject() {};
-	MeshObject(string n) { textureMap = n; };
 	~MeshObject() {};
 
 	void processData(int vstart, int nstart, int tstart, vector<int> verti, vector<int> normi, vector<int> texi);
+	void setMtlName(string n) { mtlName = n; };
 
+	MeshTextureMap *meshTex;
 	vector<Triangle> tris;
 	vector<glm::vec3> vertices;
 	vector<glm::vec3> vertNormals;
 	vector<glm::vec2> vertTextures;
-	string textureMap;
+	string mtlName;
 };
 
 class Mesh : public SceneObject {
@@ -45,9 +47,10 @@ public:
 	vector<glm::vec3> points;
 	vector<glm::vec3> normals;
 	Triangle *selectedTri;
+	MeshObject *objSel;
 	glm::vec2 barySelected;
 
-	Mesh(glm::vec3 p, vector<MeshObject *> objs, string name, ofColor diffuse = ofColor::lightGray);
+	Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps, string name, ofColor diffuse = ofColor::lightGray);
 	Mesh() {};
 	~Mesh() {};
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
@@ -55,4 +58,5 @@ public:
 	void draw();
 	float sdf(const glm::vec3 p);
 	glm::vec2 getUV(glm::vec3 p);
+	glm::vec2 getMeshUV(glm::vec3 p, MeshObject *o, glm::vec3 texCoors, glm::vec2 bary);
 };
