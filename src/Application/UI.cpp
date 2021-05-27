@@ -291,7 +291,7 @@ void UI::updateGUI(SceneObject *s) {
 	}
 
 
-	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(5, 10, 5)));
+	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(10, 10, 10)));
 	//objectGUI.add(slider_rotation.setup("Angle Rotation", s->rotation, glm::vec3(-90, -90, -90), glm::vec3(90, 90, 90)));
 	group_rotation.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(group_rotation.setup("Rotation"));

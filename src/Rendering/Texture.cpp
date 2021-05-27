@@ -14,17 +14,20 @@ ofColor Texture::getMeshTextureColor(glm::vec2 uv, string texturePath) {
 	ofImage meshTex;
 
 	string extension = texturePath.substr(texturePath.find_last_of(".") + 1);
-	if (extension == "jpg" || extension == "png") {
+	if (extension == "jpg" || extension == "png" || extension == "PNG" || extension == "tga" || extension == "TGA") {
 		meshTex.load(texturePath);
+	
+		int texHeight = meshTex.getHeight();
+		int texWidth = meshTex.getWidth();
+
+		int x = fmod(uv.x * texWidth, texWidth);
+		int y = fmod(uv.y * texHeight, texHeight);
+
+		return meshTex.getColor(x, y);
 	}
-
-	int texHeight = meshTex.getHeight();
-	int texWidth = meshTex.getWidth();
-
-	int x = fmod(uv.x * texWidth, texWidth);
-	int y = fmod(uv.y * texHeight, texHeight);
-
-	return meshTex.getColor(x, y);
+	else {
+		return ofColor::lightGray;
+	}
 }
 
 void Texture::addTexture(string path) {
