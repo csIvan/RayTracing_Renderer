@@ -9,6 +9,8 @@ void Scene::setup() {
 	nearestDistance = FLT_MAX;
 	addPlane();
 	addPointLight();
+	box = new Box(glm::vec3(-1, -1, 1), glm::vec3(1, 1, -1));
+
 }
 
 void Scene::update() {}
@@ -17,6 +19,7 @@ void Scene::draw() {
 	for (int i = 0; i < objects.size(); i++) {
 		objects[i]->draw();
 	}
+	box->draw();
 
 	ofDisableLighting();
 

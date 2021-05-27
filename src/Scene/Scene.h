@@ -9,6 +9,7 @@
 #include "../Rendering/ViewPlane.h"
 #include "../Rendering/RenderCam.h"
 #include "SceneObject.h"
+#include "Box.h"
 #include "SceneObjects/Sphere.h"
 #include "SceneObjects/Cube.h"
 #include "SceneObjects/Plane.h"
@@ -84,4 +85,6 @@ public:
 	bool renderFinished;
 
 	int samples;
+
+	Box *box;
 };
