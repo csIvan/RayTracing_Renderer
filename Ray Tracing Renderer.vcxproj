@@ -206,6 +206,7 @@
     <ClCompile Include="src\Rendering\Shader.cpp" />
     <ClCompile Include="src\Rendering\Texture.cpp" />
     <ClCompile Include="src\Rendering\ViewPlane.cpp" />
+    <ClCompile Include="src\Scene\Box.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cone.cpp" />
     <ClCompile Include="src\Scene\SceneObjects\Cube.cpp" />
@@ -291,6 +292,7 @@
     <ClInclude Include="src\Rendering\Shader.h" />
     <ClInclude Include="src\Rendering\Texture.h" />
     <ClInclude Include="src\Rendering\ViewPlane.h" />
+    <ClInclude Include="src\Scene\Box.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneObject.h" />
     <ClInclude Include="src\Scene\SceneObjects\Cone.h" />
@@ -305,7 +307,6 @@
     <ClInclude Include="src\Scene\SceneObjects\Sphere.h" />
     <ClInclude Include="src\Scene\SceneObjects\Torus.h" />
     <ClInclude Include="src\Scene\SceneObjects\WaterPool.h" />
-    <ClInclude Include="UI.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(OF_ROOT)\libs\openFrameworksCompiled\project\vs\openframeworksLib.vcxproj">

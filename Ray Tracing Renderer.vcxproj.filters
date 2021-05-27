@@ -115,6 +115,9 @@
     <ClCompile Include="src\Rendering\BVH.cpp">
       <Filter>src\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\Box.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -419,7 +422,6 @@
     <ClInclude Include="src\Rendering\Ray.h">
       <Filter>src\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="UI.h" />
     <ClInclude Include="src\Application\UI.h">
       <Filter>src\Application</Filter>
     </ClInclude>
@@ -431,6 +433,9 @@
     </ClInclude>
     <ClInclude Include="src\Rendering\BVH.h">
       <Filter>src\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Box.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
