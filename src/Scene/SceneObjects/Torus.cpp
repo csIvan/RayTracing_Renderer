@@ -57,10 +57,10 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::
 
 	point = ray1.evalPoint(root);
 
+	uv = getUV(point);
 	normal = point * (dot(point, point) - r * r - R * R * glm::vec3(1.0, 1.0, -1.0));
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
-	uv = getUV(point);
 
 
 	// For Debugging
@@ -138,8 +138,11 @@ float Torus::sdf(glm::vec3 p1) {
 }
 
 glm::vec2 Torus::getUV(glm::vec3 p) {
-	float u = 1.0f - (atan2(p.x, p.y) / (2 * PI));
-	float v = 0.5f + atan2(-p.z, glm::length(glm::vec2(p.x, p.y)) - R) / (2 * PI);
+	glm::vec4 pp = glm::vec4(p.x, p.y, p.z, 1.0) * getTranslateMatrix();
+	glm::vec3 hit = glm::vec4(pp.x, pp.y, pp.z, 1.0);
+
+	float u = 1.0f - (atan2(hit.x, hit.y) / (2 * PI));
+	float v = 0.5f + atan2(-hit.z, glm::length(glm::vec2(hit.x, hit.y)) - R) / (2 * PI);
 
 	return  glm::vec2(glm::abs(u), glm::abs(v));
 }

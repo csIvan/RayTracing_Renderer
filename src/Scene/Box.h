@@ -1,7 +1,6 @@
 #pragma once
 
 #include "ofMain.h"
-#include "SceneObject.h"
 #include <assert.h>
 #include "vector3.h"
 #include "../Rendering/Ray.h"

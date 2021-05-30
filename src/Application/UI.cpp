@@ -225,6 +225,7 @@ void UI::updateSelected(SceneObject *s) {
 	s->rotation.z = static_cast<int>(gui_angleZ);
 	s->objMaterial.diffuseColor = (ofColor)color;
 	s->objTexture.uvTileFactor = gui_uvTile;
+	s->setBounds();
 
 	// Don't need scale for lights
 	if (dynamic_cast<Light*>(s) == nullptr) {

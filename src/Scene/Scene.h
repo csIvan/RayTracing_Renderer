@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include "../Application/Definitions.h"
+#include "../Rendering/BVH.h"
 #include "../Rendering/RayTracer.h"
 #include "../Rendering/RayMarcher.h"
 #include "../Rendering/ViewPlane.h"
@@ -87,4 +88,5 @@ public:
 	int samples;
 
 	Box *box;
+	BVH bvh;
 };

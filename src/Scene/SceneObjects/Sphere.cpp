@@ -5,6 +5,13 @@ Sphere::Sphere(glm::vec3 p, float r, string name, ofColor diffuse) {
 	radius = r;
 	objName = name;
 	objMaterial.diffuseColor = diffuse;
+	setBounds();
+}
+
+void Sphere::setBounds() {
+	glm::vec4 min = getTranslateMatrix() * glm::vec4(-radius, -radius, radius, 1.0);
+	glm::vec4 max = getTranslateMatrix() * glm::vec4(radius, radius, -radius, 1.0);
+	box = Box(min, max);
 }
 
 bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
@@ -18,9 +25,9 @@ bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm:
 
 	bool hit = (glm::intersectRaySphere(roo, rdd, glm::vec3(0, 0, 0), radius, point, normal));
 
+	uv = getUV(point);
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
-	uv = getUV(point);
 	return hit;
 }
 
@@ -68,7 +75,10 @@ float Sphere::sdf(glm::vec3 p1) {
 }
 
 glm::vec2 Sphere::getUV(glm::vec3 p) {
-	glm::vec3 n = glm::normalize(p - position);
+	glm::vec4 pp = getTranslateMatrix() * glm::vec4(p.x, p.y, p.z, 1.0);
+	glm::vec3 hit = glm::vec4(pp.x, pp.y, pp.z, 1.0);
+
+	glm::vec3 n = glm::normalize(hit - position);
 	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
 	float v = 0.5f - (asin(n.y) / PI);
 

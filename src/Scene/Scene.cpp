@@ -11,6 +11,7 @@ void Scene::setup() {
 	addPointLight();
 	box = new Box(glm::vec3(-1, -1, 1), glm::vec3(1, 1, -1));
 
+
 }
 
 void Scene::update() {}
@@ -19,7 +20,7 @@ void Scene::draw() {
 	for (int i = 0; i < objects.size(); i++) {
 		objects[i]->draw();
 	}
-	box->draw();
+	bvh.draw();
 
 	ofDisableLighting();
 
@@ -39,6 +40,7 @@ void Scene::handleRayTrace() {
 	}
 
 	time(&start);
+	bvh.create(objects);
 	image = rayTracer.render(samples);
 	time(&end);
 

@@ -53,8 +53,11 @@ public:
 	Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps, string name, ofColor diffuse = ofColor::lightGray);
 	Mesh() {};
 	~Mesh() {};
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
 
+	void setBounds();
+	int getMeshPointsInBox(const vector<int> &points, Box &box, vector<int> &pointsRtn);
+
+	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
 	void draw();
 	float sdf(const glm::vec3 p);
 	glm::vec2 getUV(glm::vec3 p);

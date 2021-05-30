@@ -17,6 +17,7 @@ public:
 	Plane();
 	~Plane() {};
 
+	void setBounds();
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
 	void draw();
 	float sdf(glm::vec3  p);

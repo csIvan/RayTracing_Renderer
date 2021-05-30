@@ -3,6 +3,7 @@
 Plane::Plane() {
 	normal = glm::vec3(0, 1, 0);
 	plane.rotateDeg(90, 1, 0, 0);
+	setBounds();
 }
 
 Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, float h) {
@@ -15,6 +16,14 @@ Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, fl
 	if (normal == glm::vec3(0, 1, 0)) {
 		plane.rotateDeg(90, 1, 0, 0);
 	}
+	setBounds();
+}
+
+void Plane::setBounds() {
+	applyMatrix();
+	glm::vec4 min = getTranslateMatrix() * glm::vec4(-width/2, 0, -height/2, 1.0);
+	glm::vec4 max = getTranslateMatrix() * glm::vec4(width/2, 0, height/2, 1.0);
+	box = Box(min, max);
 }
 
 bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
@@ -37,9 +46,9 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::
 			hit = true;
 	}
 
+	uv = getUV(point);
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
-	uv = getUV(point);
 	glm::vec2 xRange = glm::vec2(position.x - width / 2, position.x + width / 2);
 	glm::vec2 zRange = glm::vec2(position.z - height / 2, position.z + height / 2);
 	if (hit && point.x < xRange[1] && point.x > xRange[0] && point.z < zRange[1] && point.z > zRange[0]) {
@@ -71,7 +80,7 @@ void Plane::draw() {
 		ofSetColor(ofColor::yellow);
 		ofPushMatrix();
 			ofMultMatrix(Transform);
-			ofDrawAxis(width * 1.5);
+			ofDrawAxis(1.0f);
 			plane.drawWireframe();
 		ofPopMatrix();
 		ofEnableLighting();
@@ -96,17 +105,14 @@ glm::vec3 Plane::getNormal(const glm::vec3 &p) {
 }
 
 glm::vec2 Plane::getUV(glm::vec3 p) {
-	// Get texture image dimensions
-	int texHeight = objTexture.texture.getHeight();
-	int texWidth = objTexture.texture.getWidth();
+	glm::vec4 pp = glm::vec4(p.x, p.y, p.z, 1.0) * getTranslateMatrix();
+	glm::vec3 hit = glm::vec4(pp.x, pp.y, pp.z, 1.0);
 	
-	// 10x10 tiles
-	int uvTileFactor = 1;
 
-	float u = (p.x + width / 2) / (width / uvTileFactor);
-	float v = (p.z + height / 2) / (height / uvTileFactor);
+	float u = (hit.x + width / 2) / (width);
+	float v = (hit.z + height / 2) / (height);
 
-	return  glm::vec2(u, v);
+	return  glm::vec2(glm::abs(u), glm::abs(v));
 
 	//int x = glm::mod(u * texWidth, texWidth);
 	//int y = glm::mod(v * texHeight, texHeight);

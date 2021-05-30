@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ofMain.h"
+#include "Box.h"
 #include "../Rendering/Material.h"
 #include "../Rendering/Texture.h"
 #include "../Rendering/Ray.h"
@@ -16,6 +17,7 @@ public:
 	string objName = "SceneObject_";
 	bool isSelected = false;
 
+	Box box;
 	glm::mat4 Transform = glm::mat4(1.0);
 	glm::vec3 position = glm::vec3(0, 0, 0);
 	glm::vec3 rotation = glm::vec3(0, 0, 0);
@@ -23,6 +25,7 @@ public:
 
 
 	virtual ~SceneObject() {};
+	virtual void setBounds() { box = Box(glm::vec3(-1, -1, 1), glm::vec3(1, 1, -1)); }
 	virtual void draw() = 0;    // pure virtual funcs - must be overloaded
 	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) { return false; }
 	virtual float sdf(glm::vec3 p) { return 0.0f; }
