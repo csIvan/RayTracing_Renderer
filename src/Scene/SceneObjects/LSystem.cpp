@@ -25,6 +25,12 @@ LSystem::LSystem(glm::vec3 p, int n, string ax, string name, ofColor diffuse) {
 	//rule2.b = "FF+[+F-F-F]-[-F+F+F]";
 	///rule3.a = 'Z';
 	///rule3.b = "[+F-X-F][++ZX]";
+	box = new Box();
+
+}
+
+void LSystem::setBounds() {
+	box->transformBox(Transform);
 }
 
 void LSystem::generate() {
@@ -53,10 +59,31 @@ void LSystem::generate() {
 		sentence = nextSentence;
 		n--;
 	}
+
+	// Create Bounding Box
+	glm::vec3 point, normal;
+	glm::vec2 uv;
+	intersect(Ray(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)), point, normal, uv);
+	glm::vec3 min = glm::vec3(100, 100, -100);
+	glm::vec3 max = glm::vec3(-100, -100, 100);
+	for (Box *b : boxes) {
+		min.x = (b->min().x < min.x) ? b->min().x : min.x;
+		min.y = (b->min().y < min.y) ? b->min().y : min.y;
+		min.z = (b->min().z > min.z) ? b->min().z : min.z;
+
+		max.x = (b->max().x > max.x) ? b->max().x : max.x;
+		max.y = (b->max().y > max.y) ? b->max().y : max.y;
+		max.z = (b->max().z < max.z) ? b->max().z : max.z;
+	}
 	rules.clear();
+
+	applyMatrix();
+	box->setParameters(min, max);
+	setBounds();
 }
 
 bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+	boxes.clear();
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -114,6 +141,8 @@ bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm
 					normal = glm::inverse(mrot) * glm::vec4(nor.x, nor.y, nor.z, 1.0);
 				}
 			}
+			tube.box->transformBox(glm::inverse(objM));
+			boxes.push_back(tube.box);
 			objM = m * objM;
 
 			if (!(sentence[i + 1] == NULL || 
@@ -137,6 +166,8 @@ bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm
 						normal = glm::inverse(mrot) * glm::vec4(jnor.x, jnor.y, jnor.z, 1.0);
 					}
 				}
+				joint.box->transformBox(glm::inverse(objM));
+				boxes.push_back(joint.box);
 			}
 
 			//Reset angles

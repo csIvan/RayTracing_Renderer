@@ -5,21 +5,30 @@ Cube::Cube(glm::vec3 p, float s, string name, ofColor diffuse) {
 	side = s / 2;
 	objName = name;
 	objMaterial.diffuseColor = diffuse;
+	box = new Box();
+	applyMatrix();
+	setBounds();
 }
+
+void Cube::setBounds() {
+	applyMatrix();
+	glm::vec3 min = glm::vec3(-side, -side, side);
+	glm::vec3 max = glm::vec3(side, side, -side);
+	box->setParameters(min, max);
+	box->transformBox(Transform);
+}
+
 
 bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
 	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
-	Ray rTemp = Ray(ray.p, ray.d);
 
+	// Apply Transformation
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
 	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
 	roo = glm::vec4(p.x, p.y, p.z, 1.0);
 	rdd = glm::normalize(p1 - p);
 	Ray r = Ray(roo, rdd);
 
-	// Apply Transformation
-	//rdd = (glm::inverse(Transform) * glm::vec4(ray.d.x, ray.d.y, ray.d.z, 0.0));
-	//roo = (glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0));
 
 	// Calculate intersection
 	invdir = 1.0f / rdd;

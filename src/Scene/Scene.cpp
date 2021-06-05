@@ -21,6 +21,7 @@ void Scene::draw() {
 		objects[i]->draw();
 	}
 	bvh.draw();
+	//box->draw();
 
 	ofDisableLighting();
 
@@ -40,7 +41,8 @@ void Scene::handleRayTrace() {
 	}
 
 	time(&start);
-	bvh.create(objects);
+	rayTracer.setBVH(&bvh);
+	cout << rayTracer.bvh->levels << endl;
 	image = rayTracer.render(samples);
 	time(&end);
 
@@ -91,6 +93,7 @@ void Scene::handleDelete() {
 			selected.clear();
 		}
 	}
+	bvh.create(objects);
 }
 
 void Scene::handleRemoveTexture() {
@@ -114,6 +117,7 @@ void Scene::addObject(SceneObject *s) {
 	objects.push_back(s);
 	rayTracer.addObject(*s);
 	rayMarcher.addObject(*s);
+	bvh.create(objects);
 }
 
 void Scene::addLight(Light *light) {
@@ -476,6 +480,7 @@ bool Scene::FileLoader(const char * path) {
 	objects.push_back(meshObj);
 	rayTracer.addObject(*meshObj);
 	rayMarcher.addObject(*meshObj);
+	bvh.create(objects);
 	
 	return true;
 

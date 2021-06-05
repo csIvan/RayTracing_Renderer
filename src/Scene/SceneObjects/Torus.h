@@ -21,6 +21,7 @@ public:
 	Torus() {};
 	~Torus() {};
 
+	void setBounds();
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
 	void draw();
 	void drawTorus();

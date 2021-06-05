@@ -30,6 +30,8 @@ void ofApp::setup() {
 
 	ui.setup(&scene);
 	scene.setup();
+
+	box = new Box(glm::vec3(2, -2, 1), glm::vec3(4, 2, -1));
 }
 
 //--------------------------------------------------------------
@@ -62,6 +64,7 @@ void ofApp::draw() {
 	}
 
 	ui.drawGrid();
+	//box->draw();
 
 	ofEnableLighting();
 	material.begin();

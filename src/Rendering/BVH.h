@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "../Scene/SceneObject.h"
 #include "../Scene/Box.h"
+#include "../Scene/SceneObjects/Mesh.h"
 
 
 class BVHNode {
@@ -10,7 +11,7 @@ public:
 	BVHNode() {};
 	~BVHNode() {};
 
-	Box box;
+	Box *box;
 	vector<SceneObject *> objects;
 	BVHNode *left;
 	BVHNode *right;
@@ -24,17 +25,19 @@ public:
 
 	void splitBox(Box &abox, Box &bbox);
 	void buildLeaf(BVHNode *prev_node);
-	//Box combineBoxes(Box abox, Box bbox);
-	glm::vec3 findCentroid(Box box);
-	//void sortObjects(vector<SceneObject *> objs, int axis);
+	Box* combineBoxes(Box *abox, Box *bbox);
+	glm::vec3 findCentroid(Box *box);
+	int sortObjects(vector<SceneObject *> &objs, int axis);
 
 	void create(vector<SceneObject *> objs);
 	void buildNode(vector<SceneObject *> objs, BVHNode *node);
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
+	bool intersect(const Ray &ray, BVHNode *node, vector<SceneObject *> &objs, bool inside);
 	void draw();
 	void drawBVH(BVHNode *node);
 
 	vector<SceneObject *> bvhObjs;
+	vector<BVHNode *> nodes;
 	vector<glm::vec3> points;
 	BVHNode *root;
+	int levels;
 };

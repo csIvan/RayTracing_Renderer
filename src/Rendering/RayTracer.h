@@ -23,5 +23,5 @@ public:
 
 	ofImage render(int samples);
 	bool castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0);
-
+	void setBVH(BVH *h) { bvh = h; }
 };

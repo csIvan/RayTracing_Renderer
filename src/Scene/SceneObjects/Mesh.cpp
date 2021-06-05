@@ -82,47 +82,34 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps
 		cout << "Kd: " << o->meshTex->kd << endl;
 		cout << "Kd_map: " << o->meshTex->path << endl;
 	}
+	box = new Box();
+	applyMatrix();
+	glm::vec3 min = glm::vec3(100, 100, -100);
+	glm::vec3 max = glm::vec3(-100, -100, 100);
+	for (MeshObject *o : mObjects) {
+		for (int i = 0; i < o->vertices.size(); i++) {
+			glm::vec3 v = o->vertices[i];
+			min.x = (v.x < min.x) ? v.x : min.x;
+			min.y = (v.y < min.y) ? v.y : min.y;
+			min.z = (v.z > min.z) ? v.z : min.z;
+
+			max.x = (v.x > max.x) ? v.x : max.x;
+			max.y = (v.y > max.y) ? v.y : max.y;
+			max.z = (v.z < max.z) ? v.z : max.z;
+		}
+	}
+	cout << min << ", " << max << endl;
+
+	box->setParameters(min, max);
+	setBounds();
 }
 
 
-// return a Mesh Bounding Box for the entire Mesh
-//
+// Mesh Bounding Box for the entire Mesh  
 void Mesh::setBounds() {
-	//int n = mesh.getNumVertices();
-	//ofVec3f v = mesh.getVertex(0);
-	//ofVec3f max = v;
-	//ofVec3f min = v;
-	//for (int i = 1; i < n; i++) {
-	//	ofVec3f v = mesh.getVertex(i);
-
-	//	if (v.x > max.x) max.x = v.x;
-	//	else if (v.x < min.x) min.x = v.x;
-
-	//	if (v.y > max.y) max.y = v.y;
-	//	else if (v.y < min.y) min.y = v.y;
-
-	//	if (v.z > max.z) max.z = v.z;
-	//	else if (v.z < min.z) min.z = v.z;
-	//}
-	//cout << "vertices: " << n << endl;
-	////	cout << "min: " << min << "max: " << max << endl;
-	//box =  Box(glm::vec3(min.x, min.y, min.z), glm::vec3(max.x, max.y, max.z));
+	box->transformBox(Transform);
 }
 
-// getMeshPointsInBox:  return an array of indices to points in mesh that are contained 
-//                      inside the Box.  Return count of points found;
-//
-int Mesh::getMeshPointsInBox(const vector<int>& points, Box & box, vector<int> & pointsRtn) {
-	int count = 0;
-	//for (int i = 0; i < points.size(); i++) {
-	//	ofVec3f v = mesh.getVertex(points[i]);
-	//	if (box.inside(glm::vec3(v.x, v.y, v.z))) {
-	//		count++;
-	//		pointsRtn.push_back(points[i]);
-	//	}
-	//}
-	return count;
-}
 
 /**
 * Mesh Intersection function. It iterates through every triangle in the mesh

@@ -7,6 +7,16 @@ Torus::Torus(glm::vec3 p, float r1, float r2, string name, ofColor diffuse) {
 	r = r2;
 	objName = name;
 	objMaterial.diffuseColor = diffuse;
+	box = new Box();
+	applyMatrix();
+	setBounds();
+}
+
+void Torus::setBounds() {
+	glm::vec3 min = glm::vec3(-(R + r), -(R + r), r);
+	glm::vec3 max = glm::vec3((R + r), (R + r), -r);
+	box->setParameters(min, max);
+	box->transformBox(Transform);
 }
 
 bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {

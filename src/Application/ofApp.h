@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "UI.h"
+#include "../Scene/Box.h"
 
 class ofApp : public ofBaseApp {
 
@@ -24,4 +25,5 @@ public:
 
 	UI ui;	
 	Scene scene;
+	Box *box;
 };

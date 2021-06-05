@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "../Scene/SceneObject.h"
 #include "../Scene/SceneObjects/Lights/Light.h"
+#include "BVH.h"
 #include "RenderCam.h"
 
 class Renderer {
@@ -11,6 +12,7 @@ public:
 	vector<Light*> lights;
 	ofImage image;
 	RenderCam *renderCam;
+	BVH *bvh;
 
 	virtual ofImage render(int samples) = 0;
 	virtual bool castRay(Ray &r, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0) {
@@ -21,6 +23,7 @@ public:
 
 	void addObject(SceneObject &object) { objects.push_back(&object); }
 	void addLight(Light &light) { lights.push_back(&light); }
+
 
 	void removeObject(string name) {
 		for (int i = 0; i < objects.size(); i++) {

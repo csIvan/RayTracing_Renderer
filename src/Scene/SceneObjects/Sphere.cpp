@@ -5,13 +5,16 @@ Sphere::Sphere(glm::vec3 p, float r, string name, ofColor diffuse) {
 	radius = r;
 	objName = name;
 	objMaterial.diffuseColor = diffuse;
+	box = new Box();
+	applyMatrix();
 	setBounds();
 }
 
 void Sphere::setBounds() {
-	glm::vec4 min = getTranslateMatrix() * glm::vec4(-radius, -radius, radius, 1.0);
-	glm::vec4 max = getTranslateMatrix() * glm::vec4(radius, radius, -radius, 1.0);
-	box = Box(min, max);
+	glm::vec3 min = glm::vec3(-radius, -radius, radius);
+	glm::vec3 max = glm::vec3(radius, radius, -radius);
+	box->setParameters(min, max);
+	box->transformBox(Transform);
 }
 
 bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {

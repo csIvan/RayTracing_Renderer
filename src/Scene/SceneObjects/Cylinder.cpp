@@ -7,6 +7,16 @@ Cylinder::Cylinder(glm::vec3 p, float h, float r, string name, ofColor diffuse) 
 	radius = r;
 	objName = name;;
 	objMaterial.diffuseColor = diffuse;
+	box = new Box();
+	applyMatrix();
+	setBounds();
+}
+
+void Cylinder::setBounds() {
+	glm::vec3 min = glm::vec3(-radius, -height/2, radius);
+	glm::vec3 max = glm::vec3(radius, height/2, -radius);
+	box->setParameters(min, max);
+	box->transformBox(Transform);
 }
 
 bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {

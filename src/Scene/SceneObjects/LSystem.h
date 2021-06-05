@@ -26,10 +26,12 @@ public:
 	float tubeHeight = 0.5f;
 	vector<glm::vec3> points;
 	vector<glm::vec3> normals;
+	vector<Box *> boxes;
 
 	vector<float> xVec, yVec, zVec, turnAngVec, pitchAngVec, rollAngVec;
 	vector<glm::mat4> mats, jmats;
 
+	void setBounds();
 	LSystem(glm::vec3 p, int n, string ax, string name, ofColor diffuse = ofColor::lightGray);
 	LSystem() {};
 	~LSystem() {};

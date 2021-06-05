@@ -16,14 +16,16 @@ Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, fl
 	if (normal == glm::vec3(0, 1, 0)) {
 		plane.rotateDeg(90, 1, 0, 0);
 	}
+	box = new Box();
+	applyMatrix();
 	setBounds();
 }
 
 void Plane::setBounds() {
-	applyMatrix();
-	glm::vec4 min = getTranslateMatrix() * glm::vec4(-width/2, 0, -height/2, 1.0);
-	glm::vec4 max = getTranslateMatrix() * glm::vec4(width/2, 0, height/2, 1.0);
-	box = Box(min, max);
+	glm::vec4 min = glm::vec4(-width/2, 0, height/2, 1.0);
+	glm::vec4 max = glm::vec4(width/2, 0, -height/2, 1.0);
+	box->setParameters(min, max);
+	box->transformBox(Transform);
 }
 
 bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {

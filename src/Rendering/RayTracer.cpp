@@ -51,64 +51,50 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 	if (depth > 1)
 		return false;
 
-	for (int index = 0; index < objects.size(); index++) {
+
+
+	vector<SceneObject *> nodeObjs;
+	bool inside = bvh->root->box->inside(ray.p);
+
+	if (bvh->intersect(ray, bvh->root, nodeObjs, inside)) {
 		glm::vec3 point, normal;
 		glm::vec2 uv;
 
-		if (objects[index]->intersect(ray, point, normal, uv)) {
-			dist = glm::distance(ray.p, point);
-			if (dist <= nearestDist) {
-				nearestDist = dist;
-				hit = true;
-				normal = glm::normalize(normal);
-				p = point;
-				n = normal;
-				// If the object is a sphere
-				//if (typeid(*objects[index]) == typeid(Sphere)) {
-				//	Sphere *globe = (Sphere*)objects[index];
+		//cout << "name: " << o->objName << endl;
+		for (SceneObject *o : nodeObjs) {
+			if (o->intersect(ray, point, normal, uv)) {
+				//cout << "params: " << o->box.min() << " , " <<  o->box.max() << endl;
+				dist = glm::distance(ray.p, point);
+				if (dist <= nearestDist) {
+					nearestDist = dist;
+					hit = true;
+					normal = glm::normalize(normal);
+					p = point;
+					n = normal;
 
-				//	glm::vec3 n = glm::normalize(point - globe->position);
-				//	float u = atan2(n.x, n.z) / (2 * PI) + 0.5;
-				//	float v = n.y * 0.5 + 0.5;
-
-
-				//	float uLookUp = u * sphereTexture.getWidth() - .5;
-				//	float pixelj = fmod(uLookUp, sphereTexture.getWidth());
-				//	float vLookUp = v * sphereTexture.getHeight() - .5;
-				//	float pixeli = fmod(vLookUp, sphereTexture.getHeight());
-
-				//	ofColor globeColor = sphereTexture.getColor(pixelj, sphereTexture.getHeight() - pixeli - 1);
-				//	color = shader.lambert(ray, point, normal, globeColor, 0, depth);
-				//}
-				//else if (typeid(*objects[index]) == typeid(Plane)) {
-				//	// 10x10 tiles
-				//	int uvTileFactor = 10;
-
-				//	Plane *p1 = (Plane*)objects[index];
-
-				//	float u = (p1->width + point.x) / (p1->width / uvTileFactor);
-				//	float v = (p1->height + point.z) / (p1->height / uvTileFactor);
-
-				//	// Find the color at the point of u and v
-				//	float uLookUp = u * texture.getWidth() - .5;
-				//	float pixelj = fmod(uLookUp, texture.getWidth());
-				//	float vLookUp = v * texture.getHeight() - .5;
-				//	float pixeli = fmod(vLookUp, texture.getHeight());
-
-				//	// Apply the color of the texture using the shading algorithm
-				//	ofColor planeColor = texture.getColor(pixelj, texture.getHeight() - pixeli - 1);
-
-				//	//color = phong(point, normal, renderCam.position, planeColor, objects[index]->specularColor, Power);
-				//	color = shader.lambert(ray, point, normal, planeColor, 0, depth);
-				//}
-				//else {
-					//color = shader.phong(point, normal, renderCam.position, objects[index]->diffuseColor, objects[index]->specularColor, Power);
-					color = shader.getColor(ray, point, normal, uv, objects[index], depth);
-					//color = shader.lambert(ray, point, normal, objects[index]->objMaterial.diffuseColor, objects[index]->objMaterial.reflection, depth);
-				//}
+					color = shader.getColor(ray, point, normal, uv, o, depth);
+				}
 			}
 		}
 	}
+
+	//for (int index = 0; index < objects.size(); index++) {
+	//	glm::vec3 point, normal;
+	//	glm::vec2 uv;
+
+	//	if (objects[index]->intersect(ray, point, normal, uv)) {
+	//		dist = glm::distance(ray.p, point);
+	//		if (dist <= nearestDist) {
+	//			nearestDist = dist;
+	//			hit = true;
+	//			normal = glm::normalize(normal);
+	//			p = point;
+	//			n = normal;
+	//			
+	//			color = shader.getColor(ray, point, normal, uv, objects[index], depth);
+	//		}
+	//	}
+	//}
 
 	return hit;
 }

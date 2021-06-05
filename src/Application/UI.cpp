@@ -227,6 +227,8 @@ void UI::updateSelected(SceneObject *s) {
 	s->objTexture.uvTileFactor = gui_uvTile;
 	s->setBounds();
 
+	scene->bvh.create(scene->objects);
+
 	// Don't need scale for lights
 	if (dynamic_cast<Light*>(s) == nullptr) {
 		s->scale = static_cast<glm::vec3>(slider_scale);
