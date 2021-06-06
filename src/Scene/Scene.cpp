@@ -42,7 +42,6 @@ void Scene::handleRayTrace() {
 
 	time(&start);
 	rayTracer.setBVH(&bvh);
-	cout << rayTracer.bvh->levels << endl;
 	image = rayTracer.render(samples);
 	time(&end);
 

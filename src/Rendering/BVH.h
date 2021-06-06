@@ -23,8 +23,6 @@ public:
 	BVH();
 	~BVH() {};
 
-	void splitBox(Box &abox, Box &bbox);
-	void buildLeaf(BVHNode *prev_node);
 	Box* combineBoxes(Box *abox, Box *bbox);
 	glm::vec3 findCentroid(Box *box);
 	int sortObjects(vector<SceneObject *> &objs, int axis);

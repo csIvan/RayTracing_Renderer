@@ -131,8 +131,7 @@ bool BVH::intersect(const Ray &ray, BVHNode *node, vector<SceneObject *> &objs, 
 	else {
 		if (node->box->intersect(ray)) {
 			if (node->left == nullptr && node->right == nullptr) {
-				// object intersection
-				//cout << "test" << endl;
+				// box object intersection
 				objs.push_back(node->objects[0]);
 				hit = true;
 			}

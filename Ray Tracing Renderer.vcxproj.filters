@@ -118,6 +118,9 @@
     <ClCompile Include="src\Scene\Box.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Rendering\RenderThread.cpp">
+      <Filter>src\Rendering</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -436,6 +439,9 @@
     </ClInclude>
     <ClInclude Include="src\Scene\Box.h">
       <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Rendering\RenderThread.h">
+      <Filter>src\Rendering</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

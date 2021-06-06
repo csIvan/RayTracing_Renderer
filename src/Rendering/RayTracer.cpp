@@ -51,8 +51,6 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 	if (depth > 1)
 		return false;
 
-
-
 	vector<SceneObject *> nodeObjs;
 	bool inside = bvh->root->box->inside(ray.p);
 
@@ -60,10 +58,8 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 		glm::vec3 point, normal;
 		glm::vec2 uv;
 
-		//cout << "name: " << o->objName << endl;
 		for (SceneObject *o : nodeObjs) {
 			if (o->intersect(ray, point, normal, uv)) {
-				//cout << "params: " << o->box.min() << " , " <<  o->box.max() << endl;
 				dist = glm::distance(ray.p, point);
 				if (dist <= nearestDist) {
 					nearestDist = dist;
@@ -77,24 +73,6 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 			}
 		}
 	}
-
-	//for (int index = 0; index < objects.size(); index++) {
-	//	glm::vec3 point, normal;
-	//	glm::vec2 uv;
-
-	//	if (objects[index]->intersect(ray, point, normal, uv)) {
-	//		dist = glm::distance(ray.p, point);
-	//		if (dist <= nearestDist) {
-	//			nearestDist = dist;
-	//			hit = true;
-	//			normal = glm::normalize(normal);
-	//			p = point;
-	//			n = normal;
-	//			
-	//			color = shader.getColor(ray, point, normal, uv, objects[index], depth);
-	//		}
-	//	}
-	//}
 
 	return hit;
 }
