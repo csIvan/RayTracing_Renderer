@@ -9,8 +9,6 @@ void Scene::setup() {
 	nearestDistance = FLT_MAX;
 	addPlane();
 	addPointLight();
-	box = new Box(glm::vec3(-1, -1, 1), glm::vec3(1, 1, -1));
-
 
 }
 
@@ -21,7 +19,6 @@ void Scene::draw() {
 		objects[i]->draw();
 	}
 	bvh.draw();
-	//box->draw();
 
 	ofDisableLighting();
 
@@ -29,6 +26,23 @@ void Scene::draw() {
 		lights[i]->draw();
 	}
 	renderCam.draw();
+}
+
+
+void Scene::multithreadRender(Renderer *r) {
+	// Create 16 threads
+
+	float p = 0;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++) {
+			threads[i * 4 + j].setup(r, glm::vec2(i, j), glm::vec2(imageWidth, imageHeight), samples, p);
+		}
+	for (int i = 0; i < 16; i++)
+		threads[i].startThread();
+
+	for (int i = 0; i < 16; i++)
+		threads[i].waitForThread();
+	printf("\rRendering... 100%%");
 }
 
 void Scene::handleRayTrace() {
@@ -42,7 +56,10 @@ void Scene::handleRayTrace() {
 
 	time(&start);
 	rayTracer.setBVH(&bvh);
-	image = rayTracer.render(samples);
+	//image = rayTracer.render(samples);
+	rayTracer.setShader();
+	multithreadRender(&rayTracer);
+	image = rayTracer.getImage();
 	time(&end);
 
 	renderFinished = true;

@@ -17,7 +17,7 @@ AreaLight::AreaLight(glm::vec3 p, glm::vec3 d, float h, float w, string name) {
 }
 
 
-bool AreaLight::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool AreaLight::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	glm::vec3 rdd, roo;
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
 	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);

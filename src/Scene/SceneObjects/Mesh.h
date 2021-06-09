@@ -4,6 +4,7 @@
 #include "../SceneObject.h"
 
 struct MeshTextureMap {
+	ofImage tex;
 	string path;
 	string name;
 	glm::vec3 kd;
@@ -47,7 +48,7 @@ public:
 	vector<glm::vec3> points;
 	vector<glm::vec3> normals;
 	Triangle *selectedTri;
-	MeshObject *objSel;
+	//MeshObject *objSel;
 	glm::vec2 barySelected;
 
 	Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps, string name, ofColor diffuse = ofColor::lightGray);
@@ -57,9 +58,9 @@ public:
 	void setBounds();
 	int getMeshPointsInBox(const vector<int> &points, Box &box, vector<int> &pointsRtn);
 
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
+	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
 	void draw();
 	float sdf(const glm::vec3 p);
 	glm::vec2 getUV(glm::vec3 p);
-	glm::vec2 getMeshUV(glm::vec3 p, MeshObject *o, glm::vec3 texCoors, glm::vec2 bary);
+	glm::vec2 getMeshUV(glm::vec3 p, glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, glm::vec2 bary);
 };

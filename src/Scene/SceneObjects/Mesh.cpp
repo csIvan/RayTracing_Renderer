@@ -63,6 +63,12 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps
 		for (MeshTextureMap *m : maps) {
 			if (m->name == o->mtlName) {
 				o->meshTex = m;
+				if (o->meshTex->hasTexture) {
+					string extension = o->meshTex->path.substr(o->meshTex->path.find_last_of(".") + 1);
+					if (extension == "jpg" || extension == "png" || extension == "PNG" || extension == "tga" || extension == "TGA") {
+						o->meshTex->tex.load(o->meshTex->path);
+					}
+				}
 			}
 		}
 
@@ -119,7 +125,7 @@ void Mesh::setBounds() {
 * on the barycentric coordinates. Also, it takes the closest hit triangle, so that
 * triangles behind it are not shown in front.
 */
-bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -133,10 +139,10 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 	float dist;
 	glm::vec3 po, no;
 	Triangle *tri;
-	objSel = nullptr;
 	selectedTri = new Triangle();
 	barySelected = glm::vec2(0.0, 0.0);
 	glm::vec3 texCoors = glm::vec3(0, 0, 0);
+	surfaceColor = objMaterial.diffuseColor;
 
 	for (MeshObject *o : mObjects) {
 		for (Triangle triangle : o->tris) {
@@ -161,10 +167,10 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 					insideTri = true;
 					po = point;
 					no = normal;
-					texCoors = glm::vec3(triangle.it, triangle.jt, triangle.kt);
 					//cout << selectedTri->it << ", " << selectedTri->jt << ", " << selectedTri->kt << endl;
 					barySelected = glm::vec2(bary.x, bary.y);
-					objSel = o;
+					if(o->meshTex->hasTexture)
+						surfaceColor = objTexture.getMeshTextureColor(getMeshUV(point, o->vertTextures[triangle.it], o->vertTextures[triangle.jt], o->vertTextures[triangle.kt], barySelected), o->meshTex->tex);
 				}
 			}
 		}
@@ -173,9 +179,10 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 	//cout << texCoors << endl;
 	point = Transform * glm::vec4(po, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(no, 1.0));
-	if (objSel) {
-		uv = getMeshUV(point, objSel, texCoors, barySelected);
-	}
+	//if (objSel != nullptr) {
+	//	surfaceColor = objTexture.getMeshTextureColor(getMeshUV(point, objSel, texCoors, barySelected), objSel->meshTex->tex);
+	//}
+	//uv = glm::vec2(0, 0);
 	return insideTri;
 }
 
@@ -266,13 +273,9 @@ glm::vec2 Mesh::getUV(glm::vec3 p) {
 }
 
 
-glm::vec2 Mesh::getMeshUV(glm::vec3 p, MeshObject *o, glm::vec3 texCoors, glm::vec2 bary) {
-	glm::vec2 tC0 = o->vertTextures[texCoors.x];
-	glm::vec2 tC1 = o->vertTextures[texCoors.y];
-	glm::vec2 tC2 = o->vertTextures[texCoors.z];
-
+glm::vec2 Mesh::getMeshUV(glm::vec3 p, glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, glm::vec2 bary) {
 	//this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
-	glm::vec2 uv = (tC1 - tC0) * bary.x + (tC2 - tC0) * bary.y + tC0;
+	glm::vec2 uv = (t2 - t1) * bary.x + (t3 - t1) * bary.y + t1;
 	//cout << uv << endl;
 	//cout << tri->it << ", " << tri->jt << ", " << tri->kt << endl;
 	//for (glm::vec2 v : o->vertTextures) {

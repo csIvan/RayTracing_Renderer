@@ -19,7 +19,7 @@ void Cube::setBounds() {
 }
 
 
-bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
 
 	// Apply Transformation
@@ -54,7 +54,7 @@ bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 
 	// Point
 	point = r.evalPoint(tN);
-	uv = getUV(point);
+	surfaceColor = objTexture.getTextureColor(getUV(point));
 
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	// Normal

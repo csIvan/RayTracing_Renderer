@@ -62,8 +62,8 @@ void LSystem::generate() {
 
 	// Create Bounding Box
 	glm::vec3 point, normal;
-	glm::vec2 uv;
-	intersect(Ray(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)), point, normal, uv);
+	ofColor diffuse;
+	intersect(Ray(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0)), point, normal, diffuse);
 	glm::vec3 min = glm::vec3(100, 100, -100);
 	glm::vec3 max = glm::vec3(-100, -100, 100);
 	for (Box *b : boxes) {
@@ -82,7 +82,7 @@ void LSystem::generate() {
 	setBounds();
 }
 
-bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	boxes.clear();
 	glm::vec3 rdd, roo;
 
@@ -131,8 +131,8 @@ bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm
 
 			tube = Cylinder(glm::vec3(0, 0, 0), tubeHeight * 2, tubeRadius, "", ofColor::seaGreen);
 			glm::vec3 poi, nor;
-			glm::vec2 uv2;
-			if (tube.intersect(rayTemp, poi, nor, uv2)) {
+			ofColor diffuse2;
+			if (tube.intersect(rayTemp, poi, nor, diffuse2)) {
 				dist = glm::distance(roop, poi);
 				if (dist < nearestDist) {
 					nearestDist = dist;
@@ -156,8 +156,8 @@ bool LSystem::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm
 
 				joint = Sphere(glm::vec3(0, 0, 0), tubeRadius, "", ofColor::seaGreen);
 				glm::vec3 jpoi, jnor;
-				glm::vec2 juv;
-				if (joint.intersect(jr, jpoi, jnor, juv)) {
+				ofColor jdiffuse;
+				if (joint.intersect(jr, jpoi, jnor, jdiffuse)) {
 					dist = glm::distance(jroop, jpoi);
 					if (dist <= nearestDist) {
 						nearestDist = dist;

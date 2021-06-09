@@ -17,7 +17,7 @@ void Sphere::setBounds() {
 	box->transformBox(Transform);
 }
 
-bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -28,7 +28,7 @@ bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm:
 
 	bool hit = (glm::intersectRaySphere(roo, rdd, glm::vec3(0, 0, 0), radius, point, normal));
 
-	uv = getUV(point);
+	surfaceColor = objTexture.getTextureColor(getUV(point));
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
 	return hit;

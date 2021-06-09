@@ -8,31 +8,31 @@ Shader::Shader(Renderer *renderer, vector<Light *> lights, vector<SceneObject *>
 	this->renderer = renderer;
 }
 
-ofColor Shader::getColor(Ray &ray, const glm::vec3 &point, const glm::vec3 &norm, const glm::vec2 &uv, SceneObject *obj, int depth) {
+ofColor Shader::getColor(Ray &ray, const glm::vec3 &point, const glm::vec3 &norm, const ofColor &surfaceColor, SceneObject *obj, int depth) {
 	// Check material
 	ofColor color;
 	switch (obj->objMaterial.getType()) {
 		case Material::MATTE:
-			color = lambert(point, norm, uv, obj);
+			color = lambert(point, norm, surfaceColor, obj);
 			break;
 		case Material::MIRROR:
 		case Material::GLASS:
 		case Material::REFLECTIVE:
-			color = phong(ray, point, norm, uv, obj, depth);
+			color = phong(ray, point, norm, surfaceColor, obj, depth);
 			break;
 	}
 
 	return color;
 }
 
-ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const glm::vec2 &uv, SceneObject* obj) {
-	ofColor kd;
-	if (dynamic_cast<Mesh*>(obj) != nullptr) {
-		Mesh *meshSelected = (Mesh*)obj;
-		kd = (meshSelected->objSel->meshTex->hasTexture) ? meshSelected->objTexture.getMeshTextureColor(uv, meshSelected->objSel->meshTex->path) : meshSelected->objMaterial.diffuseColor;
-	}
-	else
-		kd = (obj->objTexture.hasTexture) ? obj->objTexture.getTextureColor(uv) : obj->objMaterial.diffuseColor;
+ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const ofColor &surfaceColor, SceneObject* obj) {
+	ofColor kd = surfaceColor;
+	//if (dynamic_cast<Mesh*>(obj) != nullptr) {
+	//	Mesh *meshSelected = (Mesh*)obj;
+	//	kd = (meshSelected->objSel->meshTex->hasTexture) ? meshSelected->objTexture.getMeshTextureColor(uv, meshSelected->objSel->meshTex->path) : meshSelected->objMaterial.diffuseColor;
+	//}
+	//else
+	//	kd = (obj->objTexture.hasTexture) ? obj->objTexture.getTextureColor(uv) : obj->objMaterial.diffuseColor;
 
 	float ambientCo = obj->objMaterial.ambient;
 
@@ -194,7 +194,7 @@ ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &norma
 	return lambertColor;
 }
 
-ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const glm::vec2 &uv, SceneObject* obj, int depth) {
+ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const ofColor &surfaceColor, SceneObject* obj, int depth) {
 	ofColor kd = obj->objMaterial.diffuseColor;
 	ofColor ks = obj->objMaterial.specularColor;
 	float roughness = obj->objMaterial.roughness;
@@ -299,7 +299,7 @@ bool Shader::inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, boo
 	float dist = FLT_MAX;
 	for (int index = 0; index < objects.size(); index++) {
 		glm::vec3 point, normal;
-		glm::vec2 uv;
+		ofColor surfaceColor;
 		//calculate shadows using rayMarch()
 		//if (rayMarch(r, point)) {
 		//	blocked = true;
@@ -319,7 +319,7 @@ bool Shader::inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, boo
 			}
 			
 		}
-		if (objects[index]->intersect(r, point, normal, uv)) {
+		if (objects[index]->intersect(r, point, normal, surfaceColor)) {
 			objectDistance = glm::distance(point, hitPoint);
 			if (objectDistance < dist) {
 				dist = objectDistance;

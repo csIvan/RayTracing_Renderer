@@ -7,7 +7,7 @@ public:
 	Texture() {};
 
 	ofColor getTextureColor(glm::vec2 uv);
-	ofColor getMeshTextureColor(glm::vec2 uv, string texturePath);
+	ofColor getMeshTextureColor(glm::vec2 uv, ofImage &tex);
 
 	void addTexture(string path);
 	void addBumpMap(string path);

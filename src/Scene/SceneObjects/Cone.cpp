@@ -19,7 +19,7 @@ void Cone::setBounds() {
 	box->transformBox(Transform);
 }
 
-bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -47,7 +47,7 @@ bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 		if (glm::dot(oa * m3 - rdd * m1, oa * m3 - rdd * m1) < (radius * radius * m3 * m3)) {
 			t = -m1 / m3;
 			if (t < EPSILON) return false;
-			uv = getUV(rTemp.evalPoint(t));
+			surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)));
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(-ba * glm::inversesqrt(m0), 1.0));
 			return true;
@@ -57,7 +57,7 @@ bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 		if (glm::dot(ob * m3 - rdd * m2, ob * m3 - rdd * m2) < 0.0) {
 			t = -m2 / m3;
 			if (t < EPSILON) return false;
-			uv = getUV(rTemp.evalPoint(t));
+			surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)));
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(ba * glm::inversesqrt(m0), 1.0));
 			return true;
@@ -80,7 +80,7 @@ bool Cone::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::v
 
 	float y = m1 + t * m3;
 	if (y > 0.0 && y < m0 && t >= EPSILON) {
-		uv = getUV(rTemp.evalPoint(t));
+		surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)));
 		point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 		normal = glm::normalize(getRotateMatrix() * 
 			glm::vec4((m0 * (m0 * (oa + t * rdd) + radius * ba * radius) - ba * hy * y), 1.0));

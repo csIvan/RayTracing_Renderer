@@ -36,7 +36,7 @@ public:
 	LSystem() {};
 	~LSystem() {};
 
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv);
+	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
 	void draw();
 	void drawLSystem();
 

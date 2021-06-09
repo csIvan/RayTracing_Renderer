@@ -43,6 +43,40 @@ ofImage RayTracer::render(int samples) {
 	return image;
 }
 
+void RayTracer::mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &percent){
+	int startX = (int)(start.x);
+	int startY = (int)(start.y);
+	int width = (int)dim.x + startX;
+	int height = (int)dim.y + startY;
+
+	for (float row = startY; row < height; row++) {
+		for (float column = startX; column < width; column++) {
+
+			glm::vec3 total = glm::vec3(0.0f, 0.0f, 0.0f);
+
+			for (int i = 0; i < sqrt(samples); i++) {
+				for (int j = 0; j < sqrt(samples); j++) {
+					float jitter = (sqrt(samples) == 1) ? 0.5 : ((float)rand() / (RAND_MAX));
+
+					Ray ray = renderCam->getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
+						1 - (row + (i + jitter) / sqrt(samples)) / imageHeight);
+					ofColor color;
+					glm::vec3 ptest;
+					glm::vec3 ntest;
+					if (castRay(ray, color, ptest, ntest))
+						total += glm::vec3(color.r, color.g, color.b);
+					else
+						total += glm::vec3(ofColor::black.r, ofColor::black.g, ofColor::black.b);
+				}
+			}
+			total /= samples;
+			image.setColor(column, row, ofColor(total.x, total.y, total.z));
+		}
+		percent += 0.03125f; //  100 / 16 threads / 200 height = 0.03125
+		printf("\rRendering... %d%%", (int)percent);
+	}
+}
+
 bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth) {
 	bool hit = false;
 	float dist;
@@ -56,10 +90,10 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 
 	if (bvh->intersect(ray, bvh->root, nodeObjs, inside)) {
 		glm::vec3 point, normal;
-		glm::vec2 uv;
+		ofColor surfaceColor;
 
 		for (SceneObject *o : nodeObjs) {
-			if (o->intersect(ray, point, normal, uv)) {
+			if (o->intersect(ray, point, normal, surfaceColor)) {
 				dist = glm::distance(ray.p, point);
 				if (dist <= nearestDist) {
 					nearestDist = dist;
@@ -68,7 +102,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 					p = point;
 					n = normal;
 
-					color = shader.getColor(ray, point, normal, uv, o, depth);
+					color = shader.getColor(ray, point, normal, surfaceColor, o, depth);
 				}
 			}
 		}

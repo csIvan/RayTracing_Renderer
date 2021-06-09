@@ -22,6 +22,9 @@ public:
  	~RayTracer() {};
 
 	ofImage render(int samples);
+	void mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &percent);
 	bool castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0);
 	void setBVH(BVH *h) { bvh = h; }
+	void setShader() { shader = Shader(this, lights, objects); };
+	ofImage getImage() { return image; }
 };

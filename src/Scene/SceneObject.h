@@ -27,7 +27,7 @@ public:
 	virtual ~SceneObject() {};
 	virtual void setBounds() { box = new Box(glm::vec3(-1, -1, 1), glm::vec3(1, 1, -1)); }
 	virtual void draw() = 0;    // pure virtual funcs - must be overloaded
-	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) { return false; }
+	virtual bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) { return false; }
 	virtual float sdf(glm::vec3 p) { return 0.0f; }
 	virtual glm::vec2 getUV(glm::vec3 p) { return glm::vec2(0, 0); };
 

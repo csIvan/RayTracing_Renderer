@@ -1,12 +1,14 @@
 #include "ofMain.h"
+#include "Renderer.h"
 
 class RenderThread : public ofThread {
 private:
-	ofImage *image;
+	Renderer *renderer;
 	glm::vec2 dim;
 	glm::vec2 subSection;
 	int samples;
+	float *percent;
 public:
-	void setup(ofImage *img, glm::vec2 sub, glm::vec2 d, int s);
+	void setup(Renderer *r, glm::vec2 sub, glm::vec2 d, int s, float &p);
 	void threadedFunction();
 };

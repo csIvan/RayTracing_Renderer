@@ -31,7 +31,6 @@ void ofApp::setup() {
 	ui.setup(&scene);
 	scene.setup();
 
-	box = new Box(glm::vec3(2, -2, 1), glm::vec3(4, 2, -1));
 }
 
 //--------------------------------------------------------------
@@ -64,7 +63,6 @@ void ofApp::draw() {
 	}
 
 	ui.drawGrid();
-	//box->draw();
 
 	ofEnableLighting();
 	material.begin();
@@ -92,23 +90,23 @@ void ofApp::mousePressed(int x, int y, int button) {
 
 	for (int i = 0; i < scene.objects.size(); i++) {
 		glm::vec3 point, normal;
-		glm::vec2 uv;
-		if (scene.objects[i]->intersect(Ray(p, dn), point, normal, uv)) {
+		ofColor surfaceColor;
+		if (scene.objects[i]->intersect(Ray(p, dn), point, normal, surfaceColor)) {
 			hits.push_back(scene.objects[i]);
 		}
 	}
 
 	for (int i = 0; i < scene.lights.size(); i++) {
 		glm::vec3 point, normal;
-		glm::vec2 luv;
-		if (scene.lights[i]->intersect(Ray(p, dn), point, normal, luv)) {
+		ofColor lsurfaceColor;
+		if (scene.lights[i]->intersect(Ray(p, dn), point, normal, lsurfaceColor)) {
 			hits.push_back(scene.lights[i]);
 		}
 	}
 
 	glm::vec3 tempPoint, tempNormal;
-	glm::vec2 ruv;
-	if (scene.renderCam.intersect(Ray(p, dn), tempPoint, tempNormal, ruv)) {
+	ofColor rsurfaceColor;
+	if (scene.renderCam.intersect(Ray(p, dn), tempPoint, tempNormal, rsurfaceColor)) {
 		hits.push_back(&(scene.renderCam));
 	}
 

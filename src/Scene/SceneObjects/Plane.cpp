@@ -28,7 +28,7 @@ void Plane::setBounds() {
 	box->transformBox(Transform);
 }
 
-bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	glm::vec3 rdd, roo;
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
 	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
@@ -48,7 +48,7 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::
 			hit = true;
 	}
 
-	uv = getUV(point);
+	surfaceColor = objTexture.getTextureColor(getUV(point));
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
 	glm::vec2 xRange = glm::vec2(position.x - width / 2, position.x + width / 2);

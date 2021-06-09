@@ -9,6 +9,7 @@
 #include "../Rendering/RayMarcher.h"
 #include "../Rendering/ViewPlane.h"
 #include "../Rendering/RenderCam.h"
+#include "../Rendering/RenderThread.h"
 #include "SceneObject.h"
 #include "Box.h"
 #include "SceneObjects/Sphere.h"
@@ -33,6 +34,7 @@ public:
 	void update();
 	void draw();
 
+	void multithreadRender(Renderer *r);
 	void handleRayTrace();
 	void handleRayMarch();
 	void handleSaveImage();
@@ -85,8 +87,7 @@ public:
 		meshCount, lsystemCount, waterpoolCount, pointlightCount, spotlightCount, arealightCount;
 	bool renderFinished;
 
+	RenderThread threads[16];
 	int samples;
-
-	Box *box;
 	BVH bvh;
 };

@@ -19,7 +19,7 @@ void Torus::setBounds() {
 	box->transformBox(Transform);
 }
 
-bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::vec2 &uv) {
+bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
 	glm::vec3 rdd, roo;
 
 	// Apply Transformation
@@ -67,7 +67,7 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, glm::
 
 	point = ray1.evalPoint(root);
 
-	uv = getUV(point);
+	surfaceColor = objTexture.getTextureColor(getUV(point));
 	normal = point * (dot(point, point) - r * r - R * R * glm::vec3(1.0, 1.0, -1.0));
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);

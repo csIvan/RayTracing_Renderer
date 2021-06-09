@@ -30,11 +30,11 @@ public:
 	Shader() {};
 	~Shader() {};
 
-	ofColor getColor(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const glm::vec2 &uv, SceneObject* obj, int depth);
+	ofColor getColor(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const ofColor &surfaceColor, SceneObject* obj, int depth);
 	
-	ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, const glm::vec2 &uv, SceneObject* obj);
+	ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, const ofColor &surfaceColor, SceneObject* obj);
 	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, float reflect, int depth);
-	ofColor phong(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const glm::vec2 &uv, SceneObject* obj, int depth);
+	ofColor phong(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const ofColor &surfaceColor, SceneObject* obj, int depth);
 	bool inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, bool ref);
 
 	Ray reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, bool outside);
