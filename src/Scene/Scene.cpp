@@ -16,6 +16,7 @@ void Scene::update() {}
 
 void Scene::draw() {
 	for (int i = 0; i < objects.size(); i++) {
+		objects[i]->applyMatrix();
 		objects[i]->draw();
 	}
 	bvh.draw();

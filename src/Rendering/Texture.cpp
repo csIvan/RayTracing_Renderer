@@ -7,6 +7,9 @@ ofColor Texture::getTextureColor(glm::vec2 uv) {
 
 		int x = fmod(uv.x * texWidth * uvTileFactor, texWidth);
 		int y = fmod(uv.y * texHeight * uvTileFactor, texHeight);
+		if (x > texWidth || x < -texWidth || y > texHeight || y < -texHeight) {
+			return ofColor::seaGreen;
+		}
 
 		return texture.getColor(x, y);
 	}

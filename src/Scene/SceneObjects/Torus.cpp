@@ -74,8 +74,8 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofCol
 
 
 	// For Debugging
-	points.push_back(point);
-	normals.push_back((point + normal/2));
+	//points.push_back(point);
+	//normals.push_back((point + normal/2));
 
 	return true;
 }

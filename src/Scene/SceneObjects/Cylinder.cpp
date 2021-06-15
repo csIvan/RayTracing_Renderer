@@ -90,7 +90,7 @@ bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, of
 }
 
 void Cylinder::draw() {
-	applyMatrix();
+	//applyMatrix();
 	ofDisableLighting();
 	for (int i = 0; i < points.size(); i++) {
 		ofSetColor(ofColor::red);
@@ -113,7 +113,7 @@ void Cylinder::draw() {
 		ofEnableLighting();
 	}
 
-	ofSetColor(ofColor::white);
+	ofSetColor(ofColor::yellow);
 	sceneMaterial.begin();
 	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
 	ofPushMatrix();

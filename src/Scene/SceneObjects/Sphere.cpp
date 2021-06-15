@@ -35,7 +35,7 @@ bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofCo
 }
 
 void Sphere::draw() {
-	applyMatrix();
+	//applyMatrix();
 	ofDisableLighting();
 	//for (int i = 0; i < points.size(); i++) {
 	//	//ofSetColor(ofColor::red);

@@ -164,6 +164,15 @@ void UI::updateMaterial() {
 
 // Use the interface to manipulate scene object attributes
 void UI::updateSelected(SceneObject *s) {
+	s->objMaterial.setString(selectedMaterial);
+	s->position = static_cast<glm::vec3>(slider_location);
+	s->rotation.x = static_cast<int>(gui_angleX);
+	s->rotation.y = static_cast<int>(gui_angleY);
+	s->rotation.z = static_cast<int>(gui_angleZ);
+	s->setRotate();
+	s->objMaterial.diffuseColor = (ofColor)color;
+	s->objTexture.uvTileFactor = gui_uvTile;
+
 	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
 		sphereSelected->radius = (float)gui_value1;
@@ -218,13 +227,6 @@ void UI::updateSelected(SceneObject *s) {
 	}
 
 	//s->objMaterial.reflection = (float)gui_reflect;
-	s->objMaterial.setString(selectedMaterial);
-	s->position = static_cast<glm::vec3>(slider_location);
-	s->rotation.x = static_cast<int>(gui_angleX);
-	s->rotation.y = static_cast<int>(gui_angleY);
-	s->rotation.z = static_cast<int>(gui_angleZ);
-	s->objMaterial.diffuseColor = (ofColor)color;
-	s->objTexture.uvTileFactor = gui_uvTile;
 	s->setBounds();
 
 	scene->bvh.create(scene->objects);
