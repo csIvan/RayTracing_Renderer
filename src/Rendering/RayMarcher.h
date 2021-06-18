@@ -19,13 +19,16 @@ public:
 	~RayMarcher() {};
 
 	ofImage render(int samples);
-	void mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &percent) {};
+	void mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &percent);
 	bool castRay(Ray &r, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0);
 
-	bool rayMarch(Ray r, glm::vec3 &p);
-	float sceneSDF(glm::vec3 p);
+	bool rayMarch(Ray r, glm::vec3 &p, int &index);
+	float sceneSDF(glm::vec3 p, int &index);
 	glm::vec3 getNormal(const glm::vec3 &p, int i); 
 	glm::vec3 getNormalRM(const glm::vec3 &p);
 	float opRep(const glm::vec3 p, const glm::vec3 c, SceneObject &s);
 	float opRound(const glm::vec3 p, SceneObject &s, float rad);
+
+	void setShader() { shader = Shader(this, lights, objects); };
+	ofImage getImage() { return image; }
 };

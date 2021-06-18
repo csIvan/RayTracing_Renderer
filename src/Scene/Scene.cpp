@@ -32,7 +32,6 @@ void Scene::draw() {
 
 void Scene::multithreadRender(Renderer *r) {
 	// Create 16 threads
-
 	float p = 0;
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++) {
@@ -77,7 +76,10 @@ void Scene::handleRayMarch() {
 	}
 
 	time(&start);
-	image = rayMarcher.render(samples);
+	//image = rayMarcher.render(samples);
+	rayMarcher.setShader();
+	multithreadRender(&rayMarcher);
+	image = rayMarcher.getImage();
 	time(&end);
 
 	renderFinished = true;

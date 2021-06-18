@@ -231,30 +231,32 @@ float Mesh::sdf(const glm::vec3 p1) {
 
 	float dist = FLT_MAX;
 
-	for (Triangle triangle : tris) {
-		glm::vec3 a = vertices[triangle.i];
-		glm::vec3 b = vertices[triangle.j];
-		glm::vec3 c = vertices[triangle.k];
-		glm::vec3 ba = b - a; glm::vec3 pa = p - a;
-		glm::vec3 cb = c - b; glm::vec3 pb = p - b;
-		glm::vec3 ac = a - c; glm::vec3 pc = p - c;
-		glm::vec3 nor = glm::cross(ba, ac);
+	for (MeshObject *o : mObjects) {
+		for (Triangle triangle : o->tris) {
+			glm::vec3 a = o->vertices[triangle.i];
+			glm::vec3 b = o->vertices[triangle.j];
+			glm::vec3 c = o->vertices[triangle.k];
+			glm::vec3 ba = b - a; glm::vec3 pa = p - a;
+			glm::vec3 cb = c - b; glm::vec3 pb = p - b;
+			glm::vec3 ac = a - c; glm::vec3 pc = p - c;
+			glm::vec3 nor = glm::cross(ba, ac);
 
-		float triDist = sqrt(
-			(glm::sign(glm::dot(glm::cross(ba, nor), pa)) +
-			glm::sign(glm::dot(glm::cross(cb, nor), pb)) +
-			glm::sign(glm::dot(glm::cross(ac, nor), pc)) < 2.0)
-			?
-			min(min(
-			glm::dot(ba * glm::clamp(glm::dot(ba, pa) / glm::dot(ba, ba), 0.0f, 1.0f) - pa, ba * glm::clamp(glm::dot(ba, pa) / glm::dot(ba, ba), 0.0f, 1.0f) - pa),
-			glm::dot(cb * glm::clamp(glm::dot(cb, pb) / glm::dot(cb, cb), 0.0f, 1.0f) - pb, cb * glm::clamp(glm::dot(cb, pb) / glm::dot(cb, cb), 0.0f, 1.0f) - pb)),
-			glm::dot(ac * glm::clamp(glm::dot(ac, pc) / glm::dot(ac, ac), 0.0f, 1.0f) - pc, ac * glm::clamp(glm::dot(ac, pc) / glm::dot(ac, ac), 0.0f, 1.0f) - pc))
-			:
-			glm::dot(nor, pa) * glm::dot(nor, pa) / glm::dot(nor, nor)
-		);
+			float triDist = sqrt(
+				(glm::sign(glm::dot(glm::cross(ba, nor), pa)) +
+					glm::sign(glm::dot(glm::cross(cb, nor), pb)) +
+					glm::sign(glm::dot(glm::cross(ac, nor), pc)) < 2.0)
+				?
+				min(min(
+					glm::dot(ba * glm::clamp(glm::dot(ba, pa) / glm::dot(ba, ba), 0.0f, 1.0f) - pa, ba * glm::clamp(glm::dot(ba, pa) / glm::dot(ba, ba), 0.0f, 1.0f) - pa),
+					glm::dot(cb * glm::clamp(glm::dot(cb, pb) / glm::dot(cb, cb), 0.0f, 1.0f) - pb, cb * glm::clamp(glm::dot(cb, pb) / glm::dot(cb, cb), 0.0f, 1.0f) - pb)),
+					glm::dot(ac * glm::clamp(glm::dot(ac, pc) / glm::dot(ac, ac), 0.0f, 1.0f) - pc, ac * glm::clamp(glm::dot(ac, pc) / glm::dot(ac, ac), 0.0f, 1.0f) - pc))
+				:
+				glm::dot(nor, pa) * glm::dot(nor, pa) / glm::dot(nor, nor)
+			);
 
-		if (triDist < dist) {
-			dist = triDist;
+			if (triDist < dist) {
+				dist = triDist;
+			}
 		}
 	}
 	return dist;
