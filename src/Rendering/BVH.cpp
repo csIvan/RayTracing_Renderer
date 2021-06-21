@@ -8,6 +8,7 @@ void BVH::create(vector<SceneObject *> objs) {
 	nodes.clear();
 	bvhObjs = objs;
 	root = new BVHNode();
+	isEmpty = false;
 	levels = 0;
 	buildNode(objs, root);
 }
@@ -20,6 +21,10 @@ void BVH::buildNode(vector<SceneObject *> objs, BVHNode *node) {
 
 	node->objects = objs;
 	nodes.push_back(node);
+	if (n == 0) {
+		isEmpty = true;
+		return;
+	}
 
 	if (n == 1) {
 		node->left = nullptr;
@@ -115,6 +120,9 @@ int BVH::sortObjects(vector<SceneObject *> &objs, int axis) {
 bool BVH::intersect(const Ray &ray, BVHNode *node, vector<SceneObject *> &objs, bool inside) {
 	bool hit = false;
 
+	if (isEmpty)
+		return false;
+
 	if (inside) {
 		if (node->left == nullptr && node->right == nullptr) {
 			objs.push_back(node->objects[0]);
@@ -183,6 +191,9 @@ void BVH::draw() {
 }
 
 void BVH::drawBVH(BVHNode *node) {
+	if (isEmpty)
+		return;
+
 	if (node == nullptr ) {
 		return;
 	}

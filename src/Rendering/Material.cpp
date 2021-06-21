@@ -20,7 +20,7 @@ void Material::setGlass() {
 	roughness = 0.0f;
 	refraction = 1.2f;
 	shininess = 3000;
-	ambient = 0.08f;
+	ambient = 0.0f;
 	specularCoeff = 4.0f;
 }
 void Material::setReflective() {

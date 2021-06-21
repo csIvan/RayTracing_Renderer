@@ -22,7 +22,6 @@ public:
 	void setGlass(bool & value);
  	void setReflective(bool & value);  
 	void LoadTextureFile();
-	void LoadBumpMap();
 
 	// Main GUIs
 	ofxGuiGroup objectGUI;

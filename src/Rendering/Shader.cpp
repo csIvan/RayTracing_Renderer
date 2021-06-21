@@ -195,7 +195,7 @@ ofColor Shader::lambert(Ray &ray, const glm::vec3 &point, const glm::vec3 &norma
 }
 
 ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const ofColor &surfaceColor, SceneObject* obj, int depth) {
-	ofColor kd = obj->objMaterial.diffuseColor;
+	ofColor kd = surfaceColor;
 	ofColor ks = obj->objMaterial.specularColor;
 	float roughness = obj->objMaterial.roughness;
 	float ambientCo = obj->objMaterial.ambient;

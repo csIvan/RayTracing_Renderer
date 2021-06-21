@@ -86,7 +86,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 		return false;
 
 	vector<SceneObject *> nodeObjs;
-	bool inside = bvh->root->box->inside(ray.p);
+	bool inside = (bvh->isEmpty) ? false : bvh->root->box->inside(ray.p);
 
 	if (bvh->intersect(ray, bvh->root, nodeObjs, inside)) {
 		glm::vec3 point, normal;

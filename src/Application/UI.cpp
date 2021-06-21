@@ -21,13 +21,11 @@ void UI::setup(Scene *s) {
 	button_spot_light.addListener(scene, &Scene::addSpotLight);
 	button_area_light.addListener(scene, &Scene::addAreaLight);
 	button_remove_texture.addListener(scene, &Scene::handleRemoveTexture);
-	button_remove_bumpmap.addListener(scene, &Scene::handleRemoveBumpMap);
 	toggle_matte.addListener(this, &UI::setMatte);
 	toggle_mirror.addListener(this, &UI::setMirror);
 	toggle_glass.addListener(this, &UI::setGlass);
 	toggle_reflective.addListener(this, &UI::setReflective);
 	button_texture.addListener(this, &UI::LoadTextureFile);
-	button_bump.addListener(this, &UI::LoadBumpMap);
 
 
 	// Setup Scene User Interface
@@ -310,7 +308,7 @@ void UI::updateGUI(SceneObject *s) {
 	// Don't need scale or materials for lights
 	if (dynamic_cast<Light*>(s) == nullptr) {
 		objectGUI.add(slider_scale.setup("Scale", s->scale, glm::vec3(1, 1, 1), glm::vec3(10, 10, 10)));
-
+		
 		group_texture.setBorderColor(ofColor(25, 25, 25));
 		group_material.setBorderColor(ofColor(25, 25, 25));
 		toggle_matte.setFillColor(ofColor(45, 138, 86));
@@ -322,13 +320,14 @@ void UI::updateGUI(SceneObject *s) {
 			objectGUI.add(group_texture.setup("Texture"));
 			group_texture.add(gui_uvTile.setup("Tile Factor", s->objTexture.uvTileFactor, 1, 10));
 			group_texture.add(button_texture);
-			group_texture.add(button_bump);
 			group_texture.add(button_remove_texture);
-			group_texture.add(button_remove_bumpmap);
 		}
-		objectGUI.add(group_material.setup("Material"));
-		group_material.add(label_material.setup("Current Material ", selectedMaterial));
-		updateMaterial();
+
+		if (dynamic_cast<LSystem*>(s) == nullptr) {
+			objectGUI.add(group_material.setup("Material"));
+			group_material.add(label_material.setup("Current Material ", selectedMaterial));
+			updateMaterial();
+		}
 		//group_material.add(gui_reflect.setup("Reflection", s->objMaterial.reflection, 0.0, 1.0));
 	}
 
@@ -392,16 +391,5 @@ void UI::LoadTextureFile() {
 			scene->selected[0]->objTexture.addTexture(result.getPath());
 		}
 		
-	}
-}
-
-void UI::LoadBumpMap() {
-	cout << "Bumped" << endl;
-	if (scene->selected.size() > 0) {
-		ofFileDialogResult result = ofSystemLoadDialog("Choose image(.jpg, .png) bump file");
-		if (result.bSuccess) {
-			scene->selected[0]->objTexture.addBumpMap(result.getPath());
-		}
-
 	}
 }

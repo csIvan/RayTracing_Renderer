@@ -38,4 +38,5 @@ public:
 	vector<glm::vec3> points;
 	BVHNode *root;
 	int levels;
+	bool isEmpty;
 };
