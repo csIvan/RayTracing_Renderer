@@ -7,6 +7,8 @@ void Scene::setup() {
 	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image, renderCam);
 	nearestDistance = FLT_MAX;
+
+	// Load initial scene
 	addPlane();
 	addPointLight();
 
@@ -19,6 +21,8 @@ void Scene::draw() {
 		objects[i]->applyMatrix();
 		objects[i]->draw();
 	}
+
+	// Display acceleration structure if toggle is enabled
 	bvh.draw();
 
 	ofDisableLighting();
@@ -56,7 +60,7 @@ void Scene::handleRayTrace() {
 
 	time(&start);
 	rayTracer.setBVH(&bvh);
-	//image = rayTracer.render(samples);
+	//image = rayTracer.render(samples);	// single thread
 	rayTracer.setShader();
 	multithreadRender(&rayTracer);
 	image = rayTracer.getImage();
@@ -76,7 +80,7 @@ void Scene::handleRayMarch() {
 	}
 
 	time(&start);
-	//image = rayMarcher.render(samples);
+	//image = rayMarcher.render(samples);	// single thread
 	rayMarcher.setShader();
 	multithreadRender(&rayMarcher);
 	image = rayMarcher.getImage();

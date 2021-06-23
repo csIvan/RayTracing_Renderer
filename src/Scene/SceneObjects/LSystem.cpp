@@ -85,6 +85,9 @@ void LSystem::generate() {
 }
 
 void LSystem::build() {
+	if (sentence.length() == 0) {
+		sentence = "F";
+	}
 	glm::vec3 point, normal;
 	Ray ray = Ray(glm::vec3(0, 0, 0), glm::vec3(0, 0, 0));
 	boxes.clear();
@@ -299,6 +302,7 @@ void LSystem::draw() {
 
 }
 
+// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float LSystem::sdf(glm::vec3 p1) {
 	glm::vec4 pp = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 p = glm::vec3(pp.x, pp.y, pp.z);

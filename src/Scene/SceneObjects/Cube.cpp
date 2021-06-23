@@ -54,7 +54,7 @@ bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColo
 
 	// Point
 	point = r.evalPoint(tN);
-	surfaceColor = objTexture.getTextureColor(getUV(point));
+	surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
 
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	// Normal
@@ -94,6 +94,7 @@ void Cube::draw() {
 	sceneMaterial.end();
 }
 
+// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Cube::sdf(const glm::vec3 p1) {
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 q = abs(p) - side;

@@ -81,9 +81,6 @@ void AreaLight::draw() {
 glm::vec3 AreaLight::pointOnLight(int u, int v) {
 	glm::vec3 pos = (corner + uvec * (u + ((float)rand() / (RAND_MAX))) + vvec * (v + ((float)rand() / (RAND_MAX))));
 	glm::vec4 newPos = Transform * glm::vec4(pos.x, pos.y, pos.z, 1.0f);
-	if (count < 16) {
-		//lightPositions.push_back(newPos);
-	}
 	count++;
 	return glm::vec3(newPos.x, newPos.y, newPos.z);
 }

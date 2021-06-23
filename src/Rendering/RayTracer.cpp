@@ -5,9 +5,6 @@ RayTracer::RayTracer(int imageWidth, int imageHeight, ofImage &image, RenderCam 
 	this->imageHeight = imageHeight;
 	this->image = image;
 	this->renderCam = &cam;
-
-	texture.load("images/texture2.jpg");
-	sphereTexture.load("images/WorldMap.jpg");
 }
 
 ofImage RayTracer::render(int samples) {
@@ -24,8 +21,7 @@ ofImage RayTracer::render(int samples) {
 					Ray ray = renderCam->getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
 						1 - (row + (i + jitter) / sqrt(samples)) / imageHeight);
 					ofColor color;
-					glm::vec3 ptest;
-					glm::vec3 ntest;
+					glm::vec3 ptest, ntest;
 					if (castRay(ray, color, ptest, ntest))
 						total += glm::vec3(color.r, color.g, color.b);
 					else
@@ -61,8 +57,7 @@ void RayTracer::mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &per
 					Ray ray = renderCam->getRay((column + (j + jitter) / sqrt(samples)) / imageWidth,
 						1 - (row + (i + jitter) / sqrt(samples)) / imageHeight);
 					ofColor color;
-					glm::vec3 ptest;
-					glm::vec3 ntest;
+					glm::vec3 ptest, ntest;
 					if (castRay(ray, color, ptest, ntest))
 						total += glm::vec3(color.r, color.g, color.b);
 					else
@@ -82,7 +77,7 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 	float dist;
 	float nearestDist = FLT_MAX;
 
-	if (depth > 1)
+	if (depth > 2)
 		return false;
 
 	vector<SceneObject *> nodeObjs;

@@ -22,41 +22,88 @@ Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, fl
 }
 
 void Plane::setBounds() {
-	glm::vec4 min = glm::vec4(-width/2, 0, height/2, 1.0);
-	glm::vec4 max = glm::vec4(width/2, 0, -height/2, 1.0);
+	min = glm::vec4(-width/2, 0, height/2, 1.0);
+	max = glm::vec4(width/2, 0, -height/2, 1.0);
 	box->setParameters(min, max);
 	box->transformBox(Transform);
 }
 
+// Similar to the cube intersect function
 bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
-	glm::vec3 rdd, roo;
+	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
+
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
 	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
 	roo = glm::vec4(p.x, p.y, p.z, 1.0);
 	rdd = glm::normalize(p1 - p);
 	Ray r = Ray(roo, rdd);
 
-	float dist1, dist2;
-	bool insidePlane = false;
-	bool hit = false;
-	float d = glm::dot(rdd, this->normal);
-	if (glm::abs(d) > -0.001f) {
-		float t = glm::dot(-roo, this->normal) / d;
-		point = r.evalPoint(t);
-		normal = this->normal;
-		if(t >= 0)
-			hit = true;
-	}
 
-	surfaceColor = objTexture.getTextureColor(getUV(point));
+	// Calculate intersection
+	invdir = 1.0f / rdd;
+	sign = glm::vec3((rdd.x < 0.0) ? 1.0 : -1.0, (rdd.y < 0.0) ? 1.0 : -1.0, (rdd.z < 0.0) ? 1.0 : -1.0);
+	t = sign * glm::vec3(glm::abs(max.x - min.x) / 2, glm::abs(max.y - min.y) / 2, glm::abs(max.z - min.z) / 2);
+
+	tMinV = glm::vec3(-roo.x + t.x, -roo.y + t.y, -roo.z + t.z);
+	tMaxV = glm::vec3(-roo.x - t.x, -roo.y - t.y, -roo.z - t.z);
+	tMin = invdir * tMinV;
+	tMax = invdir * tMaxV;
+
+	// Calculate entering and exiting points
+	float tN = glm::max(glm::max(tMin.x, tMin.y), tMin.z);
+	float tF = glm::min(glm::min(tMax.x, tMax.y), tMax.z);
+
+	// Cube distance
+	glm::vec3 d = abs(roo) - glm::vec3(glm::abs(max.x - min.x) / 2, glm::abs(max.y - min.y) / 2, glm::abs(max.z - min.z) / 2);
+	float cubeDist = MIN(MAX(d.x, glm::max(d.y, d.z)), 0.0) + length(glm::max(d, 0.0f));
+
+	// No intersection
+	if (tN > tF || tF < 0.0 || isnan(tF) || tN < cubeDist)
+		return false;
+
+	// Point
+	point = r.evalPoint(tN);
+	surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
+
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
-	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
-	glm::vec2 xRange = glm::vec2(position.x - width / 2, position.x + width / 2);
-	glm::vec2 zRange = glm::vec2(position.z - height / 2, position.z + height / 2);
-	if (hit && point.x < xRange[1] && point.x > xRange[0] && point.z < zRange[1] && point.z > zRange[0]) {
-		insidePlane = true;
-	}
-	return insidePlane;
+	// Normal
+	if (tMin.x > tMin.y && tMin.x > tMin.z)
+		normal = glm::vec3(Transform[0].x * sign.x, Transform[0].y*sign.x, Transform[0].z*sign.x);
+	else if (tMin.y > tMin.z)
+		normal = glm::vec3(Transform[1].x * sign.y, Transform[1].y*sign.y, Transform[1].z*sign.y);
+	else
+		normal = glm::vec3(Transform[2].x * sign.z, Transform[2].y*sign.z, Transform[2].z*sign.z);
+
+
+	return true;
+	//glm::vec3 rdd, roo;
+	//glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
+	//glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
+	//roo = glm::vec4(p.x, p.y, p.z, 1.0);
+	//rdd = glm::normalize(p1 - p);
+	//Ray r = Ray(roo, rdd);
+
+	//float dist1, dist2;
+	//bool insidePlane = false;
+	//bool hit = false;
+	//float d = glm::dot(rdd, this->normal);
+	//if (glm::abs(d) > -0.001f) {
+	//	float t = glm::dot(-roo, this->normal) / d;
+	//	point = r.evalPoint(t);
+	//	normal = this->normal;
+	//	if(t >= 0)
+	//		hit = true;
+	//}
+
+	//surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
+	//normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
+	////glm::vec2 xRange = glm::vec2(position.x - width / 2, position.x + width / 2);
+	////glm::vec2 zRange = glm::vec2(position.z - height / 2, position.z + height / 2);
+	////if (hit && point.x < xRange[1] && point.x > xRange[0] && point.z < zRange[1] && point.z > zRange[0]) {
+	////	insidePlane = true;
+	////}
+	//point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
+	//return hit;
 }
 
 void Plane::draw() {
@@ -97,6 +144,7 @@ void Plane::draw() {
 	sceneMaterial.end();
 }
 
+// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Plane::sdf(const glm::vec3 p1) {
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	return p.y;
@@ -115,25 +163,4 @@ glm::vec2 Plane::getUV(glm::vec3 p) {
 	float v = (hit.z + height / 2) / (height);
 
 	return  glm::vec2(glm::abs(u), glm::abs(v));
-
-	//int x = glm::mod(u * texWidth, texWidth);
-	//int y = glm::mod(v * texHeight, texHeight);
-
-	//return  objTexture.texture.getColor(x, y);
-
-
-	//int textConst = 16;
-	////get projected texture dimensions
-	//float projTextHeight = width / textConst;
-	//float projTextWidth = height / textConst;
-	////get x,y coordinates of point of intersection (add dimension/2 to get coordinates to start at corner)
-	//float x = point.x + width / 2;
-	//float y = point.z + height / 2;
-	////get u,v coordinates on texture
-	//float u = x / (projTextWidth);
-	//float v = y / (projTextHeight);
-	////transform u,v to i,j
-	//int i = fmod(u, 1) * texWidth;
-	//int j = fmod(v, 1) * texHeight;
-	//return objTexture.texture.getColor(i, j);
 }

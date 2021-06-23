@@ -67,7 +67,7 @@ bool Torus::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofCol
 
 	point = ray1.evalPoint(root);
 
-	surfaceColor = objTexture.getTextureColor(getUV(point));
+	surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
 	normal = point * (dot(point, point) - r * r - R * R * glm::vec3(1.0, 1.0, -1.0));
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);

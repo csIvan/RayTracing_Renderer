@@ -40,27 +40,17 @@ class Mesh : public SceneObject {
 public:
 	vector<ofMesh *> meshes;
 	vector<MeshObject *> mObjects;
-	vector<MeshTextureMap> textureMaps;
-	vector<Triangle> tris;
-	vector<glm::vec3> vertices;
-	vector<glm::vec3> vertNormals;
-	vector<glm::vec2> vertTextures;
 	vector<glm::vec3> points;
 	vector<glm::vec3> normals;
-	Triangle *selectedTri;
-	//MeshObject *objSel;
-	glm::vec2 barySelected;
 
 	Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps, string name, ofColor diffuse = ofColor::lightGray);
 	Mesh() {};
 	~Mesh() {};
 
 	void setBounds();
-	int getMeshPointsInBox(const vector<int> &points, Box &box, vector<int> &pointsRtn);
 
 	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
 	void draw();
 	float sdf(const glm::vec3 p);
-	glm::vec2 getUV(glm::vec3 p);
 	glm::vec2 getMeshUV(glm::vec3 p, glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, glm::vec2 bary);
 };

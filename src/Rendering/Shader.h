@@ -33,9 +33,8 @@ public:
 	ofColor getColor(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const ofColor &surfaceColor, SceneObject* obj, int depth);
 	
 	ofColor lambert(const glm::vec3 &p, const glm::vec3 &norm, const ofColor &surfaceColor, SceneObject* obj);
-	ofColor lambert(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, SceneObject* obj, float reflect, int depth);
 	ofColor phong(Ray &ray, const glm::vec3 &p, const glm::vec3 &norm, const ofColor &surfaceColor, SceneObject* obj, int depth);
-	bool inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance, bool ref);
+	bool inShadow(const Ray &r, glm::vec3 hitPoint, float lightDistance);
 
 	Ray reflect(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, bool outside);
 	Ray refract(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, float ior, bool outside);

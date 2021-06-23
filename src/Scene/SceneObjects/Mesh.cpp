@@ -139,8 +139,7 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColo
 	float dist;
 	glm::vec3 po, no;
 	Triangle *tri;
-	selectedTri = new Triangle();
-	barySelected = glm::vec2(0.0, 0.0);
+	glm::vec2 barySelected = glm::vec2(0.0, 0.0);
 	glm::vec3 texCoors = glm::vec3(0, 0, 0);
 	surfaceColor = objMaterial.diffuseColor;
 
@@ -167,7 +166,6 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColo
 					insideTri = true;
 					po = point;
 					no = normal;
-					//cout << selectedTri->it << ", " << selectedTri->jt << ", " << selectedTri->kt << endl;
 					barySelected = glm::vec2(bary.x, bary.y);
 					if(o->meshTex->hasTexture)
 						surfaceColor = objTexture.getMeshTextureColor(getMeshUV(point, o->vertTextures[triangle.it], o->vertTextures[triangle.jt], o->vertTextures[triangle.kt], barySelected), o->meshTex->tex);
@@ -176,13 +174,8 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColo
 		}
 	}
 	
-	//cout << texCoors << endl;
 	point = Transform * glm::vec4(po, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(no, 1.0));
-	//if (objSel != nullptr) {
-	//	surfaceColor = objTexture.getMeshTextureColor(getMeshUV(point, objSel, texCoors, barySelected), objSel->meshTex->tex);
-	//}
-	//uv = glm::vec2(0, 0);
 	return insideTri;
 }
 
@@ -225,6 +218,7 @@ void Mesh::draw() {
 	sceneMaterial.end();
 }
 
+// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Mesh::sdf(const glm::vec3 p1) {
 	glm::vec4 pp = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 p = glm::vec3(pp.x, pp.y, pp.z);
@@ -262,27 +256,9 @@ float Mesh::sdf(const glm::vec3 p1) {
 	return dist;
 }
 
-glm::vec2 Mesh::getUV(glm::vec3 p) {
-
-	//glm::vec2 tC0 = vertTextures[selectedTri->it];
-	//glm::vec2 tC1 = vertTextures[selectedTri->it];
-	//glm::vec2 tC2 = vertTextures[selectedTri->it];
-
-	////this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
-	//glm::vec2 uv = (tC1 - tC0) * barySelected.x + (tC2 - tC0) * barySelected.y + tC0;
-
-	return  glm::vec2(1, 1);
-}
-
 
 glm::vec2 Mesh::getMeshUV(glm::vec3 p, glm::vec2 t1, glm::vec2 t2, glm::vec2 t3, glm::vec2 bary) {
-	//this is a relatively simple operation, we just remap our berycentric points to fall within the bounds of the uvw triangle
 	glm::vec2 uv = (t2 - t1) * bary.x + (t3 - t1) * bary.y + t1;
-	//cout << uv << endl;
-	//cout << tri->it << ", " << tri->jt << ", " << tri->kt << endl;
-	//for (glm::vec2 v : o->vertTextures) {
-	//	cout << "vt " << v << endl;
-	//}
 	float u = uv.x;
 	float v = 1.0f - uv.y;
 

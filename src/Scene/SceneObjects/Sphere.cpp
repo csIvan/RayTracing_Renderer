@@ -28,7 +28,7 @@ bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofCo
 
 	bool hit = (glm::intersectRaySphere(roo, rdd, glm::vec3(0, 0, 0), radius, point, normal));
 
-	surfaceColor = objTexture.getTextureColor(getUV(point));
+	surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
 	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
 	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
 	return hit;
@@ -71,6 +71,7 @@ void Sphere::draw() {
 	sceneMaterial.end();
 }
 
+// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Sphere::sdf(glm::vec3 p1) {
 	glm::vec3 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	float distance = glm::distance(p, glm::vec3(0, 0, 0)) - radius;

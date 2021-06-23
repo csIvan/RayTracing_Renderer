@@ -7,10 +7,6 @@ RayMarcher::RayMarcher(int imageWidth, int imageHeight, ofImage image, RenderCam
 	this->renderCam = &cam;
 }
 
-/*
-* RayMarching function. Calls rayMarch instead of the object's ray intersect function.
-* Also uses the normalRM so that phong shading can be applied to the scene
-*/
 ofImage RayMarcher::render(int samples) {
 	shader = Shader(this, lights, objects);
 	for (float row = 0; row < imageHeight; row++) {
@@ -77,7 +73,7 @@ void RayMarcher::mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &pe
 
 bool RayMarcher::castRay(Ray &r, ofColor &color, glm::vec3 &po, glm::vec3 &n, int depth) {
 
-	if (depth > 1)
+	if (depth > 2)
 		return false;
 
 	glm::vec3 p;
@@ -92,6 +88,10 @@ bool RayMarcher::castRay(Ray &r, ofColor &color, glm::vec3 &po, glm::vec3 &n, in
 	return hit;
 }
 
+
+/*
+* RayMarching function
+*/
 bool RayMarcher::rayMarch(Ray r, glm::vec3 &p, int &index) {
 	bool hit = false;
 	p = r.p;
@@ -120,9 +120,6 @@ float RayMarcher::sceneSDF(glm::vec3 p, int &index) {
 	float nearestDist = FLT_MAX;
 	float d = 0.0;
 	for (int i = 0; i < objects.size(); i++) {
-		//WaterPool *wp1 = (WaterPool*)objects[i];
-		//d = wp1->sdf(p, 1, 8);
-		//d = opRep(p, glm::vec3(20.0f, 20.0f, 20.0f), *objects[i]);
 		d = objects[i]->sdf(p);
 		if (d <= nearestDist) {
 			nearestDist = d;
@@ -130,17 +127,6 @@ float RayMarcher::sceneSDF(glm::vec3 p, int &index) {
 		}
 	}
 	return nearestDist;
-}
-
-//Regular hard-coded getNormal function
-glm::vec3 RayMarcher::getNormal(const glm::vec3 &p, int i) {
-	glm::vec3 pNormal;
-	//if ((typeid(*objects[i]) == typeid(Sphere)))
-	//	pNormal = glm::normalize(p - objects[i]->position);
-	//else if ((typeid(*objects[i]) == typeid(Plane)))
-	//	pNormal = glm::vec3(0, 1, 0);
-
-	return pNormal;
 }
 
 // Ray Marching getNormal Function
@@ -151,9 +137,6 @@ glm::vec3 RayMarcher::getNormalRM(const glm::vec3 &p) {
 	int temp;
 
 	float dp = sceneSDF(p, temp);
-	//glm::vec3 n(dp - sceneSDF(glm::vec3(p.x - eps, p.y, p.z)),
-	//	dp - sceneSDF(glm::vec3(p.x, p.y - eps, p.z)),
-	//	dp - sceneSDF(glm::vec3(p.x, p.y, p.z - eps)));
 
 	glm::vec3 n(glm::vec3(k.x, k.y, k.y) * sceneSDF(p + glm::vec3(k.x, k.y, k.y) * eps, temp) +
 		glm::vec3(k.y, k.y, k.x) * sceneSDF(p + glm::vec3(k.y, k.y, k.x) * eps, temp) +
@@ -174,6 +157,5 @@ float RayMarcher::opRep(const glm::vec3 p, const glm::vec3 c, SceneObject &s) {
 
 // opRound Function - it rounds the edges based on a float variable
 float RayMarcher::opRound(const glm::vec3 p, SceneObject &s, float rad) {
-	//return 2.0f;
 	return s.sdf(p) - rad;
 }

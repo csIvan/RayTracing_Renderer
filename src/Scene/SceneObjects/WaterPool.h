@@ -4,6 +4,7 @@
 #include "../SceneObject.h"
  
 //************************************ WaterPool Class *********************************
+// DEPRECATED //
 class WaterPool : public SceneObject {
 public:
 	ofPlanePrimitive plane;

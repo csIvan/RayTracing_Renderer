@@ -1,6 +1,6 @@
 #include "Texture.h"
 
-ofColor Texture::getTextureColor(glm::vec2 uv) {
+ofColor Texture::getTextureColor(glm::vec2 uv, ofColor diffuse) {
 	if (hasTexture) {
 		int texHeight = texture.getHeight();
 		int texWidth = texture.getWidth();
@@ -8,13 +8,13 @@ ofColor Texture::getTextureColor(glm::vec2 uv) {
 		int x = fmod(uv.x * texWidth * uvTileFactor, texWidth);
 		int y = fmod(uv.y * texHeight * uvTileFactor, texHeight);
 		if (x > texWidth || x < -texWidth || y > texHeight || y < -texHeight) {
-			return ofColor::seaGreen;
+			return diffuse;
 		}
 
 		return texture.getColor(x, y);
 	}
 	
-	return ofColor::seaGreen;
+	return diffuse;
 }
 
 ofColor Texture::getMeshTextureColor(glm::vec2 uv, ofImage &tex) {

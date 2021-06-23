@@ -21,11 +21,11 @@ void UI::setup(Scene *s) {
 	button_spot_light.addListener(scene, &Scene::addSpotLight);
 	button_area_light.addListener(scene, &Scene::addAreaLight);
 	button_remove_texture.addListener(scene, &Scene::handleRemoveTexture);
+	button_texture.addListener(this, &UI::LoadTextureFile);
 	toggle_matte.addListener(this, &UI::setMatte);
 	toggle_mirror.addListener(this, &UI::setMirror);
 	toggle_glass.addListener(this, &UI::setGlass);
 	toggle_reflective.addListener(this, &UI::setReflective);
-	button_texture.addListener(this, &UI::LoadTextureFile);
 
 
 	// Setup Scene User Interface
@@ -181,6 +181,8 @@ void UI::updateSelected(SceneObject *s) {
 	}
 	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
+		planeSelected->width = (float)gui_value1;
+		planeSelected->height = (float)gui_value2;
 	}
 	else if (dynamic_cast<Cylinder*>(s) != nullptr) {
 		Cylinder *cylinderSelected = (Cylinder*)s;
@@ -224,7 +226,6 @@ void UI::updateSelected(SceneObject *s) {
 		}
 	}
 
-	//s->objMaterial.reflection = (float)gui_reflect;
 	s->setBounds();
 
 	scene->bvh.create(scene->objects);
@@ -250,6 +251,8 @@ void UI::updateGUI(SceneObject *s) {
 	}
 	else if (dynamic_cast<Plane*>(s) != nullptr) {
 		Plane *planeSelected = (Plane*)s;
+		objectGUI.add(gui_value1.setup("Width", planeSelected->width, 0.2, 40));
+		objectGUI.add(gui_value2.setup("Height", planeSelected->height, 0.2, 40));
 	}
 	else if (dynamic_cast<Cylinder*>(s) != nullptr) {
 		Cylinder *cylinderSelected = (Cylinder*)s;
@@ -295,7 +298,6 @@ void UI::updateGUI(SceneObject *s) {
 
 
 	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(10, 10, 10)));
-	//objectGUI.add(slider_rotation.setup("Angle Rotation", s->rotation, glm::vec3(-90, -90, -90), glm::vec3(90, 90, 90)));
 	group_rotation.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(group_rotation.setup("Rotation"));
 	group_rotation.add(gui_angleX.setup("Angle X", s->rotation.x, -90, 90));
@@ -328,7 +330,6 @@ void UI::updateGUI(SceneObject *s) {
 			group_material.add(label_material.setup("Current Material ", selectedMaterial));
 			updateMaterial();
 		}
-		//group_material.add(gui_reflect.setup("Reflection", s->objMaterial.reflection, 0.0, 1.0));
 	}
 
 	objectGUI.add(color.setup("Color", s->objMaterial.diffuseColor, ofColor(0, 0), ofColor(255, 255)));
@@ -390,6 +391,5 @@ void UI::LoadTextureFile() {
 		if (result.bSuccess) {
 			scene->selected[0]->objTexture.addTexture(result.getPath());
 		}
-		
 	}
 }

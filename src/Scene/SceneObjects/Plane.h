@@ -8,12 +8,13 @@ class Plane : public SceneObject {
 public:
 	ofPlanePrimitive plane;
 	glm::vec3 normal;
-	float width = 20;
-	float height = 20;
+	float width = 10;
+	float height = 10;
 	vector<glm::vec3> points;
 	vector<glm::vec3> normals;
+	glm::vec3 min, max;
 
-	Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse = ofColor::darkOliveGreen, float w = 50, float h = 50);
+	Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse = ofColor::darkOliveGreen, float w = 10, float h = 10);
 	Plane();
 	~Plane() {};
 

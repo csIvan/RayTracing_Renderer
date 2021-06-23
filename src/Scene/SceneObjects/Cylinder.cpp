@@ -51,7 +51,7 @@ bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, of
 		if (glm::dot(oa * m3 - rdd * m1, oa * m3 - rdd * m1) < (r2 * m3 * m3)) {
 			t = -m1 / m3;
 			if (t < EPSILON) return false;
-			surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)));
+			surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)), objMaterial.diffuseColor);
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(-ba * glm::inversesqrt(m0), 1.0));
 			return true;
@@ -61,7 +61,7 @@ bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, of
 		if (glm::dot(ob * m3 - rdd * m2, ob * m3 - rdd * m2) < (r2 * m3 * m3)) {
 			t = -m2 / m3;
 			if (t < EPSILON) return false;
-			surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)));
+			surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)), objMaterial.diffuseColor);
 			point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 			normal = glm::normalize(getRotateMatrix() * glm::vec4(ba * glm::inversesqrt(m0), 1.0));
 			return true;
@@ -80,7 +80,7 @@ bool Cylinder::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, of
 	
 	float y = m1 + t * m3;
 	if (y > 0.0 && y < m0 && t >= EPSILON) {
-		surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)));
+		surfaceColor = objTexture.getTextureColor(getUV(rTemp.evalPoint(t)), objMaterial.diffuseColor);
 		point = Transform * glm::vec4(rTemp.evalPoint(t), 1.0);
 		normal = glm::normalize(getRotateMatrix() * glm::vec4((m0 * (m0 * (oa + t * rdd)) - ba * m0 * y), 1.0));		
 		return true;
@@ -123,6 +123,7 @@ void Cylinder::draw() {
 	sceneMaterial.end();
 }
 
+// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Cylinder::sdf(const glm::vec3 p1) {
 	glm::vec4 pp = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 p = glm::vec3(pp.x, pp.y, pp.z);

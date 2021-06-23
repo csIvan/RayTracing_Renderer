@@ -15,8 +15,6 @@ public:
 //************************************ LSystem Class **************************************
 class LSystem : public SceneObject {
 public:
-	//Cylinder tube;
-	//Sphere joint;
 	string axiom, sentence;
 	Rule rule1, rule2, rule3;
 	vector<Rule> rules;

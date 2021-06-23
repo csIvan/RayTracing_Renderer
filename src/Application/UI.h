@@ -6,7 +6,6 @@
 class UI {
 
 public:
-
 	UI() {};
 	void setup(Scene *s);
 	void update();
@@ -32,46 +31,25 @@ public:
 	Scene *scene;
 
 	// GUI variables
-	ofxVec3Slider slider_location;
-	ofxVec3Slider slider_rotation;
-	ofxVec3Slider slider_scale;
+	ofxGuiGroup group_scene, group_create, group_objects, group_lights, group_rotation, group_material, group_texture, group_mat_variables;
+	ofxVec3Slider slider_location, slider_rotation, slider_scale;
 	ofxFloatSlider gui_value1, gui_value2, gui_value3, gui_value4, gui_reflect;
-	ofxIntSlider gui_ivalue1, gui_uvTile;
+	ofxIntSlider gui_ivalue1, gui_uvTile, gui_angleX, gui_angleY, gui_angleZ, gui_samples, gui_area_samples;
 	ofxTextField gui_axiom, gui_rule1, gui_rule2, gui_rule3, gui_rule4;
-	ofxIntSlider gui_angle1;
-	ofxIntSlider gui_angle2;
-	ofxIntSlider gui_samples;
-	ofxIntSlider gui_area_samples;
+	ofxLabel label_material;
 	ofxColorSlider color;
-	ofxGuiGroup group_scene;
-	ofxGuiGroup group_create;
-	ofxGuiGroup group_objects;
-	ofxGuiGroup group_lights;
-	ofxGuiGroup group_rotation;
-	ofxGuiGroup group_material;
-	ofxGuiGroup group_texture;
-	ofxGuiGroup group_mat_variables;
-	ofxIntSlider gui_angleX;
-	ofxIntSlider gui_angleY;
-	ofxIntSlider gui_angleZ;
-
+		
 	ofParameter<void> button_texture = { " Load Texture file" };
-	ofParameter<void> button_bump = { " Load Bump Map" };
 	ofParameter<void> button_remove_texture = { " Clear Texture" };
-	ofParameter<void> button_remove_bumpmap = { " Clear Bump Map" };
 
-	// GUI functions
-	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete;
+	// SceneObject Buttons
+	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete, button_sphere, 
+		button_cube, button_plane, button_cylinder, button_cone, button_torus, button_mesh, 
+		button_lsystem, button_point_light, button_spot_light, button_area_light;
+
 	ofxToggle toggle_image, toggle_grid, toggle_render_cam, toggle_matte, toggle_mirror,
 		toggle_glass, toggle_reflective;
 
-	ofxLabel label_material;
-
-	// SceneObject Buttons
-	ofxButton button_sphere, button_cube, button_plane, button_cylinder, button_cone, button_torus,
-		button_mesh, button_lsystem, button_point_light, button_spot_light, button_area_light;
-
-	int samples = 1;
-
 	string selectedMaterial = "Matte";
+	int samples = 1;
 };
