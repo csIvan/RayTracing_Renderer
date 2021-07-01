@@ -7,11 +7,8 @@ void Scene::setup() {
 	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
 	rayMarcher = RayMarcher(imageWidth, imageHeight, image, renderCam);
 	nearestDistance = FLT_MAX;
-
-	// Load initial scene
-	addPlane();
+	addCube();
 	addPointLight();
-
 }
 
 void Scene::update() {}
@@ -22,8 +19,10 @@ void Scene::draw() {
 		objects[i]->draw();
 	}
 
-	// Display acceleration structure if toggle is enabled
-	bvh.draw();
+	// Display acceleration
+	if (showBVH) {
+		bvh.draw();
+	}
 
 	ofDisableLighting();
 
@@ -119,6 +118,27 @@ void Scene::handleDelete() {
 	bvh.create(objects);
 }
 
+void Scene::handleClearScene() {
+	// Deleted all objects
+	while (objects.size() > 0) {
+		for (SceneObject *o : objects) {
+			rayTracer.removeObject(o->objName);
+			rayMarcher.removeObject(o->objName);
+			objects.erase(std::remove(objects.begin(), objects.end(), o), objects.end());
+		}
+	}
+
+	while (lights.size() > 0) {
+		for (Light *l : lights) {
+			rayTracer.removeLight(l->objName);
+			rayMarcher.removeLight(l->objName);
+			lights.erase(std::remove(lights.begin(), lights.end(), l), lights.end());
+		}
+	}
+	selected.clear();
+	bvh.create(objects);
+}
+
 void Scene::handleRemoveTexture() {
 	for (int i = 0; i < objects.size(); i++) {
 		if (selected.size() > 0 && objects[i]->objName == selected[0]->objName) {
@@ -199,16 +219,14 @@ bool Scene::FileLoader(const char * path) {
 	vector<glm::vec3> tempVertices;
 	vector<glm::vec3> tempVertNormals;
 	vector<glm::vec2> tempVertTextures;
-	FILE * file;
-	char mtl[100];
+
 	MeshObject *tempObj;
 	vector<MeshObject *> mObjects;
 	bool firstObject = true;
 
 	ifstream objFile;
 	objFile.open(string(path));
-	string line;
-	string matLibName;
+	string line, matLibName;
 	int vCount = 0, nCount = 0, tCount = 0;
 	int vstart = 1, nstart = 1, tstart = 1;
 
@@ -220,7 +238,6 @@ bool Scene::FileLoader(const char * path) {
 		stringstream   linestream(line);
 		string token;
 		linestream >> token;
-		//cout << dataT << endl;
 
 		if (token == "mtllib") {
 			string name;
@@ -277,7 +294,9 @@ bool Scene::FileLoader(const char * path) {
 				string v;
 				linestream >> v;
 				stringstream fp(v);
-
+				if ((v.find("//") != std::string::npos)) {
+					break;
+				}
 				int count = 0;
 				string tok;
 				while (getline(fp, tok, '/')) {
@@ -290,15 +309,8 @@ bool Scene::FileLoader(const char * path) {
 						tempVertNormIndices.push_back(stoi(tok));
 					}
 					count++;
-					//cout << tok << "/";
 				}
-				//cout << " ";
 			}
-			//cout << endl;
-			//for (int i = 0; i < tempIndices.size(); i++) {
-			//	cout << i << " : " << tempIndices[i] << "/" << tempVertTexIndices[i] << "/" << tempVertNormIndices[i] <<  " ";
-			//}
-			//cout << endl;
 		}
 	}
 
@@ -308,186 +320,60 @@ bool Scene::FileLoader(const char * path) {
 		tempVertNormIndices.clear();
 		tempVertTexIndices.clear();
 	}
-
+	objFile.close();
 
 
 	string matLibPath = dir + matLibName;
 
-	bool firstMap = true;
 	MeshTextureMap *tempMap;
 	vector<MeshTextureMap *> mMaps;
 	ifstream matFile;
 	matFile.open(string(matLibPath));
 	string mline;
+	if (matFile) {
+		while (getline(matFile, mline, '\n')) {
+			stringstream   linestream(mline);
+			string token;
+			linestream >> token;
 
-	while (getline(matFile, mline, '\n')) {
-		stringstream   linestream(mline);
-		string token;
-		linestream >> token;
-
-		if (token == "newmtl") {
-			string name;
-			linestream >> name;		
-			tempMap = new MeshTextureMap();
-			tempMap->name = name;
-			tempMap->hasTexture = false;
-			mMaps.push_back(tempMap);
-		}
-		else if (token == "Kd") {
-			float v1, v2, v3;;
-			linestream >> v1 >> v2 >> v3;
-			tempMap->kd = glm::vec3(v1, v2, v3);
-		}
-		else if (token == "map_Kd") {
-			string name;
-			linestream >> name;
-
-			string mapName;
-			bool correctFormat = false;
-
-			if ((name.find("\\") == std::string::npos) && (name.find(".") != std::string::npos)) {
-				mapName = name;
-				correctFormat = true;
+			if (token == "newmtl") {
+				string name;
+				linestream >> name;
+				tempMap = new MeshTextureMap();
+				tempMap->name = name;
+				tempMap->hasTexture = false;
+				mMaps.push_back(tempMap);
 			}
-
-
-			if (correctFormat) {
-				string mapDir = string(path);
-				string mapPath = mapDir.substr(0, mapDir.find_last_of("\\")) + "\\" + mapName;
-
-				tempMap->path = mapPath;
-				tempMap->hasTexture = true;
+			else if (token == "Kd") {
+				float v1, v2, v3;;
+				linestream >> v1 >> v2 >> v3;
+				tempMap->kd = glm::vec3(v1, v2, v3);
 			}
-			
+			else if (token == "map_Kd") {
+				string name;
+				linestream >> name;
+
+				string mapName;
+				bool correctFormat = false;
+
+				if ((name.find("\\") == std::string::npos) && (name.find(".") != std::string::npos)) {
+					mapName = name;
+					correctFormat = true;
+				}
+
+
+				if (correctFormat) {
+					string mapDir = string(path);
+					string mapPath = mapDir.substr(0, mapDir.find_last_of("\\")) + "\\" + mapName;
+
+					tempMap->path = mapPath;
+					tempMap->hasTexture = true;
+				}
+
+			}
 		}
 	}
-
-
-	//errno_t err = fopen_s(&file, path, "r");
-	//if (err != 0) {
-	//	printf("Could not open file!\n");
-	//	return false;
-	//}
-	//while (1) {
-	//	char line[128];
-	//	int res = fscanf(file, "%s", line);
-	//	if (res == EOF) {
-	//		if (!firstObject) {
-	//			tempObj->processData(tempIndices, tempVertNormIndices, tempVertTexIndices);
-	//			cout << "Hey" << endl;
-	//			tempIndices.clear();
-	//			tempVertNormIndices.clear();
-	//			tempVertTexIndices.clear();
-	//		}
-	//		break;
-	//	}
-
-	//	if (strcmp(line, "mtllib") == 0) {
-	//		fscanf_s(file, "%s\n", mtl);
-	//	}
-
-
-	//	if (strcmp(line, "o") == 0) {
-	//		char n[100];
-	//		fscanf_s(file, "%s\n", n);
-
-	//		if (firstObject) {			
-	//			tempObj = new MeshObject(n);
-	//			mObjects.push_back(tempObj);
-	//			firstObject = false;
-	//		}
-	//		else {
-	//			tempObj->processData(tempIndices, tempVertNormIndices, tempVertTexIndices);
-	//			tempIndices.clear();
-	//			tempVertNormIndices.clear();
-	//			tempVertTexIndices.clear();
-	//			tempObj = new MeshObject(n);
-	//			mObjects.push_back(tempObj);
-	//		}
-	//	}
-	//	
-
-	//	if (strcmp(line, "v") == 0) {
-	//		glm::vec3 vertex;
-	//		fscanf_s(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
-	//		tempObj->vertices.push_back(vertex);
-	//	}
-	//	else if (strcmp(line, "vn") == 0) {
-	//		glm::vec3 vertNormal;
-	//		fscanf_s(file, "%f %f %f\n", &vertNormal.x, &vertNormal.y, &vertNormal.z);
-	//		tempObj->vertNormals.push_back(vertNormal);
-	//	}
-	//	else if (strcmp(line, "vt") == 0) {
-	//		glm::vec2 vertTex;
-	//		fscanf_s(file, "%f %f %f\n", &vertTex.x, &vertTex.y);
-	//		tempObj->vertTextures.push_back(vertTex);
-	//	}
-	//	else if (strcmp(line, "f") == 0) {
-	//		unsigned int vertexIndex[3];
-	//		unsigned int vertNormIndex[3];
-	//		unsigned int vertTexIndex[3];
-
-	//		fscanf(file, "%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0], &vertTexIndex[0], &vertNormIndex[0],
-	//			&vertexIndex[1], &vertTexIndex[1], &vertNormIndex[1], &vertexIndex[2], &vertTexIndex[2], &vertNormIndex[2]);
-	//		tempIndices.push_back(vertexIndex[0]);
-	//		tempIndices.push_back(vertexIndex[1]);
-	//		tempIndices.push_back(vertexIndex[2]);
-	//		tempVertTexIndices.push_back(vertTexIndex[0]);
-	//		tempVertTexIndices.push_back(vertTexIndex[1]);
-	//		tempVertTexIndices.push_back(vertTexIndex[2]);
-	//		tempVertNormIndices.push_back(vertNormIndex[0]);
-	//		tempVertNormIndices.push_back(vertNormIndex[1]);
-	//		tempVertNormIndices.push_back(vertNormIndex[2]);
-	//	}
-	//}
-	//cout << "yo" << endl;
-	//fclose(file);
-
-	//
-
-	//// Read .MTL file
-	//string dir = string(path);
-	//string matLib = dir.substr(0, dir.find_last_of("\\")) + "\\" + mtl;
-	//char *matLibDir = new char[matLib.length() + 1];
-	//strcpy(matLibDir, matLib.c_str());
-
-	//FILE *mtlfile;
-	//errno_t mtlErr = fopen_s(&mtlfile, matLibDir, "r");
-	//if (mtlErr != 0) {
-	//	printf("Could not open file!\n");
-	//	return false;
-	//}
-
-	//vector<string> mtlNames;
-	//vector<string> mtlPaths;
-	//vector<glm::vec3> mtlKds;
-
-	//while (1) {
-	//	char line[128];
-	//	int res = fscanf(mtlfile, "%s", line);
-	//	if (res == EOF)
-	//		break;
-
-	//	if (strcmp(line, "newmtl") == 0) {
-	//		char mtlName[100];
-	//		fscanf_s(mtlfile, "%s\n", mtlName);
-	//		mtlNames.push_back(mtlName);
-	//	}
-	//	else if (strcmp(line, "Kd") == 0) {
-	//		glm::vec3 kd;
-	//		fscanf_s(mtlfile, "%f %f %f\n", &kd.x, &kd.y, &kd.z);
-	//		mtlKds.push_back(kd);
-	//	}
-	//	else if (strcmp(line, "map_Kd") == 0) {
-	//		char mtlPath[100];
-	//		fscanf_s(mtlfile, "%s\n", mtlPath);
-	//		mtlPaths.push_back(dir.substr(0, dir.find_last_of("\\")) + "\\" + mtlPath);
-	//	}
-	//}
-
-	//for (int i = 0; i < mtlNames.size(); i++) {
-	//	cout << "Name: " << mtlNames[i] << endl << "Path: " << mtlPaths[i] << endl << "Kd: " << mtlKds[i] << endl << endl;
-	//}
+	matFile.close();
 
 	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), mObjects, mMaps, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
 
@@ -495,11 +381,7 @@ bool Scene::FileLoader(const char * path) {
 	rayTracer.addObject(*meshObj);
 	rayMarcher.addObject(*meshObj);
 	bvh.create(objects);
-	
+
 	return true;
 
-	// Display diagnostic information
-	//cout << "Number of Vertices: " << meshVertices.size() << endl;
-	//cout << "Number of Faces: " << meshTris.size() << endl;
-	//cout << "Number of Vertex Normals: " << meshVerticesNormals.size() << endl;
 }

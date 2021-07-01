@@ -60,7 +60,7 @@ void RayMarcher::mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &pe
 					if (castRay(ray, color, ptest, ntest))
 						total += glm::vec3(color.r, color.g, color.b);
 					else
-						total += glm::vec3(ofColor::black.r, ofColor::black.g, ofColor::black.b);
+						total += glm::vec3(10, 10, 10);
 				}
 			}
 			total /= samples;
@@ -83,6 +83,23 @@ bool RayMarcher::castRay(Ray &r, ofColor &color, glm::vec3 &po, glm::vec3 &n, in
 	glm::vec3 normal = getNormalRM(p);
 	
 	if(hit)
+		color = shader.getColor(r, p, normal, objects[index]->objMaterial.diffuseColor, objects[index], depth);
+
+	return hit;
+}
+
+// Reflection Rays
+bool RayMarcher::castNewRay(Ray &r, ofColor &color, glm::vec3 &po, glm::vec3 &n, int depth) {
+	if (depth > 2)
+		return false;
+
+	glm::vec3 p;
+	int index;
+	bool hit = rayMarch(r, p, index);
+
+	glm::vec3 normal = getNormalRM(p);
+
+	if (hit)
 		color = shader.getColor(r, p, normal, objects[index]->objMaterial.diffuseColor, objects[index], depth);
 
 	return hit;

@@ -60,6 +60,7 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps
 
 	// Create scene mesh
 	for (MeshObject *o : mObjects) {
+		o->meshTex = nullptr;
 		for (MeshTextureMap *m : maps) {
 			if (m->name == o->mtlName) {
 				o->meshTex = m;
@@ -67,6 +68,9 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps
 					string extension = o->meshTex->path.substr(o->meshTex->path.find_last_of(".") + 1);
 					if (extension == "jpg" || extension == "png" || extension == "PNG" || extension == "tga" || extension == "TGA") {
 						o->meshTex->tex.load(o->meshTex->path);
+					}
+					else {
+						o->meshTex->hasTexture = false;
 					}
 				}
 			}
@@ -83,10 +87,10 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps
 		meshes.push_back(mesh);
 
 
-		cout << endl << "Mesh: " << o->mtlName << endl;
-		cout << "newmtl: " << o->meshTex->name << endl;
-		cout << "Kd: " << o->meshTex->kd << endl;
-		cout << "Kd_map: " << o->meshTex->path << endl;
+		//cout << endl << "Mesh: " << o->mtlName << endl;
+		//cout << "newmtl: " << o->meshTex->name << endl;
+		//cout << "Kd: " << o->meshTex->kd << endl;
+		//cout << "Kd_map: " << o->meshTex->path << endl;
 	}
 	box = new Box();
 	applyMatrix();
@@ -104,10 +108,19 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps
 			max.z = (v.z < max.z) ? v.z : max.z;
 		}
 	}
-	cout << min << ", " << max << endl;
 
 	box->setParameters(min, max);
 	setBounds();
+
+	// Display diagnostic information
+	int verts = 0;
+	int tris = 0;
+	for (MeshObject *o : mObjects) {
+		verts += o->vertices.size();
+		tris += o->tris.size();
+	}
+	cout << "Number of Vertices: " << verts << endl;
+	cout << "Number of Faces: " << tris << endl;
 }
 
 
@@ -167,7 +180,7 @@ bool Mesh::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColo
 					po = point;
 					no = normal;
 					barySelected = glm::vec2(bary.x, bary.y);
-					if(o->meshTex->hasTexture)
+					if(o->meshTex != nullptr && o->meshTex->hasTexture)
 						surfaceColor = objTexture.getMeshTextureColor(getMeshUV(point, o->vertTextures[triangle.it], o->vertTextures[triangle.jt], o->vertTextures[triangle.kt], barySelected), o->meshTex->tex);
 				}
 			}
@@ -218,7 +231,7 @@ void Mesh::draw() {
 	sceneMaterial.end();
 }
 
-// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+// sdf modified from Inigo Quilez's version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Mesh::sdf(const glm::vec3 p1) {
 	glm::vec4 pp = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 p = glm::vec3(pp.x, pp.y, pp.z);

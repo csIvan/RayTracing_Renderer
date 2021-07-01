@@ -61,7 +61,7 @@ void RayTracer::mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &per
 					if (castRay(ray, color, ptest, ntest))
 						total += glm::vec3(color.r, color.g, color.b);
 					else
-						total += glm::vec3(ofColor::black.r, ofColor::black.g, ofColor::black.b);
+						total += glm::vec3(10, 10, 10);
 				}
 			}
 			total /= samples;
@@ -102,6 +102,35 @@ bool RayTracer::castRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, in
 			}
 		}
 	}
+
+	return hit;
+}
+
+bool RayTracer::castNewRay(Ray &ray, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth) {
+	bool hit = false;
+	float dist;
+	float nearestDist = FLT_MAX;
+
+	if (depth > 2)
+		return false;
+
+	for (SceneObject *o : objects) {
+		glm::vec3 point, normal;
+		ofColor surfaceColor;
+		if (o->intersect(ray, point, normal, surfaceColor)) {
+			dist = glm::distance(ray.p, point);
+			if (dist <= nearestDist) {
+				nearestDist = dist;
+				hit = true;
+				normal = glm::normalize(normal);
+				p = point;
+				n = normal;
+
+				color = shader.getColor(ray, point, normal, surfaceColor, o, depth);
+			}
+		}
+	}
+	
 
 	return hit;
 }

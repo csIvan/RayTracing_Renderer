@@ -18,7 +18,11 @@ public:
 	virtual void mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &percent) = 0;
 	virtual bool castRay(Ray &r, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0) {
 		return false;
+	}	
+	virtual bool castNewRay(Ray &r, ofColor &color, glm::vec3 &p, glm::vec3 &n, int depth = 0) {
+		return false;
 	}
+
 	virtual ~Renderer() {};
 
 

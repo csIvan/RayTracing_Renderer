@@ -130,7 +130,8 @@ bool BVH::intersect(const Ray &ray, BVHNode *node, vector<SceneObject *> &objs, 
 		}
 
 		for (BVHNode *n : nodes) {
-			if (n->left == nullptr && n->right == nullptr && n->box->intersect(ray)) {
+			if (n->left == nullptr && n->right == nullptr && n->box->intersect(ray) ||
+				n->left == nullptr && n->right == nullptr && n->box->inside(ray.p)) {
 				objs.push_back(n->objects[0]);
 				hit = true;
 			}

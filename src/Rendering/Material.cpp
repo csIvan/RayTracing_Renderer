@@ -18,7 +18,7 @@ void Material::setMirror() {
 }
 void Material::setGlass() {
 	roughness = 0.0f;
-	refraction = 1.2f;
+	refraction = 1.3f;
 	shininess = 3000;
 	ambient = 0.0f;
 	specularCoeff = 4.0f;

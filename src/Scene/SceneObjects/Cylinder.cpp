@@ -123,7 +123,7 @@ void Cylinder::draw() {
 	sceneMaterial.end();
 }
 
-// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+// sdf modified from Inigo Quilez's version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Cylinder::sdf(const glm::vec3 p1) {
 	glm::vec4 pp = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 p = glm::vec3(pp.x, pp.y, pp.z);

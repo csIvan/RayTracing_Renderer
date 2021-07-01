@@ -88,19 +88,19 @@ void ofApp::mousePressed(int x, int y, int button) {
 	glm::vec3 d = p - theCam->getPosition();
 	glm::vec3 dn = glm::normalize(d);
 
-	for (int i = 0; i < scene.objects.size(); i++) {
+	for (SceneObject *o : scene.objects) {
 		glm::vec3 point, normal;
 		ofColor surfaceColor;
-		if (scene.objects[i]->intersect(Ray(p, dn), point, normal, surfaceColor)) {
-			hits.push_back(scene.objects[i]);
+		if (o->intersect(Ray(p, dn), point, normal, surfaceColor)) {
+			hits.push_back(o);
 		}
 	}
 
-	for (int i = 0; i < scene.lights.size(); i++) {
+	for (Light *l : scene.lights) {
 		glm::vec3 point, normal;
 		ofColor lsurfaceColor;
-		if (scene.lights[i]->intersect(Ray(p, dn), point, normal, lsurfaceColor)) {
-			hits.push_back(scene.lights[i]);
+		if (l->intersect(Ray(p, dn), point, normal, lsurfaceColor)) {
+			hits.push_back(l);
 		}
 	}
 
@@ -114,7 +114,7 @@ void ofApp::mousePressed(int x, int y, int button) {
 	if (hits.size() > 0) {
 		selectedObj = hits[0];
 		float nearestDist = FLT_MAX;
-		for (int n = 0; n < hits.size(); n++) {
+		for (int n = 1; n < hits.size(); n++) {
 			float dist = glm::length(hits[n]->position - theCam->getPosition());
 			if (dist < nearestDist) {
 				nearestDist = dist;
@@ -122,11 +122,11 @@ void ofApp::mousePressed(int x, int y, int button) {
 			}
 		}
 	}
-	for (int i = 0; i < scene.objects.size(); i++) {
-		scene.objects[i]->isSelected = false;
+	for (SceneObject *o : scene.objects) {
+		o->isSelected = false;
 	}
-	for (int i = 0; i < scene.lights.size(); i++) {
-		scene.lights[i]->isSelected = false;
+	for (Light *l : scene.lights) {
+		l->isSelected = false;
 	}
 
 	scene.renderCam.isSelected = false;
@@ -145,7 +145,8 @@ void ofApp::mousePressed(int x, int y, int button) {
 	}
 }
 
-//--------------------------------------------------------------
+
+// Shortcut Keys
 void ofApp::keyPressed(int key) {
 	switch (key) {
 	case OF_KEY_F1: theCam = &mainCam;
@@ -153,6 +154,42 @@ void ofApp::keyPressed(int key) {
 	case OF_KEY_F2: theCam = &sideCam;
 		break;
 	case OF_KEY_F3: theCam = &previewCam;
+		break;
+	case 'a': scene.addSphere();
+		break;
+	case '0': scene.addCube();
+		break;
+	case '1': scene.addPlane();
+		break;
+	case '2': scene.addCylinder();
+		break;
+	case '3': scene.addCone();
+		break;
+	case '4': scene.addTorus();
+		break;
+	case '5': scene.addMesh();
+		break;
+	case '6': scene.addLSystem();
+		break;
+	case '7': scene.addPointLight();
+		break;
+	case '8': scene.addSpotLight();
+		break;
+	case '9': scene.addAreaLight();
+		break;
+	case 's': scene.handleSaveImage();
+		break;
+	case 'd': scene.handleClearScene();
+		break;
+	case 'b': ui.toggle_bvh = !ui.toggle_bvh;
+		break;
+	case 'g': ui.toggle_grid = !ui.toggle_grid;
+		break;
+	case 'r': ui.toggle_image = !ui.toggle_image;
+		break;
+	case '.': ui.toggle_render_cam = !ui.toggle_render_cam;
+		break;
+	case 'x': scene.handleDelete();
 		break;
 	default:
 		break;

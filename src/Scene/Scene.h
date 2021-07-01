@@ -39,6 +39,7 @@ public:
 	void handleRayMarch();
 	void handleSaveImage();
 	void handleDelete();
+	void handleClearScene();
 	void handleRemoveTexture();
 	void addObject(SceneObject *s);
 	void addLight(Light *light);
@@ -85,6 +86,7 @@ public:
 	int sphereCount, cubeCount, planeCount, cylinderCount, coneCount, torusCount,
 		meshCount, lsystemCount, waterpoolCount, pointlightCount, spotlightCount, arealightCount;
 	bool renderFinished;
+	bool showBVH;
 
 	RenderThread threads[16];
 	int samples;

@@ -9,6 +9,7 @@ void UI::setup(Scene *s) {
 	button_rayMarch.addListener(scene, &Scene::handleRayMarch);
 	button_saveImage.addListener(scene, &Scene::handleSaveImage);
 	button_delete.addListener(scene, &Scene::handleDelete);
+	button_clear_scene.addListener(scene, &Scene::handleClearScene);
 	button_sphere.addListener(scene, &Scene::addSphere);
 	button_cube.addListener(scene, &Scene::addCube);
 	button_plane.addListener(scene, &Scene::addPlane);
@@ -31,6 +32,7 @@ void UI::setup(Scene *s) {
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	sceneGUI.setDefaultHeight(30);
+	sceneGUI.setDefaultWidth(230);
 	sceneGUI.loadFont("fonts/Verdana.ttf", 10);
 	sceneGUI.setup("Render");
 	sceneGUI.setBorderColor(ofColor::black);
@@ -46,35 +48,39 @@ void UI::setup(Scene *s) {
 	group_objects.setHeaderBackgroundColor(ofColor::black);
 
 	group_create.add(group_objects.setup(" Objects"));
-	group_objects.add(button_sphere.setup(" Sphere"));
-	group_objects.add(button_cube.setup(" Cube"));
-	group_objects.add(button_plane.setup(" Plane"));
-	group_objects.add(button_cylinder.setup(" Cylinder"));
-	group_objects.add(button_cone.setup(" Cone"));
-	group_objects.add(button_torus.setup(" Torus"));
-	group_objects.add(button_mesh.setup(" Mesh (.obj)"));
-	group_objects.add(button_lsystem.setup(" LSystem"));
+	group_objects.add(button_sphere.setup(" Sphere					   (a)"));
+	group_objects.add(button_cube.setup(" Cube					      (0)"));
+	group_objects.add(button_plane.setup(" Plane				  	   (1)"));
+	group_objects.add(button_cylinder.setup(" Cylinder					  (2)"));
+	group_objects.add(button_cone.setup(" Cone					      (3)"));
+	group_objects.add(button_torus.setup(" Torus					     (4)"));
+	group_objects.add(button_mesh.setup(" Mesh (.obj)				 (5)"));
+	group_objects.add(button_lsystem.setup(" LSystem				     (6)"));
 
 	group_create.add(group_lights.setup(" Lights"));;
 	group_lights.setHeaderBackgroundColor(ofColor::black);
 	group_lights.setBorderColor(ofColor(20, 20, 20));
-	group_lights.add(button_point_light.setup(" Point Light"));
-	group_lights.add(button_spot_light.setup(" Spot Light"));
-	group_lights.add(button_area_light.setup(" Area Light"));
+	group_lights.add(button_point_light.setup(" Point Light				   (7)"));
+	group_lights.add(button_spot_light.setup(" Spot Light				   (8)"));
+	group_lights.add(button_area_light.setup(" Area Light				   (9)"));
 
 	group_scene.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	group_scene.setBorderColor(ofColor(25, 25, 25));
 	sceneGUI.add(group_scene.setup("Scene"));
+	toggle_bvh.setFillColor(ofColor(0, 153, 76));
 	button_saveImage.setTextColor(ofColor(255, 192, 81));
 	toggle_image.setFillColor(ofColor(108, 176, 94));
 	toggle_grid.setFillColor(ofColor(94, 132, 176));
 	toggle_render_cam.setFillColor(ofColor(123, 60, 230));
 	button_delete.setTextColor(ofColor(255, 63, 63));
-	group_scene.add(button_saveImage.setup(" Save Image"));
-	group_scene.add(toggle_grid.setup(" Toggle Grid", true));
-	group_scene.add(toggle_render_cam.setup(" Toggle Render Cam", false));
-	group_scene.add(toggle_image.setup(" Show Render", true));
-	group_scene.add(button_delete.setup(" Delete Selected Object"));
+	button_clear_scene.setTextColor(ofColor(255, 63, 63));
+	group_scene.add(button_saveImage.setup(" Save Image			 	(s)"));
+	group_scene.add(button_clear_scene.setup(" Clear Scene				 (d)"));
+	group_scene.add(toggle_bvh.setup(" Show BVH				   (b)", true));
+	group_scene.add(toggle_grid.setup(" Show Grid			 	  (g)", true));
+	group_scene.add(toggle_image.setup(" Show Render	           (r)", true));
+	group_scene.add(toggle_render_cam.setup(" Render Cam View	     (.)", false));
+	group_scene.add(button_delete.setup(" Delete Selected Object  (x)"));
 	
 
 	objectGUI.setup("Sphere");
@@ -105,6 +111,9 @@ void UI::update() {
 	else {
 		hideGUI = true;
 	}
+
+	scene->showBVH = (bool)toggle_bvh;
+
 }
 
 void UI::draw() {
@@ -117,6 +126,8 @@ void UI::draw() {
 		}
 		objectGUI.draw();
 	}
+
+
 }
 
 void UI::drawGrid() {
@@ -197,6 +208,7 @@ void UI::updateSelected(SceneObject *s) {
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 		torusSelected->R = (float)gui_value1;
+		torusSelected->r = (float)gui_value2;
 	}
 	else if (dynamic_cast<LSystem*>(s) != nullptr) {
 		LSystem *lsystemSelected = (LSystem*)s;
@@ -221,8 +233,6 @@ void UI::updateSelected(SceneObject *s) {
 		}
 		else if (dynamic_cast<AreaLight*>(s) != nullptr) {
 			AreaLight *areaLightSelected = (AreaLight*)s;
-			areaLightSelected->height = (float)gui_value2;
-			areaLightSelected->width = (float)gui_value3;
 		}
 	}
 
@@ -267,11 +277,12 @@ void UI::updateGUI(SceneObject *s) {
 	else if (dynamic_cast<Torus*>(s) != nullptr) {
 		Torus *torusSelected = (Torus*)s;
 		objectGUI.add(gui_value1.setup("Major Radius", torusSelected->R, 0.5, 5));
+		objectGUI.add(gui_value2.setup("Minor Radius", torusSelected->r, 0.1, 5));
 	}
 	else if (dynamic_cast<LSystem*>(s) != nullptr) {
 		LSystem *lsystemSelected = (LSystem*)s;
 		objectGUI.add(gui_ivalue1.setup("Iterations", lsystemSelected->iterations, 1, 10));
-		objectGUI.add(gui_value1.setup("Angle", lsystemSelected->angle, -90, 90));
+		objectGUI.add(gui_value1.setup("Angle", lsystemSelected->angle, -180, 180));
 		objectGUI.add(gui_value2.setup("Tube Radius", lsystemSelected->tubeRadius, 0.02, 2));
 		objectGUI.add(gui_value3.setup("Tube Height", lsystemSelected->tubeHeight, 0.1, 2));
 		objectGUI.add(gui_axiom.setup("Axiom", lsystemSelected->axiom));
@@ -291,18 +302,16 @@ void UI::updateGUI(SceneObject *s) {
 		}
 		else if (dynamic_cast<AreaLight*>(s) != nullptr) {
 			AreaLight *areaLightSelected = (AreaLight*)s;
-			objectGUI.add(gui_value2.setup("Height", areaLightSelected->height, 0.5, 10));
-			objectGUI.add(gui_value3.setup("Width", areaLightSelected->width, 0.5, 10));
 		}
 	}
 
 
-	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-5, -5, -5), glm::vec3(10, 10, 10)));
+	objectGUI.add(slider_location.setup("Location", s->position, glm::vec3(-20, -20, -20), glm::vec3(20, 20, 20)));
 	group_rotation.setBorderColor(ofColor(25, 25, 25));
 	objectGUI.add(group_rotation.setup("Rotation"));
-	group_rotation.add(gui_angleX.setup("Angle X", s->rotation.x, -90, 90));
-	group_rotation.add(gui_angleY.setup("Angle Y", s->rotation.y, -90, 90));
-	group_rotation.add(gui_angleZ.setup("Angle Z", s->rotation.z, -90, 90));
+	group_rotation.add(gui_angleX.setup("Angle X", s->rotation.x, -180, 180));
+	group_rotation.add(gui_angleY.setup("Angle Y", s->rotation.y, -180, 180));
+	group_rotation.add(gui_angleZ.setup("Angle Z", s->rotation.z, -180, 180));
 	slider_scale.setBorderColor(ofColor(25, 25, 25));
 	slider_location.setBorderColor(ofColor(25, 25, 25));
 

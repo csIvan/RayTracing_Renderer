@@ -76,34 +76,6 @@ bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofCol
 
 
 	return true;
-	//glm::vec3 rdd, roo;
-	//glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
-	//glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
-	//roo = glm::vec4(p.x, p.y, p.z, 1.0);
-	//rdd = glm::normalize(p1 - p);
-	//Ray r = Ray(roo, rdd);
-
-	//float dist1, dist2;
-	//bool insidePlane = false;
-	//bool hit = false;
-	//float d = glm::dot(rdd, this->normal);
-	//if (glm::abs(d) > -0.001f) {
-	//	float t = glm::dot(-roo, this->normal) / d;
-	//	point = r.evalPoint(t);
-	//	normal = this->normal;
-	//	if(t >= 0)
-	//		hit = true;
-	//}
-
-	//surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
-	//normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
-	////glm::vec2 xRange = glm::vec2(position.x - width / 2, position.x + width / 2);
-	////glm::vec2 zRange = glm::vec2(position.z - height / 2, position.z + height / 2);
-	////if (hit && point.x < xRange[1] && point.x > xRange[0] && point.z < zRange[1] && point.z > zRange[0]) {
-	////	insidePlane = true;
-	////}
-	//point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
-	//return hit;
 }
 
 void Plane::draw() {
@@ -144,7 +116,7 @@ void Plane::draw() {
 	sceneMaterial.end();
 }
 
-// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+// sdf modified from Inigo Quilez's version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Plane::sdf(const glm::vec3 p1) {
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	return p.y;

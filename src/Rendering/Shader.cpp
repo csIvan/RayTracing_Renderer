@@ -81,6 +81,7 @@ ofColor Shader::lambert(const glm::vec3 &point, const glm::vec3 &normal, const o
 
 ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal, const ofColor &surfaceColor, SceneObject* obj, int depth) {
 	ofColor kd = surfaceColor;
+
 	ofColor ks = obj->objMaterial.specularColor;
 	float roughness = obj->objMaterial.roughness;
 	float ambientCo = obj->objMaterial.ambient;
@@ -150,15 +151,15 @@ ofColor Shader::phong(Ray &ray, const glm::vec3 &point, const glm::vec3 &normal,
 
 	if (kr < 1) {
 		glm::vec3 refractHit, refractNor;
-		if (renderer->castRay(refractRay, refractColor, refractHit, refractNor, depth + 1)) {
+		if (renderer->castNewRay(refractRay, refractColor, refractHit, refractNor, depth + 1)) {
 
 			Ray insideRefractRay = refract(refractHit, refractRay.d, refractNor, obj->objMaterial.refraction, true);
-			renderer->castRay(insideRefractRay, refractColor, refractHit, refractNor, depth + 1);
+			renderer->castNewRay(insideRefractRay, refractColor, refractHit, refractNor, depth + 1);
 		}
 	}
 
 	glm::vec3 refleftHit, refleftNor;
-	if (renderer->castRay(reflectRay, reflectColor, refleftHit, refleftNor, depth + 1)) {
+	if (renderer->castNewRay(reflectRay, reflectColor, refleftHit, refleftNor, depth + 1)) {
 		opoint = reflectRay.p;
 		opoint2 = refleftHit;
 		onormal = reflectRay.d;

@@ -94,7 +94,7 @@ void Cube::draw() {
 	sceneMaterial.end();
 }
 
-// sdf modified from Inigo Quilez version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+// sdf modified from Inigo Quilez's version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 float Cube::sdf(const glm::vec3 p1) {
 	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
 	glm::vec3 q = abs(p) - side;
@@ -108,19 +108,20 @@ glm::vec2 Cube::getUV(glm::vec3 p) {
 	glm::vec3 np = hit - position;
 	float u, v;
 	float eps = 0.001f;
-	if (abs((np.x / side)) >= (1.0f - eps) && abs((np.x / side)) <= (1.0f + eps)) {
-		u = (np.z + 1.0f) / 2.0f;
-		v = (np.y + 1.0f) / 2.0f;
+	if (abs((np.x)) >= (side - eps) && abs((np.x)) <= (side + eps)) {
+		u = (np.z + side) / (side * 2.0f);
+		v = (np.y + side) / (side * 2.0f);
 	} 
-	else if (abs((np.y / side)) >= (1.0f - eps) && abs((np.y / side)) <= (1.0f + eps)) {
-		u = (np.x + 1.0f) / 2.0f;
-		v = (np.z + 1.0f) / 2.0f;
+	else if (abs((np.y)) >= (side - eps) && abs((np.y)) <= (side + eps)) {
+		u = (np.x + side) / (side * 2.0f);
+		v = (np.z + side) / (side * 2.0f);
 	}
-	else if (abs((np.z / side)) >= (1.0f - eps) && abs((np.z / side)) <= (1.0f + eps)) {
-		u = (np.x + 1.0f) / 2.0f;
-		v = (np.y + 1.0f) / 2.0f;
+	else if (abs((np.z)) >= (side - eps) && abs((np.z)) <= (side + eps)) {
+		u = (np.x + side) / (side * 2.0f);
+		v = (np.y + side) / (side * 2.0f);
 	}
 
+	v = 1.0f - v;
 
-	return  glm::vec2(glm::abs(u), glm::abs(v));
+	return glm::vec2(glm::abs(u), glm::abs(v));
 }
