@@ -86,11 +86,6 @@ Mesh::Mesh(glm::vec3 p, vector<MeshObject *> objs, vector<MeshTextureMap *> maps
 		mesh->addNormals(o->vertNormals);
 		meshes.push_back(mesh);
 
-
-		//cout << endl << "Mesh: " << o->mtlName << endl;
-		//cout << "newmtl: " << o->meshTex->name << endl;
-		//cout << "Kd: " << o->meshTex->kd << endl;
-		//cout << "Kd_map: " << o->meshTex->path << endl;
 	}
 	box = new Box();
 	applyMatrix();

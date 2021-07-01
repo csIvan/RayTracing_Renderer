@@ -2,14 +2,15 @@
 
 /*************************************************************************
 * ------------------- RAY TRACING / RAY MARCHING -------------------------
-* Date Created: Fall 2020
 * Author: Ivan Hernandez
-* Description: This project adds the functionality to perform ray
-* marching on a 3D scene. It also has the sceneSDF() function that
-* calls each primitive's sdf and returns the closest distance to the
-* point. This program also has a new primitive, a torus. The torus
-* can be be rendered using the ray marching algorithm and has matrices
-* that can translate or rotate the object.
+* Description: This project allows the user to render a scene using either
+* the Ray Tracing or Ray Marching algorithm. The User Interface provides
+* several options to create and manipulate scene objects. The project has 
+* smooth shading for mesh(.obj only) objects as well as texturing for 
+* supported files(.png, .jpg, and .tga). A command console is provided to
+* show the rendering progress and information regarding specific objects,
+* such as Lsystem strings or mesh vertices. Also, shortcuts are indicated
+* next to their correspontding user interface buttons.
 ***************************************************************************/
 
 //--------------------------------------------------------------
