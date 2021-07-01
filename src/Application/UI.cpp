@@ -339,11 +339,10 @@ void UI::updateGUI(SceneObject *s) {
 			group_material.add(label_material.setup("Current Material ", selectedMaterial));
 			updateMaterial();
 		}
+		objectGUI.add(color.setup("Color", s->objMaterial.diffuseColor, ofColor(0, 0), ofColor(255, 255)));
+		color.setBorderColor(ofColor(25, 25, 25));
+		objectGUI.getGroup("Color").maximize();
 	}
-
-	objectGUI.add(color.setup("Color", s->objMaterial.diffuseColor, ofColor(0, 0), ofColor(255, 255)));
-	color.setBorderColor(ofColor(25, 25, 25));
-	objectGUI.getGroup("Color").maximize();
 
 }
 
