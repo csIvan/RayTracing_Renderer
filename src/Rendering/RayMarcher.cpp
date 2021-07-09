@@ -60,7 +60,7 @@ void RayMarcher::mtRender(glm::vec2 start, glm::vec2 dim, int samples, float &pe
 					if (castRay(ray, color, ptest, ntest))
 						total += glm::vec3(color.r, color.g, color.b);
 					else
-						total += glm::vec3(10, 10, 10);
+						total += glm::vec3(0, 0, 0);
 				}
 			}
 			total /= samples;
