@@ -189,7 +189,7 @@ void Scene::addMesh() {
 	}
 }
 void Scene::addLSystem() {
-	LSystem *ls = new LSystem(glm::vec3(0, 0, 0), 1, "F", "LSystem_" + to_string(++lsystemCount));
+	LSystem *ls = new LSystem(glm::vec3(0, 0, 0), 1, "F", "LSystem_" + to_string(++lsystemCount), ofColor::seaGreen);
 	ls->generate();
 	addObject(ls);
 }
