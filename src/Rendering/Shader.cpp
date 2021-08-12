@@ -227,6 +227,9 @@ Ray Shader::refract(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, float 
 	return Ray(refractOrigin, glm::normalize(refractDir));
 }
 
+
+// Fresnel function
+// Code from: https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel
 void Shader::fresnel(glm::vec3 point, glm::vec3 viewRay, glm::vec3 normal, float ior, float &kr) {
 	float cosi = glm::clamp(-1.0f, 1.0f, glm::dot(normal, viewRay));
 	float etai = 1;
