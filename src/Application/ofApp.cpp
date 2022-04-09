@@ -179,6 +179,8 @@ void ofApp::keyPressed(int key) {
 	case '9': scene.addAreaLight();
 		break;
 	case 's': scene.handleSaveImage();
+		break;	
+	case 'n': scene.handleRename();
 		break;
 	case 'd': scene.handleClearScene();
 		break;

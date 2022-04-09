@@ -50,4 +50,8 @@ public:
 		Rotate = (glm::eulerAngleYXZ(glm::radians(rotation.y), glm::radians(rotation.x), glm::radians(rotation.z)));
 	}
 
+	void setName(std::string newName) {
+		objName = newName;
+	}
+
 };

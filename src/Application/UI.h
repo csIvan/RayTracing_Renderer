@@ -43,10 +43,10 @@ public:
 	ofParameter<void> button_remove_texture = { " Clear Texture" };
 
 	// SceneObject Buttons
-	ofxButton button_rayTrace, button_rayMarch, button_saveImage, button_delete, 
-		button_clear_scene, button_sphere, button_cube, button_plane, button_cylinder, 
-		button_cone, button_torus, button_mesh, button_lsystem, button_point_light, 
-		button_spot_light, button_area_light;
+	ofxButton button_rayTrace, button_rayMarch, button_rename_selected, button_saveImage, 
+		button_delete, button_clear_scene, button_sphere, button_cube, button_plane, 
+		button_cylinder, button_cone, button_torus, button_mesh, button_lsystem, 
+		button_point_light, button_spot_light, button_area_light;
 
 	ofxToggle toggle_image, toggle_grid, toggle_render_cam, toggle_matte, toggle_mirror,
 		toggle_glass, toggle_reflective, toggle_bvh;

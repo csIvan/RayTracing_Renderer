@@ -98,6 +98,36 @@ void Scene::handleSaveImage() {
 	}
 }
 
+void Scene::handleRename() {
+	if (selected.size() > 0 && selected[0]->objName != "Render_Cam") {
+		string result = ofSystemTextBoxDialog("Enter New Name", "");
+
+		bool alreadyExists = false;
+		for (SceneObject* o : objects) {
+			if (o->objName == result) {
+				alreadyExists = true;
+			}
+		}
+
+		for (Light* l : lights) {
+			if (l->objName == result) {
+				alreadyExists = true;
+			}
+		}
+
+		if ((result.length() > 0 && result.length() < 20) && !alreadyExists ) {
+			cout << "Name change confirmed: " << result << endl;
+			selected[0]->setName(result);
+			
+		}
+		else {
+			cout << "Name change denied (must be unique and 1 to 20 characters long)" << endl;
+		}
+		selected.clear();
+	}
+
+}
+
 void Scene::handleDelete() {
 	for (int i = 0; i < objects.size(); i++) {
 		if (selected.size() > 0 && objects[i]->objName == selected[0]->objName) {

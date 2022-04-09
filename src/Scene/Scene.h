@@ -38,6 +38,7 @@ public:
 	void handleRayTrace();
 	void handleRayMarch();
 	void handleSaveImage();
+	void handleRename();
 	void handleDelete();
 	void handleClearScene();
 	void handleRemoveTexture();

@@ -8,6 +8,7 @@ void UI::setup(Scene *s) {
 	button_rayTrace.addListener(scene, &Scene::handleRayTrace);
 	button_rayMarch.addListener(scene, &Scene::handleRayMarch);
 	button_saveImage.addListener(scene, &Scene::handleSaveImage);
+	button_rename_selected.addListener(scene, &Scene::handleRename);
 	button_delete.addListener(scene, &Scene::handleDelete);
 	button_clear_scene.addListener(scene, &Scene::handleClearScene);
 	button_sphere.addListener(scene, &Scene::addSphere);
@@ -32,7 +33,7 @@ void UI::setup(Scene *s) {
 	// Setup Scene User Interface
 	sceneGUI.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	sceneGUI.setDefaultHeight(30);
-	sceneGUI.setDefaultWidth(230);
+	sceneGUI.setDefaultWidth(240);
 	sceneGUI.loadFont("fonts/Verdana.ttf", 10);
 	sceneGUI.setup("Render");
 	sceneGUI.setBorderColor(ofColor::black);
@@ -48,39 +49,41 @@ void UI::setup(Scene *s) {
 	group_objects.setHeaderBackgroundColor(ofColor::black);
 
 	group_create.add(group_objects.setup(" Objects"));
-	group_objects.add(button_sphere.setup(" Sphere					   (a)"));
-	group_objects.add(button_cube.setup(" Cube					      (0)"));
-	group_objects.add(button_plane.setup(" Plane				  	   (1)"));
-	group_objects.add(button_cylinder.setup(" Cylinder					  (2)"));
-	group_objects.add(button_cone.setup(" Cone					      (3)"));
-	group_objects.add(button_torus.setup(" Torus					     (4)"));
-	group_objects.add(button_mesh.setup(" Mesh (.obj)				 (5)"));
-	group_objects.add(button_lsystem.setup(" LSystem				     (6)"));
+	group_objects.add(button_sphere.setup(" Sphere					     (a)"));
+	group_objects.add(button_cube.setup(" Cube					        (0)"));
+	group_objects.add(button_plane.setup(" Plane				  	     (1)"));
+	group_objects.add(button_cylinder.setup(" Cylinder				  	  (2)"));
+	group_objects.add(button_cone.setup(" Cone					        (3)"));
+	group_objects.add(button_torus.setup(" Torus					       (4)"));
+	group_objects.add(button_mesh.setup(" Mesh (.obj)				   (5)"));
+	group_objects.add(button_lsystem.setup(" LSystem				       (6)"));
 
 	group_create.add(group_lights.setup(" Lights"));;
 	group_lights.setHeaderBackgroundColor(ofColor::black);
 	group_lights.setBorderColor(ofColor(20, 20, 20));
-	group_lights.add(button_point_light.setup(" Point Light				   (7)"));
-	group_lights.add(button_spot_light.setup(" Spot Light				   (8)"));
-	group_lights.add(button_area_light.setup(" Area Light				   (9)"));
+	group_lights.add(button_point_light.setup(" Point Light				     (7)"));
+	group_lights.add(button_spot_light.setup(" Spot Light				     (8)"));
+	group_lights.add(button_area_light.setup(" Area Light				     (9)"));
 
 	group_scene.setHeaderBackgroundColor(ofColor(50, 50, 50));
 	group_scene.setBorderColor(ofColor(25, 25, 25));
 	sceneGUI.add(group_scene.setup("Scene"));
 	toggle_bvh.setFillColor(ofColor(0, 153, 76));
+	button_rename_selected.setTextColor(ofColor(111, 169, 255));
 	button_saveImage.setTextColor(ofColor(255, 192, 81));
 	toggle_image.setFillColor(ofColor(108, 176, 94));
 	toggle_grid.setFillColor(ofColor(94, 132, 176));
 	toggle_render_cam.setFillColor(ofColor(123, 60, 230));
 	button_delete.setTextColor(ofColor(255, 63, 63));
 	button_clear_scene.setTextColor(ofColor(255, 63, 63));
-	group_scene.add(button_saveImage.setup(" Save Image			 	(s)"));
-	group_scene.add(button_clear_scene.setup(" Clear Scene				 (d)"));
-	group_scene.add(toggle_bvh.setup(" Show BVH				   (b)", true));
-	group_scene.add(toggle_grid.setup(" Show Grid			 	  (g)", true));
-	group_scene.add(toggle_image.setup(" Show Render	           (r)", true));
-	group_scene.add(toggle_render_cam.setup(" Render Cam View	     (.)", false));
-	group_scene.add(button_delete.setup(" Delete Selected Object  (x)"));
+	group_scene.add(button_rename_selected.setup(" Rename Selected Object  (n)"));
+	group_scene.add(button_saveImage.setup(" Save Image			  	 (s)"));
+	group_scene.add(button_clear_scene.setup(" Clear Scene			  	 (d)"));
+	group_scene.add(toggle_bvh.setup(" Show BVH				     (b)", true));
+	group_scene.add(toggle_grid.setup(" Show Grid			 	    (g)", true));
+	group_scene.add(toggle_image.setup(" Show Render	             (r)", true));
+	group_scene.add(toggle_render_cam.setup(" Render Cam View	       (.)", false));
+	group_scene.add(button_delete.setup(" Delete Selected Object    (x)"));
 	
 
 	objectGUI.setup("Sphere");
@@ -250,7 +253,11 @@ void UI::updateSelected(SceneObject *s) {
 // Load scene object attributes to interface
 void UI::updateGUI(SceneObject *s) {
 	objectGUI.setDefaultHeight(24);
-	objectGUI.setName("			" + s->objName);
+	string buffer = "";
+	for (int i = 0; i < (20 - (s->objName.length() / 2)); i++) {
+		buffer += " ";
+	}
+	objectGUI.setName(buffer + s->objName);
 	if (dynamic_cast<Sphere*>(s) != nullptr) {
 		Sphere *sphereSelected = (Sphere*)s;
 		objectGUI.add(gui_value1.setup("Radius", sphereSelected->radius, 0.2, 3));
