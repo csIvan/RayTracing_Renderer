@@ -1,29 +1,30 @@
 #pragma once
 
 #include "ofMain.h"
-#include "UI.h"
-#include "../Scene/Box.h"
+#include "Definitions.h"
+#include "../UI/UI.h"
+#include "../Scene/Scene.h"
 
-class ofApp : public ofBaseApp {
-
-public:
-	// OpenFrameworks scene variables
-	ofEasyCam  mainCam;
-	ofCamera  *theCam;    // set to current camera either mainCam or sideCam
-	ofCamera sideCam;
-	ofCamera previewCam;
-	ofLight lightScene;
+class ofApp : public ofBaseApp{
+private:
+	// OF scene variables
+	ofEasyCam interactiveCam;
+	ofCamera *mainCam;
+	ofCamera sideCam, previewCam;
+	ofLight light;
 	ofMaterial material;
 
-	UI ui;
-	Scene scene;
+	// Custom classes variables
+	UI *ui;
+	Scene *scene;
 
+public:
 	void setup();
 	void update();
 	void draw();
 
-	void mousePressed(int x, int y, int button);
 	void keyPressed(int key);
+	void mousePressed(int x, int y, int button);
 	void dragEvent(ofDragInfo dragInfo);
-
+		
 };

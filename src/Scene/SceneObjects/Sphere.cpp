@@ -1,90 +1,92 @@
 #include "Sphere.h"
 
-Sphere::Sphere(glm::vec3 p, float r, string name, ofColor diffuse) {
-	position = p;
-	radius = r;
+//--------------------------------------------------------------
+Sphere::Sphere(const glm::vec3 &position, float radius, const string &name, const ofColor &diffuse) {
+	this->position = position;
+	this->radius = radius;
 	objName = name;
-	objMaterial.diffuseColor = diffuse;
-	box = new Box();
-	applyMatrix();
+	objMaterial.setDiffuse(diffuse);
 	setBounds();
 }
 
+
+//--------------------------------------------------------------
 void Sphere::setBounds() {
+	applyMatrix();
 	glm::vec3 min = glm::vec3(-radius, -radius, radius);
 	glm::vec3 max = glm::vec3(radius, radius, -radius);
-	box->setParameters(min, max);
-	box->transformBox(Transform);
+	box.setParameters(min, max);
+	box.transformBox(Transform);
 }
 
-bool Sphere::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
-	glm::vec3 rdd, roo;
 
-	// Apply Transformation
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
-	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
-	roo = glm::vec4(p.x, p.y, p.z, 1.0);
-	rdd = glm::normalize(p1 - p);
-
-	bool hit = (glm::intersectRaySphere(roo, rdd, glm::vec3(0, 0, 0), radius, point, normal));
-
-	surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
-	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
-	normal = glm::normalize(getRotateMatrix() * glm::vec4(normal.x, normal.y, normal.z, 1.0));
-	return hit;
-}
-
+//--------------------------------------------------------------
 void Sphere::draw() {
-	//applyMatrix();
-	ofDisableLighting();
-	//for (int i = 0; i < points.size(); i++) {
-	//	//ofSetColor(ofColor::red);
-	//	//ofDrawSphere(points[i], 0.025);		
-	//	ofSetColor(ofColor::blue);
-	//	ofDrawSphere(points2[i], 0.025);
-	//	ofSetColor(ofColor::yellow);
-	//	ofDrawLine(points[i], normals[i]);
-	//	//cout << points2.size() << points2[i] << endl;
-	//}
+	applyMatrix();
 
-
-	ofEnableLighting();
+	// check if object is selected
 	if (isSelected) {
 		ofDisableLighting();
-		ofSetColor(ofColor::yellow);
+		glLineWidth(0.1f);
+
+		// Draw selection outline
+		ofSetColor(SELECTED_COLOR);
 		ofNoFill();
 		ofPushMatrix();
-			ofMultMatrix(Transform);
-			ofDrawAxis(radius * 1.5);
-			ofDrawSphere(ofVec3f::zero(), radius);
+		ofMultMatrix(Transform);
+		ofDrawAxis(radius * 1.5f);
+		ofDrawSphere(ZERO_VECTOR, radius);
 		ofPopMatrix();
 		ofFill();
+
+		glLineWidth(1.0f);
 		ofEnableLighting();
 	}
+
+	// Draw 3D solid sphere
 	ofSetColor(ofColor::white);
 	sceneMaterial.begin();
-	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
+	sceneMaterial.setDiffuseColor(objMaterial.getDiffuse());
 	ofPushMatrix();
-		ofMultMatrix(Transform);
-		ofDrawSphere(ofVec3f::zero(), radius);
+	ofMultMatrix(Transform);
+	ofDrawSphere(ZERO_VECTOR, radius);
 	ofPopMatrix();
 	sceneMaterial.end();
 }
 
-// sdf modified from Inigo Quilez's version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
-float Sphere::sdf(glm::vec3 p1) {
-	glm::vec3 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
-	float distance = glm::distance(p, glm::vec3(0, 0, 0)) - radius;
+
+//--------------------------------------------------------------
+bool Sphere::intersect(const Ray &ray, HitInfo &hitInfo) {
+	// Apply Transformation
+	glm::vec3 rayOriginLocal = glm::inverse(Transform) * glm::vec4(ray.p, 1.0f);
+	glm::vec3 rayDirLocal = glm::inverse(Transform) * glm::vec4(ray.d, 0.0f);
+
+	glm::vec3 point, normal;
+	hitInfo.hit = glm::intersectRaySphere(rayOriginLocal, glm::normalize(rayDirLocal), ZERO_VECTOR, radius, point, normal);
+
+	hitInfo.surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.getDiffuse());
+	hitInfo.point = Transform * glm::vec4(point, 1.0f);
+	hitInfo.normal = glm::normalize(getRotateMatrix() * glm::vec4(normal, 0.0f));
+	return hitInfo.hit;
+}
+
+
+//--------------------------------------------------------------
+// Sphere Signed Distance Function modified from Inigo Quilez's version 
+// Source: https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+float Sphere::sdf(const glm::vec3 &point) {
+	glm::vec3 pointLocal = glm::inverse(Transform) * glm::vec4(point, 1.0f);
+	float distance = glm::distance(pointLocal, ZERO_VECTOR) - radius;
 	return distance;
 }
 
-glm::vec2 Sphere::getUV(glm::vec3 p) {
-	glm::vec4 pp = getTranslateMatrix() * glm::vec4(p.x, p.y, p.z, 1.0);
-	glm::vec3 hit = glm::vec4(pp.x, pp.y, pp.z, 1.0);
 
-	glm::vec3 n = glm::normalize(hit - position);
-	float u = 0.5f + (atan2(n.x, n.z) / (2 * PI));
-	float v = 0.5f - (asin(n.y) / PI);
+//--------------------------------------------------------------
+glm::vec2 Sphere::getUV(const glm::vec3 &point) const {
+	glm::vec3 hitPoint = getTranslateMatrix() * glm::vec4(point, 1.0f);
+	glm::vec3 normal = glm::normalize(hitPoint - position);
+	float u = 0.5f + (atan2(normal.x, normal.z) / (2 * PI));
+	float v = 0.5f - (asin(normal.y) / PI);
 
-	return  glm::vec2(u, v);
+	return glm::vec2(u, v);
 }

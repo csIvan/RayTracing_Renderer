@@ -2,54 +2,66 @@
 
 #include "ofMain.h"
 #include "../../SceneObject.h"
+#include "../../../Application/Definitions.h"
 
-//Point Light class with an intensity variable
+// Base Light class that functions as a point light
 class Light : public SceneObject {
-public:
-	float intensity = 6;
-	float radius = 0.1;
+protected:
+	float intensity = 6.5f;
+	float radius = 0.1f;
 
-	Light(glm::vec3 p, float i, string name) {
+public:
+
+	Light(const glm::vec3 &p, float i, const string &name) {
 		position = p;
 		intensity = i;
 		objName = name;
 	}
-
-	Light() {}
 	~Light() {};
 
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
-		return (glm::intersectRaySphere(ray.p, ray.d, position, radius, point, normal));
+	bool intersect(const Ray &ray, HitInfo &hitInfo) {
+		return (glm::intersectRaySphere(ray.p, ray.d, position, radius, hitInfo.point, hitInfo.normal));
 	}
 
 	void draw() {
 		applyMatrix();
 		if (isSelected) {
-			ofSetColor(ofColor::yellow);
-			ofNoFill();
+			glLineWidth(0.1f);
+
+			ofSetColor(SELECTED_COLOR);
 			ofPushMatrix();
-				ofMultMatrix(Transform);
-				ofDrawAxis(radius * 1.5);;
-				ofDrawSphere(ofVec3f::zero(), radius);
+			ofMultMatrix(Transform);
+			ofDrawAxis(radius * 1.5f);
+			ofDrawSphere(ZERO_VECTOR, radius);
 			ofPopMatrix();
-			ofFill();
+
+			glLineWidth(1.0f);
 		}
+
 		ofSetColor(ofColor::cyan);
 		ofPushMatrix();
-			ofMultMatrix(Transform);
-			ofDrawSphere(ofVec3f::zero(), radius);
+		ofMultMatrix(Transform);
+		ofDrawSphere(ZERO_VECTOR, radius);
 		ofPopMatrix();
-	};
-
-	glm::vec3 getLightDir(glm::vec3 pos, glm::vec3 hit) {
-		return (pos - hit);
 	}
 
-	double  getLightDist(glm::vec3 pos, glm::vec3 hit) {
-		return glm::length(hit - pos);
+	// Get the direction from hit point to light position
+	virtual glm::vec3 getLightDirection(const glm::vec3 &hit) const {
+		return glm::normalize(position - hit);
 	}
 
-	double  getLightIntensity(float i, double dist) {
-		return i / glm::pow(dist, 2);
+	// Get the distance between the hit point and the light position
+	virtual double getDistance(const glm::vec3 &hit) const {
+		return glm::distance(position, hit);
 	}
+
+	// Calculate the intensity with dropoff for the light
+	virtual double getIntensity(double dist) {
+		return intensity / glm::max((dist * dist), 1.0);
+	}
+
+	// Setters and Getters
+	void setIntensity(float intensity) { this->intensity = intensity; }
+	float getIntensity() const { return intensity; }
+
 };

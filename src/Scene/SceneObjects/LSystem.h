@@ -1,45 +1,71 @@
 #pragma once
 
-#include "ofMain.h"
 #include "../SceneObject.h"
 #include "Cylinder.h"
 #include "Sphere.h"
 
-class Rule {
-public:
-	char a;
-	string b;
+struct Rule {
+	char symbol;
+	string sequence;
 	//F[+F[+FX]+FX]+F[+FX]+FX
 };
 
-//************************************ LSystem Class **************************************
+// 3D LSystem scene object class
 class LSystem : public SceneObject {
-public:
-	string axiom, sentence;
-	Rule rule1, rule2, rule3;
+private:
+	string axiom;
+	string sentence;
+	Rule rule1;
+	Rule rule2;
+	Rule rule3;
 	vector<Rule> rules;
-	int iterations;
+	int iterations = 1;
 	float angle = 22.5f;
 	float tubeRadius = 0.2f;
 	float tubeHeight = 0.5f;
-	vector<glm::vec3> points;
-	vector<glm::vec3> normals;
-	vector<Box *> boxes;
-	vector<SceneObject *> objs;
 
-	vector<float> xVec, yVec, zVec, turnAngVec, pitchAngVec, rollAngVec;
-	vector<glm::mat4> mats, jmats;
+	vector<SceneObject *> geometryObjects;
 
-	void setBounds();
-	LSystem(glm::vec3 p, int n, string ax, string name, ofColor diffuse = ofColor::lightGray);
-	LSystem() {};
+public:
+	LSystem(const glm::vec3 &position, int iterations, const string &axiom, const string &name, const ofColor &diffuse = DEFAULT_COLOR);
 	~LSystem() {};
 
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
+
+	// Override functions from SceneObject
+	void setBounds();
 	void draw();
+	bool intersect(const Ray &ray, HitInfo &hitInfo);
+	float sdf(const glm::vec3 &point);
+
+	
+	// Custom draw function for Lsystem
 	void drawLSystem();
 
+
+	// Generate full Lsystem grammar string
 	void generate();
+
+
+	// Build LSystem shape based on full sentence string
 	void build();
-	float sdf(glm::vec3 p);
+
+
+	// Setter and Getters
+	void setIterations(int iterations) { this->iterations = iterations; }
+	void setAngle(float angle) { this->angle = angle; }
+	void setTubeRadius(float tubeRadius) { this->tubeRadius = tubeRadius; }
+	void setTubeHeight(float tubeHeight) { this->tubeHeight = tubeHeight; }
+	void setAxiom(string axiom) { this->axiom = axiom; }
+	void setRule1(string rule) { rule1.sequence = rule; }
+	void setRule2(string rule) { rule2.sequence = rule; }
+	void setRule3(string rule) { rule3.sequence = rule; }
+	int getIterations() const { return iterations; }
+	float getAngle() const { return angle; }
+	float getTubeRadius() const { return tubeRadius; }
+	float getTubeHeight() const { return tubeHeight; }
+	string getAxiom() const { return axiom; }
+	string getSentence() const { return sentence; }
+	string getRule1() const { return rule1.sequence; }
+	string getRule2() const { return rule2.sequence; }
+	string getRule3() const { return rule3.sequence; }
 };

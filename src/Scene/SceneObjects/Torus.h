@@ -1,30 +1,38 @@
 #pragma once
 
-#include "ofMain.h"
 #include "../../Math/poly34.h"
 #include "../SceneObject.h"
 
-//************************************** Torus Class *********************************
+// 3D Torus scene object class
 class Torus : public SceneObject {
-public:
-	float R;	// Larger radius; from center of torus to center of tube
-	float r;	// Smaller radius; radius of tube
+private:
+	float radius = 0.5f;
+	float majorRadius = 1.0f;
 
-	vector<glm::vec3> points;
-	vector<glm::vec3> normals;
-	bool debugMode = false;
-
+	// OF draw strips
 	int numc = 20;
 	int numt = 35;
 
-	Torus(glm::vec3 p, float r1, float r2, string name, ofColor diffuse = ofColor::azure);
-	Torus() {};
+public:
+	Torus(const glm::vec3 &position, float radius, float majorRadius, const string &name, const ofColor &diffuse = DEFAULT_COLOR);
 	~Torus() {};
 
+
+	// Override functions from SceneObject
 	void setBounds();
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
 	void draw();
+	bool intersect(const Ray &ray, HitInfo &hitInfo);
+	float sdf(const glm::vec3 &point);
+	glm::vec2 getUV(const glm::vec3 &point) const;
+
+
+	// Custom draw function for 3D torus
 	void drawTorus();
-	float sdf(glm::vec3 p1);
-	glm::vec2 getUV(glm::vec3 p);
+
+
+	// Setter and Getters
+	void setRadius(float radius) { this->radius = radius; }
+	void setMajorRadius(float majorRadius) { this->majorRadius = majorRadius; }
+	float getRadius() const { return radius; }
+	float getMajorRadius() const { return majorRadius; }
 };

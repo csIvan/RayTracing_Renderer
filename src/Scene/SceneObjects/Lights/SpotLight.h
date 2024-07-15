@@ -1,23 +1,31 @@
 #pragma once
 
-#include "ofMain.h"
 #include "Light.h"
 
-/** 
- * Spotlight class. Inherits from Light and has variables for angles that constraint
- * the light into a cone with some falloff light to provide smoother edges.
- **/
+// Spot Light scene object class
 class SpotLight : public Light {
-public:
+private:
 	glm::vec3 direction;
+	float heightRef = 6.0f;
 	float totalWidth;
 	float falloffStart;
-	float heightRef = 6.0f;
 
-	SpotLight(glm::vec3 p, glm::vec3 d, float angle, float foAngle, string name);
-	SpotLight() {};
+public:
+	SpotLight(const glm::vec3 &position, const glm::vec3 &direction, float intensity, float angle, float foAngle, const string &name);
 	~SpotLight() {};
 
+	// Draw spotlight cone 
 	void draw();
+
+	// Calculate the light depending on the constraint angle and falloff angle
 	float falloff(float spotAngle);
+
+	// Setters and Getters
+	void setHeightRef(float heightRef) { this->heightRef = heightRef; }
+	void setTotalWidth(float totalWidth) { this->totalWidth = totalWidth; }
+	void setFalloff(float falloffStart) { this->falloffStart = falloffStart; }
+	float getHeightRef() const { return heightRef; }
+	float getTotalWidth() const { return totalWidth; }
+	float getFalloff() const { return falloffStart; }
+	glm::vec3 getDirection() const { return direction; }
 };

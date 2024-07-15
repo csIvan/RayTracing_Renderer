@@ -1,216 +1,212 @@
 #include "ofApp.h"
 
 /*************************************************************************
-* ------------------- RAY TRACING / RAY MARCHING -------------------------
+* ------------------- 3D MODELING AND RENDERING -------------------------
 * Author: Ivan Hernandez
 * Description: This project allows the user to render a scene using either
 * the Ray Tracing or Ray Marching algorithm. The User Interface provides
-* several options to create and manipulate scene objects. The project has 
-* smooth shading for mesh(.obj only) objects as well as texturing for 
+* several options to create and manipulate scene objects. The project has
+* smooth shading for mesh(.obj only) objects as well as texturing for
 * supported files(.png, .jpg, and .tga). A command console is provided to
 * show the rendering progress and information regarding specific objects,
 * such as Lsystem strings or mesh vertices. Also, shortcuts are indicated
 * next to their correspontding user interface buttons.
 ***************************************************************************/
 
+
 //--------------------------------------------------------------
-void ofApp::setup() {
-	ofSetBackgroundColor(ofColor(30, 30, 30));
-	theCam = &mainCam;
-	mainCam.setDistance(12);
-	mainCam.setNearClip(.1);
+void ofApp::setup(){
+	// Camera Setup
+	mainCam = &interactiveCam;
+	interactiveCam.setTarget(ZERO_VECTOR);
+	interactiveCam.setDistance(12);
+	interactiveCam.setNearClip(NEAR_CLIP);
 	sideCam.setPosition(glm::vec3(5, 0, 0));
-	sideCam.lookAt(glm::vec3(0, 0, 0));
-	sideCam.setNearClip(.1);
-	previewCam.setNearClip(.1);
-	ofSetSmoothLighting(true);
+	sideCam.lookAt(ZERO_VECTOR);
+	sideCam.setNearClip(NEAR_CLIP);
+	previewCam.setNearClip(NEAR_CLIP);
 
-	lightScene.enable();
-	lightScene.setDiffuseColor(ofColor(255.f, 255.f, 255.f));
-	lightScene.setSpecularColor(ofColor(255.f, 255.f, 255.f));
+	// Lighting Setup
+	ofSetBackgroundColor(ofColor(30, 30, 30));
+	light.enable();
+	light.setDiffuseColor(ofColor(255.0f, 255.0f, 255.0f));
+	light.setSpecularColor(ofColor(255.0f, 255.0f, 255.0f));
 
-	ui.setup(&scene);
-	scene.setup();
+	// create reasonable 3x2 aspect for the RenderCam view plane
+	RenderCam renderCam(glm::vec2(-1.5, -1), glm::vec2(1.5, 1), glm::vec3(0, 0, -3.5), glm::vec3(0, 0, 12));
+	scene = new Scene(renderCam);
+	scene->setup();
+
+	ui = new UI(scene);
+	ui->setup();
 
 }
 
 //--------------------------------------------------------------
-void ofApp::update() {
-	previewCam.setPosition(scene.renderCam.position);
-	previewCam.setOrientation(scene.renderCam.getRotateMatrix());
-	ui.update();
-
-	lightScene.setGlobalPosition(theCam->getPosition());
-	if (scene.selected.size() > 0) {
-		mainCam.setControlArea(ofRectangle(ui.sceneGUI.getWidth(), 0, ofGetWidth() - ui.sceneGUI.getWidth() - ui.objectGUI.getWidth(), ofGetHeight()));
-	}
-	else {
-		mainCam.setControlArea(ofRectangle(ui.sceneGUI.getWidth(), 0, ofGetWidth() - ui.sceneGUI.getWidth(), ofGetHeight()));
-	}
+void ofApp::update(){
+	previewCam.setPosition(scene->getRenderCam()->getPosition());
+	previewCam.setOrientation(scene->getRenderCam()->getRotateMatrix());
+	ui->update();
+	light.setGlobalPosition(mainCam->getPosition());
 }
 
 //--------------------------------------------------------------
-void ofApp::draw() {
+void ofApp::draw(){
 	ofEnableDepthTest();
-
-	theCam = ((bool)ui.toggle_render_cam) ? &previewCam : &mainCam;
-	theCam->begin();
-
-	if ((bool)ui.toggle_image && scene.renderFinished) {
-		ofPushMatrix();
-			ofMultMatrix(scene.renderCam.Transform);
-			scene.image.draw(glm::vec3(scene.renderCam.view.bottomLeft()), scene.renderCam.view.width(), scene.renderCam.view.height());
-		ofPopMatrix();
-	}
-
-	ui.drawGrid();
+	mainCam = (ui->getToggleRenderCam()) ? &previewCam : &interactiveCam;
+	mainCam->begin();
+	ui->drawGrid();
 
 	ofEnableLighting();
 	material.begin();
 	ofFill();
 	ofSetColor(ofColor::white);
-	
-	scene.draw();
 
-	theCam->end();
+	// Draw 3D Scene objects
+	scene->draw();
+
+	mainCam->end();
+	ofDisableLighting();
 	ofDisableDepthTest();
 
-	ui.draw();
+	// Draw UI elements
+	ui->draw();
 }
 
 //--------------------------------------------------------------
-void ofApp::mousePressed(int x, int y, int button) {
-	scene.selected.clear();
-	ui.objectGUI.clear();
-
-	vector<SceneObject *> hits;
-
-	glm::vec3 p = theCam->screenToWorld(glm::vec3(x, y, 0));
-	glm::vec3 d = p - theCam->getPosition();
-	glm::vec3 dn = glm::normalize(d);
-
-	for (SceneObject *o : scene.objects) {
-		glm::vec3 point, normal;
-		ofColor surfaceColor;
-		if (o->intersect(Ray(p, dn), point, normal, surfaceColor)) {
-			hits.push_back(o);
-		}
-	}
-
-	for (Light *l : scene.lights) {
-		glm::vec3 point, normal;
-		ofColor lsurfaceColor;
-		if (l->intersect(Ray(p, dn), point, normal, lsurfaceColor)) {
-			hits.push_back(l);
-		}
-	}
-
-	glm::vec3 tempPoint, tempNormal;
-	ofColor rsurfaceColor;
-	if (scene.renderCam.intersect(Ray(p, dn), tempPoint, tempNormal, rsurfaceColor)) {
-		hits.push_back(&(scene.renderCam));
-	}
-
-	SceneObject *selectedObj = NULL;
-	if (hits.size() > 0) {
-		selectedObj = hits[0];
-		float nearestDist = FLT_MAX;
-		for (int n = 1; n < hits.size(); n++) {
-			float dist = glm::length(hits[n]->position - theCam->getPosition());
-			if (dist < nearestDist) {
-				nearestDist = dist;
-				selectedObj = hits[n];
-			}
-		}
-	}
-	for (SceneObject *o : scene.objects) {
-		o->isSelected = false;
-	}
-	for (Light *l : scene.lights) {
-		l->isSelected = false;
-	}
-
-	scene.renderCam.isSelected = false;
-
-	if (selectedObj) {
-		selectedObj->isSelected = true;
-		ui.selectedMaterial = selectedObj->objMaterial.toString();
-		scene.selected.push_back(selectedObj);
-		ui.hideGUI = false;
-		ui.updateGUI(selectedObj);
-	}
-	else {	
-		scene.selected.clear();
-		ui.objectGUI.clear();
-		ui.hideGUI = true;
-	}
-}
-
-
 // Shortcut Keys
 void ofApp::keyPressed(int key) {
 	switch (key) {
-	case OF_KEY_F1: theCam = &mainCam;
+	case OF_KEY_F1: mainCam = &interactiveCam;
 		break;
-	case OF_KEY_F2: theCam = &sideCam;
+	case OF_KEY_F2: mainCam = &sideCam;
 		break;
-	case OF_KEY_F3: theCam = &previewCam;
+	case OF_KEY_F3: mainCam = &previewCam;
 		break;
-	case 'a': scene.addSphere();
+	case 'a': scene->AddSphere();
 		break;
-	case '0': scene.addCube();
+	case '0': scene->AddCube();
 		break;
-	case '1': scene.addPlane();
+	case '1': scene->AddPlane();
 		break;
-	case '2': scene.addCylinder();
+	case '2': scene->AddCylinder();
 		break;
-	case '3': scene.addCone();
+	case '3': scene->AddCone();
 		break;
-	case '4': scene.addTorus();
+	case '4': scene->AddTorus();
 		break;
-	case '5': scene.addMesh();
+	case '5': scene->AddLSystem();
 		break;
-	case '6': scene.addLSystem();
+	case '6': scene->AddMesh();
 		break;
-	case '7': scene.addPointLight();
+	case '7': scene->AddPointLight();
 		break;
-	case '8': scene.addSpotLight();
+	case '8': scene->AddSpotLight();
 		break;
-	case '9': scene.addAreaLight();
+	case '9': scene->AddAreaLight();
 		break;
-	case 's': scene.handleSaveImage();
+	case 's': scene->HandleSaveImage();
 		break;	
-	case 'n': scene.handleRename();
+	case 'n': scene->HandleRename();
 		break;
-	case 'd': scene.handleClearScene();
+	case 'd': scene->HandleClearScene();
 		break;
-	case 'b': ui.toggle_bvh = !ui.toggle_bvh;
+	case 'x': scene->HandleDelete();
 		break;
-	case 'g': ui.toggle_grid = !ui.toggle_grid;
+	case 'b': ui->toggleBVH();
 		break;
-	case 'r': ui.toggle_image = !ui.toggle_image;
+	case 'g': ui->toggleGrid();
 		break;
-	case '.': ui.toggle_render_cam = !ui.toggle_render_cam;
+	case 'r': ui->toggleImage();
 		break;
-	case 'x': scene.handleDelete();
+	case '.': ui->toggleRenderView();
 		break;
 	default:
 		break;
 	}
 }
 
-// Allows the user to drag in a .obj file into the scene
-void ofApp::dragEvent(ofDragInfo dragInfo) {
+//--------------------------------------------------------------
+void ofApp::mousePressed(int x, int y, int button){
+	ui->mousePressed(x, y, button);
+
+	bool hit = false;
+	SceneObject *currentSelected = scene->getObjectSelected();
+
+	glm::vec3 rayOrigin = mainCam->screenToWorld(glm::vec3(x, y, 0));
+	glm::vec3 rayDir = glm::normalize(rayOrigin - mainCam->getPosition());
+	Ray mouseRay = Ray(rayOrigin, rayDir);
+
+
+
+	// Get nearest selected object
+	float nearestDist = FLT_MAX;
+	SceneObject *newSelected = nullptr;
+	for (SceneObject *object : scene->getObjects()) {
+		HitInfo hitInfo;
+		if (object->intersect(mouseRay, hitInfo)) {
+			float dist = glm::distance(mouseRay.p, hitInfo.point);
+			if (dist < nearestDist) {
+				nearestDist = dist;
+				newSelected = object;
+			}
+		}
+	}
+
+	for (Light *light : scene->getLights()) {
+		HitInfo hitInfo;
+		if (light->intersect(mouseRay, hitInfo)) {
+			float dist = glm::distance(mouseRay.p, hitInfo.point);
+			if (dist < nearestDist) {
+				nearestDist = dist;
+				newSelected = light;
+			}
+		}
+	}
+
+	HitInfo camHitInfo;
+	if (scene->getRenderCam()->intersect(mouseRay, camHitInfo)) {
+		float dist = glm::distance(mouseRay.p, camHitInfo.point);
+		if (dist < nearestDist) {
+			nearestDist = dist;
+			newSelected = scene->getRenderCam();
+		}
+	}
+
+
+	if (newSelected) {
+		if (currentSelected != newSelected) {
+			if (currentSelected != nullptr) {
+				currentSelected->setSelected(false);
+			}
+			scene->setObjectSelected(newSelected);
+			scene->getObjectSelected()->setSelected(true);
+			ui->updateGUI(scene->getObjectSelected());
+		}
+	}
+	else {
+		if (scene->getObjectSelected() != nullptr) {
+			scene->getObjectSelected()->setSelected(false);
+			scene->setObjectSelected(nullptr);
+			ui->updateGUI(nullptr);
+		}
+	}
+
+
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo dragInfo){ 
 	if (dragInfo.files.size() > 1) {
 		dragInfo.files.clear();
 	}
 
 	for (int i = 0; i < dragInfo.files.size(); i++) {
 		string dir = dragInfo.files[i];
-		char * file = new char[dir.length() + 1];
+		char *file = new char[dir.length() + 1];
 		strcpy(file, dir.c_str());
 
-		scene.FileLoader(file);
-		cout << "files = " << dragInfo.files[i] << endl;
+		scene->OBJFileLoader(file);
+		cout << "Files = " << dragInfo.files[i] << endl;
 	}
 }

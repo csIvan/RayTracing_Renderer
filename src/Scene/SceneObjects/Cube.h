@@ -1,20 +1,26 @@
 #pragma once
 
-#include "ofMain.h"
 #include "../SceneObject.h"
 
-//************************************ Cube Class ***************************************
+// 3D Cube scene object class
 class Cube : public SceneObject {
-public:
+private:
 	float side = 1.0f;
 
-	Cube(glm::vec3 p, float s, string name, ofColor diffuse = ofColor::lightGray);
-	Cube() {};
+public:
+	Cube(const glm::vec3 &position, float side, const string &name, const ofColor &diffuse = DEFAULT_COLOR);
 	~Cube() {};
 
+	// Override functions from SceneObject
 	void setBounds();
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
 	void draw();
-	float sdf(const glm::vec3 p);
-	glm::vec2 getUV(glm::vec3 p);
+	bool intersect(const Ray &ray, HitInfo &hitInfo);
+	float sdf(const glm::vec3 &point);
+	glm::vec2 getUV(const glm::vec3 &point) const;
+
+
+	// Setter and Getters
+	void setSide(float side) { this->side = side; }
+	float getSide() const { return side; }
 };
+

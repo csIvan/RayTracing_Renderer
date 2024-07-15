@@ -1,138 +1,123 @@
 #include "Plane.h"
 
-Plane::Plane() {
-	normal = glm::vec3(0, 1, 0);
-	plane.rotateDeg(90, 1, 0, 0);
-	setBounds();
-}
-
-Plane::Plane(glm::vec3 p, glm::vec3 n, string name, ofColor diffuse, float w, float h) {
-	position = p;
-	normal = n;
-	width = w;
-	height = h;
+//--------------------------------------------------------------
+Plane::Plane(const glm::vec3 &position, const glm::vec3 &normal, const string &name, float width, float height, const ofColor &diffuse) {
+	this->position = position;
+	this->normal = normal;
+	this->width = width;
+	this->height = height;
 	objName = name;
-	objMaterial.diffuseColor = diffuse;
-	if (normal == glm::vec3(0, 1, 0)) {
-		plane.rotateDeg(90, 1, 0, 0);
-	}
-	box = new Box();
-	applyMatrix();
+	objMaterial.setDiffuse(diffuse);
 	setBounds();
+
 }
 
+//--------------------------------------------------------------
 void Plane::setBounds() {
-	min = glm::vec4(-width/2, 0, height/2, 1.0);
-	max = glm::vec4(width/2, 0, -height/2, 1.0);
-	box->setParameters(min, max);
-	box->transformBox(Transform);
+	applyMatrix();
+	min = glm::vec4(-width / 2, 0.0f, height / 2, 1.0f);
+	max = glm::vec4(width / 2, 0.0f, -height / 2, 1.0f);
+	box.setParameters(min, max);
+	box.transformBox(Transform);
 }
 
-// Similar to the cube intersect function
-bool Plane::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
-	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
 
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
-	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
-	roo = glm::vec4(p.x, p.y, p.z, 1.0);
-	rdd = glm::normalize(p1 - p);
-	Ray r = Ray(roo, rdd);
-
-
-	// Calculate intersection
-	invdir = 1.0f / rdd;
-	sign = glm::vec3((rdd.x < 0.0) ? 1.0 : -1.0, (rdd.y < 0.0) ? 1.0 : -1.0, (rdd.z < 0.0) ? 1.0 : -1.0);
-	t = sign * glm::vec3(glm::abs(max.x - min.x) / 2, glm::abs(max.y - min.y) / 2, glm::abs(max.z - min.z) / 2);
-
-	tMinV = glm::vec3(-roo.x + t.x, -roo.y + t.y, -roo.z + t.z);
-	tMaxV = glm::vec3(-roo.x - t.x, -roo.y - t.y, -roo.z - t.z);
-	tMin = invdir * tMinV;
-	tMax = invdir * tMaxV;
-
-	// Calculate entering and exiting points
-	float tN = glm::max(glm::max(tMin.x, tMin.y), tMin.z);
-	float tF = glm::min(glm::min(tMax.x, tMax.y), tMax.z);
-
-	// Cube distance
-	glm::vec3 d = abs(roo) - glm::vec3(glm::abs(max.x - min.x) / 2, glm::abs(max.y - min.y) / 2, glm::abs(max.z - min.z) / 2);
-	float cubeDist = MIN(MAX(d.x, glm::max(d.y, d.z)), 0.0) + length(glm::max(d, 0.0f));
-
-	// No intersection
-	if (tN > tF || tF < 0.0 || isnan(tF) || tN < cubeDist)
-		return false;
-
-	// Point
-	point = r.evalPoint(tN);
-	surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
-
-	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
-	// Normal
-	if (tMin.x > tMin.y && tMin.x > tMin.z)
-		normal = glm::vec3(Transform[0].x * sign.x, Transform[0].y*sign.x, Transform[0].z*sign.x);
-	else if (tMin.y > tMin.z)
-		normal = glm::vec3(Transform[1].x * sign.y, Transform[1].y*sign.y, Transform[1].z*sign.y);
-	else
-		normal = glm::vec3(Transform[2].x * sign.z, Transform[2].y*sign.z, Transform[2].z*sign.z);
-
-
-	return true;
-}
-
+//--------------------------------------------------------------
 void Plane::draw() {
 	applyMatrix();
-	ofDisableLighting();
-	for (int i = 0; i < points.size(); i++) {
-		ofSetColor(ofColor::red);
-		ofDrawSphere(points[i], 0.015);
-		ofSetColor(ofColor::yellow);
-		//ofDrawLine(points[i], normals[i]);
+
+	// check if object is selected
+	if (isSelected) {
+		ofDisableLighting();
+		glLineWidth(0.1f);
+
+		// Draw selection outline
+		ofSetColor(SELECTED_COLOR);
+		ofNoFill();
+		ofPushMatrix();
+		ofMultMatrix(Transform);
+		ofDrawAxis(1.0f);
+		plane.drawWireframe();
+		ofPopMatrix();
+		ofFill();
+
+		glLineWidth(1.0f);
+		ofEnableLighting();
 	}
 
-
-	ofEnableLighting();
-	plane.setPosition(glm::vec3(0, 0, 0));
+	// Draw 3D solid plane
+	plane.setPosition(ZERO_VECTOR);
 	plane.setWidth(width);
 	plane.setHeight(height);
 	plane.setResolution(4, 4);
 	plane.setOrientation(glm::vec3(270, 0, 0));
 
-	if (isSelected) {
-		ofDisableLighting();
-		ofSetColor(ofColor::yellow);
-		ofPushMatrix();
-			ofMultMatrix(Transform);
-			ofDrawAxis(1.0f);
-			plane.drawWireframe();
-		ofPopMatrix();
-		ofEnableLighting();
-	}
 	ofSetColor(ofColor::white);
 	sceneMaterial.begin();
-	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
+	sceneMaterial.setDiffuseColor(objMaterial.getDiffuse());
 	ofPushMatrix();
-		ofMultMatrix(Transform);
-		plane.drawFaces();
+	ofMultMatrix(Transform);
+	plane.drawFaces();
 	ofPopMatrix();
 	sceneMaterial.end();
 }
 
-// sdf modified from Inigo Quilez's version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
-float Plane::sdf(const glm::vec3 p1) {
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
-	return p.y;
+
+//--------------------------------------------------------------
+bool Plane::intersect(const Ray &ray, HitInfo &hitInfo) {
+	// Apply Transformation
+	glm::vec3 rayOriginLocal = glm::inverse(Transform) * glm::vec4(ray.p, 1.0f);
+	glm::vec3 rayDirLocal = glm::normalize(glm::inverse(Transform) * glm::vec4(ray.d, 0.0f));
+	Ray localRay = Ray(rayOriginLocal, rayDirLocal);
+
+	// Calculate intersection
+	glm::vec3 sign = glm::vec3((rayDirLocal.x < 0.0) ? 1.0 : -1.0, (rayDirLocal.y < 0.0) ? 1.0 : -1.0, (rayDirLocal.z < 0.0) ? 1.0 : -1.0);
+	glm::vec3 t = sign * glm::vec3(glm::abs(max.x - min.x) / 2, glm::abs(max.y - min.y) / 2, glm::abs(max.z - min.z) / 2);
+	glm::vec3 tMin = glm::vec3(-rayOriginLocal + t) * localRay.inv_dir;
+	glm::vec3 tMax = glm::vec3(-rayOriginLocal - t) * localRay.inv_dir;
+	float tEntry = glm::compMax(tMin);
+	float tExit = glm::compMin(tMax);
+
+	// Plane distance
+	glm::vec3 dist = abs(rayOriginLocal) - glm::vec3(glm::abs(max.x - min.x) / 2, glm::abs(max.y - min.y) / 2, glm::abs(max.z - min.z) / 2);
+	float planeDist = glm::min(glm::compMax(dist), 0.0f) + glm::length(glm::max(dist, 0.0f));
+
+	// No intersection
+	if (tEntry > tExit || tExit < 0.0 || isnan(tExit) || tEntry < planeDist)
+		return false;
+
+	// Point
+	hitInfo.hit = true;
+	hitInfo.point = localRay.evalPoint(tEntry);
+	hitInfo.surfaceColor = objTexture.getTextureColor(getUV(hitInfo.point), objMaterial.getDiffuse());
+	hitInfo.point = Transform * glm::vec4(hitInfo.point, 1.0);
+
+	// Normal
+	if (tEntry == tMin.x)
+		hitInfo.normal = glm::vec3(Transform[0]) * sign.x;
+	else if (tEntry == tMin.y)
+		hitInfo.normal = glm::vec3(Transform[1]) * sign.y;
+	else
+		hitInfo.normal = glm::vec3(Transform[2]) * sign.z;
+
+
+	return hitInfo.hit;
 }
 
-glm::vec3 Plane::getNormal(const glm::vec3 &p) {
-	return this->normal;
+
+//--------------------------------------------------------------
+// Infinite Plane Signed Distance Function modified from Inigo Quilez's version 
+// Source: https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+float Plane::sdf(const glm::vec3 &point) {
+	glm::vec3 pointLocal = glm::inverse(Transform) * glm::vec4(point, 1.0f);
+	return pointLocal.y;
 }
 
-glm::vec2 Plane::getUV(glm::vec3 p) {
-	glm::vec4 pp = glm::vec4(p.x, p.y, p.z, 1.0) * getTranslateMatrix();
-	glm::vec3 hit = glm::vec4(pp.x, pp.y, pp.z, 1.0);
-	
 
-	float u = (hit.x + width / 2) / (width);
-	float v = (hit.z + height / 2) / (height);
-
-	return  glm::vec2(glm::abs(u), glm::abs(v));
+//--------------------------------------------------------------
+glm::vec2 Plane::getUV(const glm::vec3 &point) const {
+	glm::vec3 hitPoint = glm::vec3(getTranslateMatrix() * glm::vec4(point, 1.0));
+	float u = (hitPoint.x + width * 0.5f) / width;
+	float v = (hitPoint.z + height * 0.5f) / height;
+	return glm::vec2(glm::abs(u), glm::abs(v));
 }

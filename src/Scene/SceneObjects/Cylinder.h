@@ -1,25 +1,28 @@
 #pragma once
 
-#include "ofMain.h"
 #include "../SceneObject.h"
 
-//************************************ Cylinder Class ***************************************
+// 3D Cylinder scene object class
 class Cylinder : public SceneObject {
-public:
+private:
 	float height = 2.0f;
-	float radius = 0.25f;	
-	vector<glm::vec3> points;
-	vector<glm::vec3> normals;
-	int imageX, imageY;
-
-	Cylinder(glm::vec3 p, float h, float r, string name, ofColor diffuse = ofColor::lightGray);
-	Cylinder() {};
+	float radius = 0.25f;
+public:
+	Cylinder(const glm::vec3 &position, float height, float radius, const string &name, const ofColor &diffuse = DEFAULT_COLOR);
 	~Cylinder() {};
 
-	void setBounds();
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
-	void draw();
-	float sdf(const glm::vec3 p);
-	glm::vec2 getUV(glm::vec3 p);
 
+	// Override functions from SceneObject
+	void setBounds();
+	void draw();
+	bool intersect(const Ray &ray, HitInfo &hitInfo);
+	float sdf(const glm::vec3 &point);
+	glm::vec2 getUV(const glm::vec3 &point) const;
+
+
+	// Setter and Getters
+	void setRadius(float radius) { this->radius = radius; }
+	void setHeight(float height) { this->height = height; }
+	float getRadius() const { return radius; }
+	float getHeight() const { return height; }
 };

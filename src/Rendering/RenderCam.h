@@ -4,18 +4,28 @@
 #include "ViewPlane.h"
 #include "../Scene/SceneObject.h"
 
-// render camera 
+// Rendering Camera
 class RenderCam : public SceneObject {
-public:
-	ViewPlane view;          // The camera viewplane, this is the view that we will render
+private:
+	ViewPlane view;
 	float side = 0.25f;
 
-	RenderCam();
+public:
+	RenderCam(const glm::vec2 &viewMin, const glm::vec2 &viewMax, const glm::vec3 &viewPos, const glm::vec3 &pos);
 	~RenderCam() {};
 
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
+	// Override functions from SceneObject
+	bool intersect(const Ray &ray, HitInfo &hitInfo); 
 	void draw();
-	void drawFrustum(); 
 
-	Ray getRay(float u, float v);
+	// Calculates ray from camera to given point on a viewplane
+	Ray getRay(float u, float v) const;
+
+	// Draws camera frustum
+	void drawFrustum();
+
+	// Returns current view plane of render cam;
+	ViewPlane getViewPlane() const {
+		return view;
+	}
 };

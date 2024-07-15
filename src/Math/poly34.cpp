@@ -44,14 +44,14 @@ double root3(double x) {
 // return 2: 2 real roots x[0], x[1]
 // return 0: pair of complex roots: x[0]±i*x[1]
 int   SolveP2(double *x, double a, double b) {			// solve equation x^2 + a*x + b = 0
-	double D = 0.25*a*a - b;
+	double D = 0.25 * a * a - b;
 	if (D >= 0) {
 		D = sqrt(D);
-		x[0] = -0.5*a + D;
-		x[1] = -0.5*a - D;
+		x[0] = -0.5 * a + D;
+		x[1] = -0.5 * a - D;
 		return 2;
 	}
-	x[0] = -0.5*a;
+	x[0] = -0.5 * a;
 	x[1] = sqrt(-D);
 	return 0;
 }
@@ -63,10 +63,10 @@ int   SolveP2(double *x, double a, double b) {			// solve equation x^2 + a*x + b
 int SolveP3(double *x, double a, double b, double c) {	// solve cubic equation x^3 + a*x^2 + b*x + c = 0
 	double a2 = a * a;
 	double q = (a2 - 3 * b) / 9;
-	double r = (a*(2 * a2 - 9 * b) + 27 * c) / 54;
+	double r = (a * (2 * a2 - 9 * b) + 27 * c) / 54;
 	// equation x^3 + q*x + r = 0
 	double r2 = r * r;
-	double q3 = q * q*q;
+	double q3 = q * q * q;
 	double A, B;
 	if (r2 <= (q3 + eps)) {//<<-- FIXED!
 		double t = r / sqrt(q3);
@@ -87,8 +87,8 @@ int SolveP3(double *x, double a, double b, double c) {	// solve cubic equation x
 
 		a /= 3;
 		x[0] = (A + B) - a;
-		x[1] = -0.5*(A + B) - a;
-		x[2] = 0.5*sqrt(3.)*(A - B);
+		x[1] = -0.5 * (A + B) - a;
+		x[2] = 0.5 * sqrt(3.) * (A - B);
 		if (fabs(x[2]) < eps) { x[2] = x[1]; return(2); }
 		return(1);
 	}
@@ -97,15 +97,15 @@ int SolveP3(double *x, double a, double b, double c) {	// solve cubic equation x
 // a>=0!
 void  CSqrt(double x, double y, double &a, double &b) // returns:  a+i*s = sqrt(x+i*y)
 {
-	double r = sqrt(x*x + y * y);
+	double r = sqrt(x * x + y * y);
 	if (y == 0) {
 		r = sqrt(r);
 		if (x >= 0) { a = r; b = 0; }
 		else { a = 0; b = r; }
 	}
 	else {		// y != 0
-		a = sqrt(0.5*(x + r));
-		b = 0.5*y / a;
+		a = sqrt(0.5 * (x + r));
+		b = 0.5 * y / a;
 	}
 }
 //---------------------------------------------------------------------------
@@ -146,9 +146,9 @@ int   SolveP4Bi(double *x, double b, double d)	// solve equation x^4 + b*x^2 + d
 		return 2;
 	}
 	else { // if( D < 0 ), two pair of compex roots
-		double sD2 = 0.5*sqrt(-D);
-		CSqrt(-0.5*b, sD2, x[0], x[1]);
-		CSqrt(-0.5*b, -sD2, x[2], x[3]);
+		double sD2 = 0.5 * sqrt(-D);
+		CSqrt(-0.5 * b, sD2, x[0], x[1]);
+		CSqrt(-0.5 * b, -sD2, x[2], x[3]);
 		return 0;
 	} // if( D>=0 ) 
 } // SolveP4Bi(double *x, double b, double d)	// solve equation x^4 + b*x^2 d
@@ -167,9 +167,9 @@ static void  dblSort3(double &a, double &b, double &c) // make: a <= b <= c
 int   SolveP4De(double *x, double b, double c, double d)	// solve equation x^4 + b*x^2 + c*x + d
 {
 	//if( c==0 ) return SolveP4Bi(x,b,d); // After that, c!=0
-	if (fabs(c) < 1e-14*(fabs(b) + fabs(d))) return SolveP4Bi(x, b, d); // After that, c!=0
+	if (fabs(c) < 1e-14 * (fabs(b) + fabs(d))) return SolveP4Bi(x, b, d); // After that, c!=0
 
-	int res3 = SolveP3(x, 2 * b, b*b - 4 * d, -c * c);	// solve resolvent
+	int res3 = SolveP3(x, 2 * b, b * b - 4 * d, -c * c);	// solve resolvent
 	// by Viet theorem:  x1*x2*x3=-c*c not equals to 0, so x1!=0, x2!=0, x3!=0
 	if (res3 > 1)	// 3 real roots, 
 	{
@@ -242,9 +242,9 @@ int   SolveP4De(double *x, double b, double c, double d)	// solve equation x^4 +
 //-----------------------------------------------------------------------------
 double N4Step(double x, double a, double b, double c, double d)	// one Newton step for x^4 + a*x^3 + b*x^2 + c*x + d
 {
-	double fxs = ((4 * x + 3 * a)*x + 2 * b)*x + c;	// f'(x)
+	double fxs = ((4 * x + 3 * a) * x + 2 * b) * x + c;	// f'(x)
 	if (fxs == 0) return x;	//return 1e99; <<-- FIXED!
-	double fx = (((x + a)*x + b)*x + c)*x + d;	// f(x)
+	double fx = (((x + a) * x + b) * x + c) * x + d;	// f(x)
 	return x - fx / fxs;
 }
 //-----------------------------------------------------------------------------
@@ -254,9 +254,9 @@ double N4Step(double x, double a, double b, double c, double d)	// one Newton st
 // return 0: two pair of complex roots: x[0]±i*x[1],  x[2]±i*x[3], 
 int   SolveP4(double *x, double a, double b, double c, double d) {	// solve equation x^4 + a*x^3 + b*x^2 + c*x + d by Dekart-Euler method
 	// move to a=0:
-	double d1 = d + 0.25*a*(0.25*b*a - 3. / 64 * a*a*a - c);
-	double c1 = c + 0.5*a*(0.25*a*a - b);
-	double b1 = b - 0.375*a*a;
+	double d1 = d + 0.25 * a * (0.25 * b * a - 3. / 64 * a * a * a - c);
+	double c1 = c + 0.5 * a * (0.25 * a * a - b);
+	double b1 = b - 0.375 * a * a;
 	int res = SolveP4De(x, b1, c1, d1);
 	if (res == 4) { x[0] -= a / 4; x[1] -= a / 4; x[2] -= a / 4; x[3] -= a / 4; }
 	else if (res == 2) { x[0] -= a / 4; x[1] -= a / 4; x[2] -= a / 4; }
@@ -292,8 +292,8 @@ double SolveP5_1(double a, double b, double c, double d, double e)	// return rea
 	double x2, f2, f2s;				// next values, f(x2), f'(x2)
 	double dx;
 
-	if (e < 0) { x0 = 0; x1 = brd; f0 = e; f1 = F5(x1); x2 = 0.01*brd; }	// positive root
-	else { x0 = -brd; x1 = 0; f0 = F5(x0); f1 = e; x2 = -0.01*brd; }	// negative root
+	if (e < 0) { x0 = 0; x1 = brd; f0 = e; f1 = F5(x1); x2 = 0.01 * brd; }	// positive root
+	else { x0 = -brd; x1 = 0; f0 = F5(x0); f1 = e; x2 = -0.01 * brd; }	// negative root
 
 	if (fabs(f0) < eps) return x0;
 	if (fabs(f1) < eps) return x1;
@@ -320,7 +320,7 @@ double SolveP5_1(double a, double b, double c, double d, double e)	// return rea
 		if (fabs(f2) < eps) return x2;
 		if (f2 > 0) { x1 = x2; f1 = f2; }
 		else { x0 = x2; f0 = f2; }
-		f2s = (((5 * x2 + 4 * a)*x2 + 3 * b)*x2 + 2 * c)*x2 + d;		// f'(x2)
+		f2s = (((5 * x2 + 4 * a) * x2 + 3 * b) * x2 + 2 * c) * x2 + d;		// f'(x2)
 		if (fabs(f2s) < eps) { x2 = 1e99; continue; }
 		dx = f2 / f2s;
 		x2 -= dx;

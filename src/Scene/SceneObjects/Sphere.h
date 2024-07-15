@@ -1,23 +1,26 @@
 #pragma once
 
-#include "ofMain.h"
 #include "../SceneObject.h"
 
-// General purpose sphere  (assume parametric)
+// 3D Sphere scene object class
 class Sphere : public SceneObject {
-public:
-	float radius = 1.0;
-	vector<glm::vec3> points;
-	vector<glm::vec3> points2;
-	vector<glm::vec3> normals;
+private:
+	float radius = 1.0f;
 
-	Sphere(glm::vec3 p, float r, string name, ofColor diffuse = ofColor::lightGray);
-	Sphere() {}
+public:
+	Sphere(const glm::vec3 &position, float radius, const string &name, const ofColor &diffuse = DEFAULT_COLOR);
 	~Sphere() {};
 
+
+	// Override functions from SceneObject
 	void setBounds();
-	bool intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor);
 	void draw();
-	float sdf(glm::vec3 p);
-	glm::vec2 getUV(glm::vec3 p);
+	bool intersect(const Ray &ray, HitInfo &hitInfo);
+	float sdf(const glm::vec3 &point);
+	glm::vec2 getUV(const glm::vec3 &point) const;
+
+
+	// Setter and Getters
+	void setRadius(float radius) { this->radius = radius; }
+	float getRadius() const { return radius; }
 };

@@ -1,127 +1,137 @@
 #include "Cube.h"
 
-Cube::Cube(glm::vec3 p, float s, string name, ofColor diffuse) {
-	position = p;
-	side = s / 2;
+//--------------------------------------------------------------
+Cube::Cube(const glm::vec3 &position, float side, const string &name, const ofColor &diffuse) {
+	this->position = position;
+	this->side = side;
 	objName = name;
-	objMaterial.diffuseColor = diffuse;
-	box = new Box();
-	applyMatrix();
+	objMaterial.setDiffuse(diffuse);
 	setBounds();
 }
 
+//--------------------------------------------------------------
 void Cube::setBounds() {
 	applyMatrix();
 	glm::vec3 min = glm::vec3(-side, -side, side);
 	glm::vec3 max = glm::vec3(side, side, -side);
-	box->setParameters(min, max);
-	box->transformBox(Transform);
+	box.setParameters(min, max);
+	box.transformBox(Transform);
 }
 
 
-bool Cube::intersect(const Ray &ray, glm::vec3 &point, glm::vec3 &normal, ofColor &surfaceColor) {
-	glm::vec3 rdd, roo, invdir, sign, t, tMinV, tMaxV, tMin, tMax;
-
-	// Apply Transformation
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(ray.p.x, ray.p.y, ray.p.z, 1.0);
-	glm::vec4 p1 = glm::inverse(Transform) * glm::vec4(ray.p + ray.d, 1.0);
-	roo = glm::vec4(p.x, p.y, p.z, 1.0);
-	rdd = glm::normalize(p1 - p);
-	Ray r = Ray(roo, rdd);
-
-
-	// Calculate intersection
-	invdir = 1.0f / rdd;
-	sign = glm::vec3((rdd.x < 0.0) ? 1.0 : -1.0, (rdd.y < 0.0) ? 1.0 : -1.0, (rdd.z < 0.0) ? 1.0 : -1.0);
-	t = sign * glm::vec3(side, side, side);
-
-	tMinV = glm::vec3(-roo.x + t.x, -roo.y + t.y, -roo.z + t.z);
-	tMaxV = glm::vec3(-roo.x - t.x, -roo.y - t.y, -roo.z - t.z);
-	tMin = invdir * tMinV;
-	tMax = invdir * tMaxV;
-
-	// Calculate entering and exiting points
-	float tN = max(max(tMin.x, tMin.y), tMin.z);
-	float tF = min(min(tMax.x, tMax.y), tMax.z);
-
-	// Cube distance
-	glm::vec3 d = abs(roo) - side;
-	float cubeDist = MIN(MAX(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0f));
-
-	// No intersection
-	if (tN > tF || tF < 0.0 || isnan(tF) || tN < cubeDist)
-		return false;
-
-	// Point
-	point = r.evalPoint(tN);
-	surfaceColor = objTexture.getTextureColor(getUV(point), objMaterial.diffuseColor);
-
-	point = Transform * glm::vec4(point.x, point.y, point.z, 1.0);
-	// Normal
-	if (tMin.x > tMin.y && tMin.x > tMin.z)
-		normal = glm::vec3(Transform[0].x * sign.x, Transform[0].y*sign.x, Transform[0].z*sign.x);
-	else if (tMin.y > tMin.z)
-		normal = glm::vec3(Transform[1].x * sign.y, Transform[1].y*sign.y, Transform[1].z*sign.y);
-	else
-		normal = glm::vec3(Transform[2].x * sign.z, Transform[2].y*sign.z, Transform[2].z*sign.z);
-
-
-	return true;
-}
-
+//--------------------------------------------------------------
 void Cube::draw() {
 	applyMatrix();
+
+	// check if object is selected
 	if (isSelected) {
 		ofDisableLighting();
-		ofSetColor(ofColor::yellow);
+		glLineWidth(0.1f);
+
+		// Draw selection outline
+		ofSetColor(SELECTED_COLOR);
 		ofNoFill();
 		ofPushMatrix();
-			ofMultMatrix(Transform);
-			ofDrawAxis(side * 1.5);
-			ofDrawBox(ofVec3f::zero(), side * 2);
+		ofMultMatrix(Transform);
+		ofDrawAxis(side * 1.5f);
+		ofDrawBox(ZERO_VECTOR, side * 2);
 		ofPopMatrix();
 		ofFill();
+
+		glLineWidth(1.0f);
 		ofEnableLighting();
 	}
 
+	// Draw 3D solid cube
 	ofSetColor(ofColor::white);
 	sceneMaterial.begin();
-	sceneMaterial.setDiffuseColor(objMaterial.diffuseColor);
+	sceneMaterial.setDiffuseColor(objMaterial.getDiffuse());
 	ofPushMatrix();
-		ofMultMatrix(Transform);
-		ofDrawBox(ofVec3f::zero(), side*2);
+	ofMultMatrix(Transform);
+	ofDrawBox(ZERO_VECTOR, side * 2);
 	ofPopMatrix();
 	sceneMaterial.end();
 }
 
-// sdf modified from Inigo Quilez's version found in https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
-float Cube::sdf(const glm::vec3 p1) {
-	glm::vec4 p = glm::inverse(Transform) * glm::vec4(p1.x, p1.y, p1.z, 1.0);
-	glm::vec3 q = abs(p) - side;
-	return MIN(MAX(q.x, max(q.y, q.z)), 0.0) + length(max(q, 0.0f));
+
+//--------------------------------------------------------------
+bool Cube::intersect(const Ray &ray, HitInfo &hitInfo) {
+	// Apply Transformation
+	glm::vec3 rayOriginLocal = glm::inverse(Transform) * glm::vec4(ray.p, 1.0f);
+	glm::vec3 rayDirLocal = glm::normalize(glm::inverse(Transform) * glm::vec4(ray.d, 0.0f));
+	Ray localRay = Ray(rayOriginLocal, rayDirLocal);
+
+	// Calculate intersection
+	glm::vec3 sign = glm::vec3((rayDirLocal.x < 0.0) ? 1.0 : -1.0, (rayDirLocal.y < 0.0) ? 1.0 : -1.0, (rayDirLocal.z < 0.0) ? 1.0 : -1.0);
+	glm::vec3 t = sign * glm::vec3(side);
+	glm::vec3 tMin = glm::vec3(-rayOriginLocal + t) * localRay.inv_dir;
+	glm::vec3 tMax = glm::vec3(-rayOriginLocal - t) * localRay.inv_dir;
+	float tEntry = glm::compMax(tMin);
+	float tExit = glm::compMin(tMax);
+
+	// Cube distance
+	glm::vec3 dist = abs(rayOriginLocal) - side;
+	float cubeDist = glm::min(glm::compMax(dist), 0.0f) + glm::length(glm::max(dist, 0.0f));
+
+	// No intersection
+	if (tEntry > tExit || tExit < 0.0 || isnan(tExit) || tEntry < cubeDist)
+		return false;
+
+	// Point
+	hitInfo.hit = true;
+	hitInfo.point = localRay.evalPoint(tEntry);
+	hitInfo.surfaceColor = objTexture.getTextureColor(getUV(hitInfo.point), objMaterial.getDiffuse());
+	hitInfo.point = Transform * glm::vec4(hitInfo.point, 1.0);
+
+	// Normal
+	if (tEntry == tMin.x)
+		hitInfo.normal = glm::vec3(Transform[0]) * sign.x;
+	else if (tEntry == tMin.y)
+		hitInfo.normal = glm::vec3(Transform[1]) * sign.y;
+	else
+		hitInfo.normal = glm::vec3(Transform[2]) * sign.z;
+
+
+	return hitInfo.hit;
 }
 
-glm::vec2 Cube::getUV(glm::vec3 p) {
-	glm::vec4 pp = getTranslateMatrix() * glm::vec4(p.x, p.y, p.z, 1.0);
-	glm::vec3 hit = glm::vec4(pp.x, pp.y, pp.z, 1.0);
 
-	glm::vec3 np = hit - position;
-	float u, v;
+//--------------------------------------------------------------
+// Cube Signed Distance Function modified from Inigo Quilez's version 
+// Source: https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
+float Cube::sdf(const glm::vec3 &point) {
+	glm::vec3 pointLocal = glm::inverse(Transform) * glm::vec4(point, 1.0f);
+	glm::vec3 dist = abs(pointLocal) - side;
+	float distance = glm::min(glm::compMax(dist), 0.0f) + glm::length(glm::max(dist, 0.0f));
+	return distance;
+}
+
+
+//--------------------------------------------------------------
+glm::vec2 Cube::getUV(const glm::vec3 &point) const {
+	glm::vec3 localPoint = glm::vec3(getTranslateMatrix() * glm::vec4(point, 1.0));
+	glm::vec3 hitPoint = localPoint - position;
+	float u = 0.0f;
+	float v = 0.0f;
 	float eps = 0.001f;
-	if (abs((np.x)) >= (side - eps) && abs((np.x)) <= (side + eps)) {
-		u = (np.z + side) / (side * 2.0f);
-		v = (np.y + side) / (side * 2.0f);
-	} 
-	else if (abs((np.y)) >= (side - eps) && abs((np.y)) <= (side + eps)) {
-		u = (np.x + side) / (side * 2.0f);
-		v = (np.z + side) / (side * 2.0f);
+
+	if (abs((hitPoint.x)) >= (side - eps) && abs((hitPoint.x)) <= (side + eps)) {
+		u = (hitPoint.z + side) / (side * 2.0f);
+		v = (hitPoint.y + side) / (side * 2.0f);
 	}
-	else if (abs((np.z)) >= (side - eps) && abs((np.z)) <= (side + eps)) {
-		u = (np.x + side) / (side * 2.0f);
-		v = (np.y + side) / (side * 2.0f);
+	else if (abs((hitPoint.y)) >= (side - eps) && abs((hitPoint.y)) <= (side + eps)) {
+		u = (hitPoint.x + side) / (side * 2.0f);
+		v = (hitPoint.z + side) / (side * 2.0f);
+	}
+	else if (abs((hitPoint.z)) >= (side - eps) && abs((hitPoint.z)) <= (side + eps)) {
+		u = (hitPoint.x + side) / (side * 2.0f);
+		v = (hitPoint.y + side) / (side * 2.0f);
+	}
+	else {	
+		return glm::vec2(u, v);	// return if point is not on the surface of cube
 	}
 
-	v = 1.0f - v;
+	v = 1.0f - v;	// Flip V coordinate
 
 	return glm::vec2(glm::abs(u), glm::abs(v));
 }

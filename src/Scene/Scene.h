@@ -3,93 +3,107 @@
 #include "ofMain.h"
 #include <iostream>
 #include <fstream>
+#include <unordered_map>
 #include "../Application/Definitions.h"
-#include "../Rendering/BVH.h"
-#include "../Rendering/RayTracer.h"
-#include "../Rendering/RayMarcher.h"
-#include "../Rendering/ViewPlane.h"
 #include "../Rendering/RenderCam.h"
-#include "../Rendering/RenderThread.h"
+#include "../Rendering/Renderers/RayTracer.h"
+#include "../Rendering/Renderers/RayMarcher.h"
+#include "../Rendering/Acceleration/BVH.h"
 #include "SceneObject.h"
-#include "Box.h"
 #include "SceneObjects/Sphere.h"
 #include "SceneObjects/Cube.h"
 #include "SceneObjects/Plane.h"
 #include "SceneObjects/Cylinder.h"
 #include "SceneObjects/Cone.h"
 #include "SceneObjects/Torus.h"
-#include "SceneObjects/WaterPool.h"
-#include "SceneObjects/Mesh.h"
 #include "SceneObjects/LSystem.h"
+#include "SceneObjects/Mesh.h"
 #include "SceneObjects/Lights/Light.h"
 #include "SceneObjects/Lights/SpotLight.h"
 #include "SceneObjects/Lights/AreaLight.h"
 
 class Scene {
+private:
+	SceneObject *sphere1;
+	SceneObject *sphere2;
+
+	RenderCam renderCam;
+	Renderer *rayTracer;
+	Renderer *rayMarcher;
+	ofImage renderedImage;
+	int renderSamples = 1;
+
+	unordered_map<string, int> objectCount;
+	bool renderFinished = false;
+	bool showImage;
+	bool showBVH;
+
+	SceneObject *selected = nullptr;
+	vector<SceneObject *> objects;
+	vector<Light *> lights;
+	BVH bvh;
 
 public:
+	Scene(RenderCam &cam) : renderCam(cam) {};
+	~Scene() {};
 
-	Scene() {};
 	void setup();
 	void update();
 	void draw();
 
-	void multithreadRender(Renderer *r);
-	void handleRayTrace();
-	void handleRayMarch();
-	void handleSaveImage();
-	void handleRename();
-	void handleDelete();
-	void handleClearScene();
-	void handleRemoveTexture();
-	void addObject(SceneObject *s);
-	void addLight(Light *light);
-	void addSphere();
-	void addCube();
-	void addPlane();
-	void addCylinder();
-	void addCone();
-	void addTorus();
-	void addMesh();
-	void addLSystem();
-	void addWaterPool();
-	void addPointLight();
-	void addSpotLight();
-	void addAreaLight();
-	bool FileLoader(const char *path);
-
-	RayTracer rayTracer;
-	RayMarcher rayMarcher;
-
-	RenderCam renderCam;
-	ofImage image;
-	ofImage texture;
-	ofImage sphereTexture;
-
-	vector<SceneObject *> selected;
-	vector<SceneObject *> objects;
-	vector<Light *> lights;
-	float Power = 10;
-	float nearestDistance;
-
-	int imageWidth = 1200;
-	int imageHeight = 800;
-	//int imageWidth = 300;
-	//int imageHeight = 200;
-	//int imageWidth = 90;
-	//int imageHeight = 60;
-	//int imageWidth = 150;
-	//int imageHeight = 100;
+	// Rendering
+	void HandleRayTrace();
+	void HandleRayMarch();
+	void HandleSaveImage();
+	void HandleRename();
+	void HandleDelete();
+	void HandleClearScene();
 
 
-	int count;
-	int indexHit;
-	int sphereCount, cubeCount, planeCount, cylinderCount, coneCount, torusCount,
-		meshCount, lsystemCount, waterpoolCount, pointlightCount, spotlightCount, arealightCount;
-	bool renderFinished;
-	bool showBVH;
+	// Load Texture file from given path
+	void HandleLoadTexture();
 
-	RenderThread threads[16];
-	int samples;
-	BVH bvh;
+	// Remove texture from a given scene object
+	void HandleRemoveTexture();
+
+	void buildBVH();
+
+	// 3D Modeling
+	void AddObject(SceneObject *object);
+	void AddLight(Light *light);
+	void AddSphere();
+	void AddCube();
+	void AddPlane();
+	void AddCylinder();
+	void AddCone();
+	void AddTorus();
+	void AddLSystem();
+	void AddMesh();
+	void AddPointLight();
+	void AddSpotLight();
+	void AddAreaLight();
+
+	// Load .obj file from given path and create Mesh object
+	void OBJFileLoader(const char *path);
+
+
+	// Setters and Getters
+	void setObjectSelected(SceneObject *object) { selected = object; }
+	void setShowBVH(bool show) { showBVH = show; }
+	void setShowImage(bool show) { showImage = show; }
+	void setSamples(int renderSamples) { this->renderSamples = renderSamples; }
+	void setResolution(int width, int height) { 
+		rayTracer->setImageResolution(width, height);
+		rayMarcher->setImageResolution(width, height);
+	}
+	SceneObject *getObjectSelected() const { return selected; }
+	vector<SceneObject *> getObjects() const { return objects; }
+	vector<Light *> getLights() const { return lights; }
+	BVH getBVH() const { return bvh; }
+	RenderCam *getRenderCam() { return &renderCam; }
+	Renderer *getCurrentRenderer() const {
+		return (rayTracer->IsRendering()) ? rayTracer : rayMarcher;
+	}
+
+
 };

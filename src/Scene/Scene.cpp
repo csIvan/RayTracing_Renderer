@@ -1,342 +1,357 @@
 #include "Scene.h"
 
+//--------------------------------------------------------------
 void Scene::setup() {
-	renderCam.objName = "Render_Cam";
-	image.allocate(imageWidth, imageHeight, ofImageType::OF_IMAGE_COLOR);
+	AddPointLight();
+	AddCube();
 
-	rayTracer = RayTracer(imageWidth, imageHeight, image, renderCam);
-	rayMarcher = RayMarcher(imageWidth, imageHeight, image, renderCam);
-	nearestDistance = FLT_MAX;
-	addCube();
-	addPointLight();
+	string renderCamName = "Render_Cam";
+	renderCam.setName(renderCamName);
+
+	rayTracer = new RayTracer();
+	rayMarcher = new RayMarcher();
+	buildBVH();
 }
 
-void Scene::update() {}
+//--------------------------------------------------------------
+void Scene::update() {
 
+}
+
+//--------------------------------------------------------------
 void Scene::draw() {
+	ofEnableLighting();
 	for (int i = 0; i < objects.size(); i++) {
-		objects[i]->applyMatrix();
 		objects[i]->draw();
 	}
 
-	// Display acceleration
 	if (showBVH) {
 		bvh.draw();
 	}
 
 	ofDisableLighting();
 
+	ofNoFill();
+	if (renderFinished && showImage) {
+		ofPushMatrix();
+		ofMultMatrix(renderCam.getTransform());
+		renderedImage.draw(glm::vec3(renderCam.getViewPlane().bottomLeft()), renderCam.getViewPlane().width(), renderCam.getViewPlane().height());
+		ofPopMatrix();
+	}
+
 	for (int i = 0; i < lights.size(); i++) {
 		lights[i]->draw();
 	}
+
 	renderCam.draw();
+	ofFill();
+
+	ofEnableLighting();
 }
 
-
-void Scene::multithreadRender(Renderer *r) {
-	// Create 16 threads
-	float p = 0;
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++) {
-			threads[i * 4 + j].setup(r, glm::vec2(i, j), glm::vec2(imageWidth, imageHeight), samples, p);
-		}
-	for (int i = 0; i < 16; i++)
-		threads[i].startThread();
-
-	for (int i = 0; i < 16; i++)
-		threads[i].waitForThread();
-	printf("\rRendering... 100%%");
-}
-
-void Scene::handleRayTrace() {
-	time_t start, end;
+//--------------------------------------------------------------
+void Scene::HandleRayTrace() {
 	for (int i = 0; i < objects.size(); i++) {
-		if (dynamic_cast<LSystem*>(objects[i]) != nullptr) {
-			LSystem *lsys = (LSystem*)objects[i];
-			cout << "LSystem: " << lsys->sentence << endl;
+		if (dynamic_cast<LSystem *>(objects[i]) != nullptr) {
+			LSystem *lsys = (LSystem *)objects[i];
+			cout << "LSystem: " << lsys->getSentence() << endl;
 		}
 	}
 
+	time_t start, end;
 	time(&start);
-	rayTracer.setBVH(&bvh);
-	//image = rayTracer.render(samples);	// single thread
-	rayTracer.setShader();
-	multithreadRender(&rayTracer);
-	image = rayTracer.getImage();
-	time(&end);
 
+	//renderedImage = rayTracer->render(renderSamples, renderCam, *this);	// single thread
+	renderedImage = rayTracer->renderMT(16, renderSamples, renderCam, *this);
+
+	time(&end);
 	renderFinished = true;
-	cout << "\nFinished Ray Tracing : " << double(end - start) << " sec\n" << endl;
+	std::printf("\rRendering... 100%%");
+	cout << "\nFinished Ray Tracing : " << static_cast<float>(end - start) << " sec\n" << endl;
 }
 
-void Scene::handleRayMarch() {
-	time_t start, end;
+//--------------------------------------------------------------
+void Scene::HandleRayMarch() {
 	for (int i = 0; i < objects.size(); i++) {
-		if (dynamic_cast<LSystem*>(objects[i]) != nullptr) {
-			LSystem *lsys = (LSystem*)objects[i];
-			cout << "LSystem: " << lsys->sentence << endl;
+		if (dynamic_cast<LSystem *>(objects[i]) != nullptr) {
+			LSystem *lsys = (LSystem *)objects[i];
+			cout << "LSystem: " << lsys->getSentence() << endl;
 		}
 	}
 
+	time_t start, end;
 	time(&start);
-	//image = rayMarcher.render(samples);	// single thread
-	rayMarcher.setShader();
-	multithreadRender(&rayMarcher);
-	image = rayMarcher.getImage();
-	time(&end);
 
+	//renderedImage = rayMarcher->render(renderSamples, renderCam, *this);	// single thread
+	renderedImage = rayMarcher->renderMT(16, renderSamples, renderCam, *this);
+
+	time(&end);
 	renderFinished = true;
-	cout << "\nFinished Ray Marching : " << double(end - start) << " sec\n" << endl;
+	std::printf("\rRendering... 100%%");
+	cout << "\nFinished Ray Marching: " << static_cast<float>(end - start) << " sec\n" << endl;
+
 }
 
-void Scene::handleSaveImage() {
+//--------------------------------------------------------------
+void Scene::HandleSaveImage() {
 	if (renderFinished) {
 		ofFileDialogResult result = ofSystemSaveDialog("render.jpg", "Save");
 		if (result.bSuccess) {
-			image.save(result.getPath(), OF_IMAGE_QUALITY_BEST);
+			renderedImage.save(result.getPath(), OF_IMAGE_QUALITY_BEST);
 		}
 	}
 }
 
-void Scene::handleRename() {
-	if (selected.size() > 0 && selected[0]->objName != "Render_Cam") {
-		string result = ofSystemTextBoxDialog("Enter New Name", "");
+//--------------------------------------------------------------
+void Scene::HandleRename() {
+	if (getObjectSelected() != nullptr && getObjectSelected()->getName() != "Render_Cam") {
+		string result = ofSystemTextBoxDialog("Enter a New Name", "");
 
 		bool alreadyExists = false;
-		for (SceneObject* o : objects) {
-			if (o->objName == result) {
+		for (SceneObject *object : objects) {
+			if (object->getName() == result) {
 				alreadyExists = true;
 			}
 		}
 
-		for (Light* l : lights) {
-			if (l->objName == result) {
+		for(Light *light : lights){
+			if (light->getName() == result) {
 				alreadyExists = true;
 			}
 		}
 
-		if ((result.length() > 0 && result.length() < 20) && !alreadyExists ) {
+		if ((result.length() > 0 && result.length() < 20) && !alreadyExists) {
 			cout << "Name change confirmed: " << result << endl;
-			selected[0]->setName(result);
-			
+			getObjectSelected()->setName(result);
 		}
 		else {
 			cout << "Name change denied (must be unique and 1 to 20 characters long)" << endl;
+			setObjectSelected(nullptr);
 		}
-		selected.clear();
 	}
-
 }
 
-void Scene::handleDelete() {
+//--------------------------------------------------------------
+void Scene::HandleDelete() {
 	for (int i = 0; i < objects.size(); i++) {
-		if (selected.size() > 0 && objects[i]->objName == selected[0]->objName) {
-			rayTracer.removeObject(objects[i]->objName);
-			rayMarcher.removeObject(objects[i]->objName);
+		if (objects[i] == getObjectSelected()) {
+			objects[i]->setSelected(false);
 			objects.erase(std::remove(objects.begin(), objects.end(), objects[i]), objects.end());
-			selected.clear();
+
 		}
 	}
+
 	for (int i = 0; i < lights.size(); i++) {
-		if (selected.size() > 0 && lights[i]->objName == selected[0]->objName) {
-			rayTracer.removeLight(lights[i]->objName);
-			rayMarcher.removeLight(lights[i]->objName);
+		if (lights[i] == getObjectSelected()) {
+			lights[i]->setSelected(false);
 			lights.erase(std::remove(lights.begin(), lights.end(), lights[i]), lights.end());
-			selected.clear();
 		}
 	}
-	bvh.create(objects);
+	setObjectSelected(nullptr);
+	buildBVH();
 }
 
-void Scene::handleClearScene() {
-	// Deleted all objects
+//--------------------------------------------------------------
+void Scene::HandleClearScene() {
 	while (objects.size() > 0) {
-		for (SceneObject *o : objects) {
-			rayTracer.removeObject(o->objName);
-			rayMarcher.removeObject(o->objName);
-			objects.erase(std::remove(objects.begin(), objects.end(), o), objects.end());
+		for (SceneObject *object : objects) {
+			objects.erase(std::remove(objects.begin(), objects.end(), object), objects.end());
 		}
 	}
-
+	
 	while (lights.size() > 0) {
-		for (Light *l : lights) {
-			rayTracer.removeLight(l->objName);
-			rayMarcher.removeLight(l->objName);
-			lights.erase(std::remove(lights.begin(), lights.end(), l), lights.end());
+		for (Light *light : lights) {
+			lights.erase(std::remove(lights.begin(), lights.end(), light), lights.end());
 		}
 	}
-	selected.clear();
+	setObjectSelected(nullptr);
+	buildBVH();
+}
+
+//--------------------------------------------------------------
+void Scene::HandleLoadTexture() {
+	if (getObjectSelected() != nullptr) {
+		ofFileDialogResult result = ofSystemLoadDialog("Choose image(.jpg, .png) texture file");
+		if (result.bSuccess) {
+			getObjectSelected()->setTextureImage(result.getPath());
+			cout << "Textured" << endl;
+		}
+	}
+}
+
+//--------------------------------------------------------------
+void Scene::HandleRemoveTexture() {
+	for (int i = 0; i < getObjects().size(); i++) {
+		if (getObjectSelected() != nullptr) {
+			getObjectSelected()->removeTextureImage();
+			break;
+		}
+	}
+}
+
+
+//--------------------------------------------------------------
+void Scene::buildBVH() {
 	bvh.create(objects);
 }
 
-void Scene::handleRemoveTexture() {
-	for (int i = 0; i < objects.size(); i++) {
-		if (selected.size() > 0 && objects[i]->objName == selected[0]->objName) {
-			objects[i]->objTexture.removeTexture();
-		}
-	}
+//--------------------------------------------------------------
+void Scene::AddObject(SceneObject *object) {
+	objects.push_back(object);
+	buildBVH();
 }
 
-void Scene::addObject(SceneObject *s) {
-	objects.push_back(s);
-	rayTracer.addObject(*s);
-	rayMarcher.addObject(*s);
-	bvh.create(objects);
-}
-
-void Scene::addLight(Light *light) {
+//--------------------------------------------------------------
+void Scene::AddLight(Light *light) {
 	lights.push_back(light);
-	rayTracer.addLight(*light);
-	rayMarcher.addLight(*light);
 }
 
-void Scene::addSphere() {
-	string nameString = "Sphere_" + to_string(2);
-	addObject(new Sphere(glm::vec3(0, 0, 0), 1, "Sphere_" + to_string(++sphereCount), ofColor::seaGreen));
+//--------------------------------------------------------------
+void Scene::AddSphere() {
+	AddObject(new Sphere(ZERO_VECTOR, 1.0f, "Sphere_" + to_string(++objectCount["Sphere"]), ofColor::seaGreen));
 }
-void Scene::addCube() {
-	addObject(new Cube(glm::vec3(0, 0, 0), 2, "Cube_" + to_string(++cubeCount), ofColor::seaGreen));
+
+//--------------------------------------------------------------
+void Scene::AddCube() {
+	AddObject(new Cube(ZERO_VECTOR, 1.0f, "Cube_" + to_string(++objectCount["Cube"]), ofColor::seaGreen));
 }
-void Scene::addPlane() {
-	addObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), "Plane_" + to_string(++planeCount), ofColor::dimGrey));
+
+//--------------------------------------------------------------
+void Scene::AddPlane() {
+	AddObject(new Plane(glm::vec3(0, -3, 0), glm::vec3(0, 1, 0), "Plane_" + to_string(++objectCount["Plane"]), 10, 10, ofColor::seaGreen));
 }
-void Scene::addCylinder() {
-	addObject(new Cylinder(glm::vec3(0, 0, 0), 2, 0.5, "Cylinder_" + to_string(++cylinderCount), ofColor::seaGreen));
+
+//--------------------------------------------------------------
+void Scene::AddCylinder() {
+	AddObject(new Cylinder(ZERO_VECTOR, 2.0f, 0.5f, "Cylinder_" + to_string(++objectCount["Cylinder"]), ofColor::seaGreen));
 }
-void Scene::addCone() {
-	addObject(new Cone(glm::vec3(0, 0, 0), 2, 0.5, "Cone_" + to_string(++coneCount), ofColor::seaGreen));
+
+//--------------------------------------------------------------
+void Scene::AddCone() {
+	AddObject(new Cone(ZERO_VECTOR, 2.0f, 0.5f, "Cone_" + to_string(++objectCount["Cone"]), ofColor::seaGreen));
 }
-void Scene::addTorus() {
-	addObject(new Torus(glm::vec3(0, 0, 0), 1, 0.5, "Torus_" + to_string(++torusCount), ofColor::seaGreen));
+
+void Scene::AddTorus() {
+	AddObject(new Torus(ZERO_VECTOR, 0.5f, 1.0f, "Torus_" + to_string(++objectCount["Torus"]), ofColor::seaGreen));
 }
-void Scene::addMesh() {
+
+//--------------------------------------------------------------
+void Scene::AddLSystem() {
+	LSystem *ls = new LSystem(ZERO_VECTOR, 1, "F", "LSystem_" + to_string(++objectCount["LSystem"]), ofColor::seaGreen);
+	ls->generate();
+	AddObject(ls);
+}
+
+//--------------------------------------------------------------
+void Scene::AddMesh() {
 	ofFileDialogResult result = ofSystemLoadDialog();
 	if (result.bSuccess && result.fileName.substr(result.fileName.find_last_of(".") + 1) == "obj") {
-		FileLoader(result.filePath.c_str());
+		OBJFileLoader(result.filePath.c_str());
 	}
 	else {
 		cout << "Incorrect file type. Please enter only .obj files\n" << endl;
 	}
 }
-void Scene::addLSystem() {
-	LSystem *ls = new LSystem(glm::vec3(0, 0, 0), 1, "F", "LSystem_" + to_string(++lsystemCount), ofColor::seaGreen);
-	ls->generate();
-	addObject(ls);
-}
-void Scene::addWaterPool() {
-	addObject(new WaterPool(glm::vec3(0, 0, 0), 1, "WaterPool_" + to_string(++waterpoolCount), ofColor::seaGreen));
-}
-void Scene::addPointLight() {
-	addLight(new Light(glm::vec3(-4, 3, 5), 6.5f, "Point_Light_" + to_string(++pointlightCount)));
+
+//--------------------------------------------------------------
+void Scene::AddPointLight() {
+	AddLight(new Light(glm::vec3(-4, 3, 5), 6.0f, "Point_Light_" + to_string(++objectCount["PointLight"])));
 }
 
-void Scene::addSpotLight() {
-	addLight(new SpotLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 10.0f, 10.0f, "Spot_Light_" + to_string(++spotlightCount)));
+//--------------------------------------------------------------
+void Scene::AddSpotLight() {
+	AddLight(new SpotLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 6.0f, 10.0f, 10.0f, "SpotLight_" + to_string(++objectCount["SpotLight"])));
 }
 
-void Scene::addAreaLight() {
-	addLight(new AreaLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 1.0f, 1.0f, "Area_Light_" + to_string(++arealightCount)));
+//--------------------------------------------------------------
+void Scene::AddAreaLight() {
+	AddLight(new AreaLight(glm::vec3(0, 3, 0), glm::vec3(0, -1, 0), 6.0f, 1.0f, 1.0f, "AreaLight_" + to_string(++objectCount["AreaLight"])));
 }
 
-/**
-* File loader function reads a .obj file
-* and instantiates a mesh object
-*/
-bool Scene::FileLoader(const char * path) {
-	vector<int> tempIndices;
-	vector<int> tempVertNormIndices;
-	vector<int> tempVertTexIndices;
-	vector<glm::vec3> tempVertices;
-	vector<glm::vec3> tempVertNormals;
-	vector<glm::vec2> tempVertTextures;
 
-	MeshObject *tempObj;
-	vector<MeshObject *> mObjects;
-	bool firstObject = true;
+//--------------------------------------------------------------
+void Scene::OBJFileLoader(const char *path) {
+	vector<int> vertexIndices;
+	vector<int> normalIndices;
+	vector<int> textureIndices;
+	vector<glm::vec3> vertices;
+	vector<glm::vec3> normals;
+	vector<glm::vec2> textures;
 
-	ifstream objFile;
-	objFile.open(string(path));
+	MeshObject *currentMesh = nullptr;
+	vector<MeshObject *> meshObjects;
+
+	ifstream objFile(path);
 	string line, matLibName;
-	int vCount = 0, nCount = 0, tCount = 0;
-	int vstart = 1, nstart = 1, tstart = 1;
+	int vertexCount = 0, normalCount = 0, textureCount = 0;
+	int vertexStart = 1, normalStart = 1, textureStart = 1;
 
-	string objDir = string(path);
-	string dir = objDir.substr(0, objDir.find_last_of("\\")) + "\\";
+	string directory = static_cast<string>(path).substr(0, static_cast<string>(path).find_last_of("\\")) + "\\";
 
-	vector <string> tokens;
 	while (getline(objFile, line, '\n')) {
 		stringstream   linestream(line);
 		string token;
 		linestream >> token;
 
 		if (token == "mtllib") {
-			string name;
-			linestream >> name;
-			matLibName = name;
+			linestream >> matLibName;
 		}
 		else if (token == "o") {
-			string name;
-			linestream >> name;
-			if (firstObject) {
-				tempObj = new MeshObject();
-				mObjects.push_back(tempObj);
-				firstObject = false;				
+			if (currentMesh != nullptr) {
+				currentMesh->processData(vertexStart, normalStart, textureStart, vertexIndices, normalIndices, textureIndices);
+				vertexStart += vertexCount;
+				normalStart += normalCount;
+				textureStart += textureCount;
+				vertexCount = 0, normalCount = 0, textureCount = 0;
+				vertexIndices.clear();
+				normalIndices.clear();
+				textureIndices.clear();
 			}
-			else {
-				tempObj->processData(vstart, nstart, tstart, tempIndices, tempVertNormIndices, tempVertTexIndices);
-				vstart += vCount;
-				nstart += nCount;
-				tstart += tCount;
-				vCount = 0, nCount = 0, tCount = 0;
-				tempIndices.clear();
-				tempVertNormIndices.clear();
-				tempVertTexIndices.clear();
-				tempObj = new MeshObject();
-				mObjects.push_back(tempObj);
-			}
+			currentMesh = new MeshObject();
+			meshObjects.push_back(currentMesh);
 		}
 		else if (token == "usemtl") {
 			string name;
 			linestream >> name;
-			tempObj->setMtlName(name);
+			currentMesh->setMtlName(name);
 		}
 		else if (token == "v") {
-			float v1, v2, v3;
-			linestream >> v1 >> v2 >> v3;
-			tempObj->vertices.push_back(glm::vec3(v1, v2, v3));
-			vCount++;
+			glm::vec3 vertex;
+			linestream >> vertex.x >> vertex.y >> vertex.z;
+			currentMesh->vertices.push_back(vertex);
+			vertexCount++;
 		}
 		else if (token == "vn") {
-			float v1, v2, v3;
-			linestream >> v1 >> v2 >> v3;
-			tempObj->vertNormals.push_back(glm::vec3(v1, v2, v3));
-			nCount++;
+			glm::vec3 normal;
+			linestream >> normal.x >> normal.y >> normal.z;
+			currentMesh->vertNormals.push_back(normal);
+			normalCount++;
 		}
 		else if (token == "vt") {
-			float u, v;
-			linestream >> u >> v;
-			tempObj->vertTextures.push_back(glm::vec2(u, v));
-			tCount++;
+			glm::vec2 texture;
+			linestream >> texture.x >> texture.y;
+			currentMesh->vertTextures.push_back(texture);
+			textureCount++;
 		}
 		else if (token == "f") {
-			vector<string> vs;
 			for (int i = 0; i < 3; i++) {
-				string v;
-				linestream >> v;
-				stringstream fp(v);
-				if ((v.find("//") != std::string::npos)) {
+				string vertexData;
+				linestream >> vertexData;
+				stringstream vertexStream(vertexData);
+				if ((vertexData.find("//") != std::string::npos)) {
 					break;
 				}
+
+				string index;
 				int count = 0;
-				string tok;
-				while (getline(fp, tok, '/')) {
+				while (getline(vertexStream, index, '/')) {
 					if (count == 0)
-						tempIndices.push_back(stoi(tok));
+						vertexIndices.push_back(stoi(index));
 					else if (count == 1) {
-						tempVertTexIndices.push_back(stoi(tok));
+						textureIndices.push_back(stoi(index));
 					}
 					else if (count == 2) {
-						tempVertNormIndices.push_back(stoi(tok));
+						normalIndices.push_back(stoi(index));
 					}
 					count++;
 				}
@@ -344,21 +359,18 @@ bool Scene::FileLoader(const char * path) {
 		}
 	}
 
-	if (!firstObject) {
-		tempObj->processData(vstart, nstart, tstart, tempIndices, tempVertNormIndices, tempVertTexIndices);
-		tempIndices.clear();
-		tempVertNormIndices.clear();
-		tempVertTexIndices.clear();
+	if (currentMesh) {
+		currentMesh->processData(vertexStart, normalStart, textureStart, vertexIndices, normalIndices, textureIndices);
+		vertexIndices.clear();
+		normalIndices.clear();
+		textureIndices.clear();
 	}
 	objFile.close();
 
 
-	string matLibPath = dir + matLibName;
-
-	MeshTextureMap *tempMap;
-	vector<MeshTextureMap *> mMaps;
-	ifstream matFile;
-	matFile.open(string(matLibPath));
+	ifstream matFile(directory + matLibName);
+	vector<MeshTexture *> materialTextures;
+	MeshTexture *currentTexture = nullptr;
 	string mline;
 	if (matFile) {
 		while (getline(matFile, mline, '\n')) {
@@ -369,35 +381,26 @@ bool Scene::FileLoader(const char * path) {
 			if (token == "newmtl") {
 				string name;
 				linestream >> name;
-				tempMap = new MeshTextureMap();
-				tempMap->name = name;
-				tempMap->hasTexture = false;
-				mMaps.push_back(tempMap);
+				currentTexture = new MeshTexture();
+				currentTexture->name = name;
+				currentTexture->hasTexture = false;
+				materialTextures.push_back(currentTexture);
 			}
 			else if (token == "Kd") {
-				float v1, v2, v3;;
-				linestream >> v1 >> v2 >> v3;
-				tempMap->kd = glm::vec3(v1, v2, v3);
+				glm::vec3 color;
+				linestream >> color.x >> color.y >> color.z;
+				currentTexture->diffuse = color;
 			}
 			else if (token == "map_Kd") {
 				string name;
 				linestream >> name;
 
-				string mapName;
-				bool correctFormat = false;
-
 				if ((name.find("\\") == std::string::npos) && (name.find(".") != std::string::npos)) {
-					mapName = name;
-					correctFormat = true;
-				}
-
-
-				if (correctFormat) {
 					string mapDir = string(path);
-					string mapPath = mapDir.substr(0, mapDir.find_last_of("\\")) + "\\" + mapName;
+					string mapPath = mapDir.substr(0, mapDir.find_last_of("\\")) + "\\" + name;
 
-					tempMap->path = mapPath;
-					tempMap->hasTexture = true;
+					currentTexture->path = mapPath;
+					currentTexture->hasTexture = true;
 				}
 
 			}
@@ -405,13 +408,6 @@ bool Scene::FileLoader(const char * path) {
 	}
 	matFile.close();
 
-	Mesh *meshObj = new Mesh(glm::vec3(0, 0, 0), mObjects, mMaps, "Mesh_" + to_string(++meshCount), ofColor::seaGreen);
-
-	objects.push_back(meshObj);
-	rayTracer.addObject(*meshObj);
-	rayMarcher.addObject(*meshObj);
-	bvh.create(objects);
-
-	return true;
-
+	Mesh *meshObj = new Mesh(ZERO_VECTOR, meshObjects, materialTextures, "Mesh_" + to_string(++objectCount["Mesh"]), ofColor::seaGreen);
+	AddObject(meshObj);
 }
