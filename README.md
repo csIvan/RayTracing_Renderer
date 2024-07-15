@@ -53,7 +53,7 @@
   - Keyboard shortcuts
 
 # Setup and Usage
-The application can be found [here]([https://drive.google.com/file/d/171NS4xjrMJHrNHGB5tqRiMlYrDR3O8Fh/view?usp=sharing](https://drive.google.com/drive/folders/1YKLREWbP2Svwp_XneyNIbeFHw3LQJkYR?usp=sharing)).
+The application can be found [here]([https://drive.google.com/file/d/171NS4xjrMJHrNHGB5tqRiMlYrDR3O8Fh/view?usp=sharing](https://drive.google.com/drive/folders/1YKLREWbP2Svwp_XneyNIbeFHw3LQJkYR?usp=sharing).
 Download the zip file, unzip it, and then click on the .exe file to run the application. 
 
 A few tips for using the application:
