@@ -1,8 +1,8 @@
-<h1 align="center"> Rendering Application </h1>
+<h1 align="center"> 3D Modeling and Rendering Software </h1>
 <p align="center"> <img src="./RenderImages/TitleImage.jpg" /> </p>
 
-> A C++/OpenFrameworks rendering application that supports both Ray Tracing and Ray Marching. Initially written for the CS116B course at San Jose State University and later 
-> extended to include more rendering features. The goal of this project was to improve upon a simple ray tracer and learn about various concepts in computer graphics.
+> A C++/OpenFrameworks modeling and rendering application that supports both Ray Tracing and Ray Marching. Started as a simple ray tracer and was later extended to include various rendering and modeling features.
+> The goal of this project was to improve upon a simple ray tracer and learn about various concepts in computer graphics.
 
 # Table of Contents
 * [Features](#features)
@@ -53,21 +53,21 @@
   - Keyboard shortcuts
 
 # Setup and Usage
-The application can be found [here](https://drive.google.com/file/d/171NS4xjrMJHrNHGB5tqRiMlYrDR3O8Fh/view?usp=sharing).
-Download the zip file, unzip it, and then click on the .exe file to run the application. The zip file is safe to download, it mainly contains the .dll files and the renderer application.
+The application can be found [here]([https://drive.google.com/file/d/171NS4xjrMJHrNHGB5tqRiMlYrDR3O8Fh/view?usp=sharing](https://drive.google.com/drive/folders/1YKLREWbP2Svwp_XneyNIbeFHw3LQJkYR?usp=sharing)).
+Download the zip file, unzip it, and then click on the .exe file to run the application. 
 
 A few tips for using the application:
 - Shortcuts are displayed right next to its corresponding UI component.
+- Double left click on the 3D scene to reset view.
 - Double right click on UI sliders(i.e. object's position, rotation, scale, color or key values like radius) will allow the user to input a specific value.
 - You can disable/enable the scene grid or acceleration structure(BVH).
 - You can click on the rendering camera, then select the toggle button 'Render Camera View' and finally change position or rotation to both change the point of view of the camera and monitor how the rendered image will look like.
 - When saving the rendered image, include the .png or .jpg extension to the end of the file name.
 
 # Screenshots
-<h3> Scene examples (3D environment) </h3>
+<h3> Scene and UI examples (3D environment) </h3>
 
 ![Scene1](./RenderImages/SceneExample.PNG)
-![Scene2](./RenderImages/TitleImageScene.PNG)
 ![Scene3](./RenderImages/SceneExample2.PNG)
 
 <h3> Rendered Images </h3> 
@@ -101,13 +101,3 @@ In order to texture the mesh, all of the following must be satisfied:
 - Under the .mtl file, the 'map_Kd' line must have just the texture file name(the name should contain no spaces) not the whole directory path(ex. map_Kd checkboard.png).
 - The texture image files(.png, .jpg, .tga) found in the .mtl file need to be in the same directory as the .mtl and .obj files.
 
-# Room for Improvement
-- Known Issues:
-  - Object selection in the interactive scene might select objects behind the closest object.
-  - Some .tga files might not map correctly to the triangle mesh.
-
-- More Features
-  - Serialization
-  - Ray Marching acceleration
-  - Normal mapping
-  - Animation
