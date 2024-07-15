@@ -9,7 +9,6 @@
 * [Setup and Usage](#setup-and-usage)
 * [Screenshots](#screenshots)
 * [Mesh Texture Mapping](#mesh-texture-mapping)
-* [Room for Improvement](#room-for-improvement)
 
 
 # Features
